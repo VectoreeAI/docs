@@ -86,41 +86,7 @@
     }
   },
   "redirects": [
-    { "source": "/", "destination": "/introduction" },
-    { "source": "/agent-native/skill", "destination": "/quickstart" },
-    { "source": "/mcp-setup", "destination": "/quickstart" },
-    { "source": "/core-concepts/ai/overview", "destination": "/products" },
-    { "source": "/core-concepts/ai/protocol-compatibility", "destination": "/products" },
-    { "source": "/core-concepts/authentication/overview", "destination": "/products" },
-    { "source": "/core-concepts/database/overview", "destination": "/products" },
-    { "source": "/core-concepts/database/migrations", "destination": "/quickstart" },
-    { "source": "/core-concepts/database/pgvector", "destination": "/products" },
-    { "source": "/core-concepts/storage/overview", "destination": "/products" },
-    { "source": "/core-concepts/storage/s3-compatibility", "destination": "/products" },
-    { "source": "/core-concepts/database/branching", "destination": "/quickstart" },
-    { "source": "/configuration/config-as-code", "destination": "/quickstart" },
-    { "source": "/core-concepts/deployments/overview", "destination": "/products" },
-    { "source": "/showcase", "destination": "/introduction" },
-    { "source": "/partnership", "destination": "/products" },
-    { "source": "/oauth-server", "destination": "/products" },
-    { "source": "/sdks/typescript/overview", "destination": "/quickstart" },
-    { "source": "/examples/overview", "destination": "/quickstart" },
-    { "source": "/core-concepts/functions/overview", "destination": "/products" },
-    { "source": "/core-concepts/realtime/overview", "destination": "/products" },
-    { "source": "/core-concepts/compute/overview", "destination": "/products" },
-    { "source": "/core-concepts/sites/overview", "destination": "/products" },
-    { "source": "/core-concepts/messaging/overview", "destination": "/products" },
-    { "source": "/core-concepts/payments/overview", "destination": "/products" },
-    { "source": "/core-concepts/analytics/overview", "destination": "/products" },
-    { "source": "/agent-native/cli-harness", "destination": "/quickstart" },
-    { "source": "/agent-native/diagnostics", "destination": "/quickstart" },
-    { "source": "/agent-native/config-as-code", "destination": "/quickstart" },
-    { "source": "/agent-native/branching", "destination": "/quickstart" },
-    { "source": "/deployment/deployment-security-guide", "destination": "/products" },
-    { "source": "/deployment/deploy-to-aws-ec2", "destination": "/products" },
-    { "source": "/deployment/deploy-to-azure-virtual-machines", "destination": "/products" },
-    { "source": "/deployment/deploy-to-containarium", "destination": "/products" },
-    { "source": "/deployment/deploy-to-google-cloud-compute-engine", "destination": "/products" }
+    { "source": "/", "destination": "/introduction" }
   ],
   "logo": {
     "light": "/logo/light.svg",
@@ -147,9 +113,9 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/Vectoree_dev",
+      "x": "https://x.com/Vectoree",
       "github": "https://github.com/VectoreeAI/",
-      "linkedin": "https://linkedin.com/company/vectoree"
+      "discord": "https://discord.gg/SgbKCtqEgT"
     }
   }
 }
