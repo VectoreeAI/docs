@@ -2,7 +2,7 @@
 
 Source for [docs.vectoree.ai](https://docs.vectoree.ai), hosted by [Mintlify](https://mintlify.com).
 
-This repository is a **mirror** of `docs/` in the [Vectoree monorepo](https://github.com/Vectoree/Vectoree). Do not edit pages here by hand — they will be overwritten on the next sync.
+This repository is a **mirror** of `docs/` from the Vectoree product source. Public GitHub: [VectoreeAI](https://github.com/VectoreeAI/). Do not edit pages here by hand — they will be overwritten on the next sync.
 
 ## Local preview
 

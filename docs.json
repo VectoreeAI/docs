@@ -78,13 +78,8 @@
           "icon": "newspaper"
         },
         {
-          "anchor": "Roadmap",
-          "href": "https://feedback.vectoree.ai/roadmap",
-          "icon": "route"
-        },
-        {
           "anchor": "GitHub",
-          "href": "https://github.com/Vectoree/Vectoree",
+          "href": "https://github.com/VectoreeAI/",
           "icon": "github"
         }
       ]
@@ -153,7 +148,7 @@
   "footer": {
     "socials": {
       "x": "https://x.com/Vectoree_dev",
-      "github": "https://github.com/Vectoree/Vectoree",
+      "github": "https://github.com/VectoreeAI/",
       "linkedin": "https://linkedin.com/company/vectoree"
     }
   }
