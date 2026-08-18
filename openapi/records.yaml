@@ -1,0 +1,382 @@
+openapi: 3.0.3
+info:
+  title: VECTOREE Records API
+  version: 2.0.0
+  description: PostgREST-style database record operations
+
+paths:
+  /api/database/records/{tableName}:
+    get:
+      summary: Query Records
+      description: Query records from a table with filtering, sorting, and pagination
+      tags:
+        - Client
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - name: tableName
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Name of the table to query
+          example: posts
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 1000
+          description: Maximum number of records to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          description: Number of records to skip for pagination
+        - name: order
+          in: query
+          schema:
+            type: string
+          description: Sort order (e.g., "createdAt.desc", "name.asc")
+          example: createdAt.desc
+        - name: select
+          in: query
+          schema:
+            type: string
+          description: Comma-separated list of columns to return
+          example: id,title,content
+        # PostgREST-style filters
+        - name: field
+          in: query
+          schema:
+            type: string
+          description: Filter by field value (e.g., "?status=eq.active", "?age=gt.18")
+          example: status=eq.active
+      responses:
+        '200':
+          description: List of records
+          headers:
+            X-Total-Count:
+              schema:
+                type: integer
+              description: Total number of records matching the query
+            Content-Range:
+              schema:
+                type: string
+              description: Range of records returned (e.g., "0-99/1234")
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+              example:
+                - id: "248373e1-0aea-45ce-8844-5ef259203749"
+                  title: "Getting Started with Vectoree"
+                  content: "This is a guide to help you get started..."
+                  createdAt: "2025-07-18T05:37:24.338Z"
+                  updatedAt: "2025-07-18T05:37:24.338Z"
+                - id: "348373e1-0aea-45ce-8844-5ef259203750"
+                  title: "Advanced Database Queries"
+                  content: "Learn how to write complex queries..."
+                  createdAt: "2025-07-19T08:15:10.123Z"
+                  updatedAt: "2025-07-19T08:15:10.123Z"
+        '404':
+          description: Table not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "TABLE_NOT_FOUND"
+                message: "Table 'nonexistent' does not exist"
+                statusCode: 404
+                nextActions: "Check table name and try again"
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "INVALID_QUERY"
+                message: "Invalid filter syntax"
+                statusCode: 400
+                nextActions: "Check PostgREST filter documentation"
+
+    post:
+      summary: Create Records
+      description: Create one or more records. Request body MUST be an array.
+      tags:
+        - Client
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - name: tableName
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Name of the table
+          example: posts
+        - name: Prefer
+          in: header
+          schema:
+            type: string
+            enum: ["return=representation"]
+          description: Include to return created records in response (otherwise returns empty array)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                additionalProperties: true
+              minItems: 1
+            example:
+              - title: "My First Post"
+                content: "Hello world! This is my first post."
+                published: true
+      responses:
+        '201':
+          description: Records created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+              examples:
+                without_prefer:
+                  summary: Response without Prefer header
+                  value: []
+                with_prefer:
+                  summary: "Response with Prefer: return=representation"
+                  value:
+                    - id: "248373e1-0aea-45ce-8844-5ef259203749"
+                      title: "My First Post"
+                      content: "Hello world! This is my first post."
+                      published: true
+                      createdAt: "2025-07-18T05:37:24.338Z"
+                      updatedAt: "2025-07-18T05:37:24.338Z"
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "VALIDATION_ERROR"
+                message: "Invalid field type: expected boolean for 'published'"
+                statusCode: 400
+                nextActions: "Ensure field types match the table schema"
+        '404':
+          description: Table not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "TABLE_NOT_FOUND"
+                message: "Table 'nonexistent' does not exist"
+                statusCode: 404
+                nextActions: "Create the table first"
+
+    patch:
+      summary: Update Records
+      description: Update records matching query filters
+      tags:
+        - Client
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - name: tableName
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Name of the table
+          example: posts
+        - name: id
+          in: query
+          schema:
+            type: string
+          description: Filter records by ID (e.g., "?id=eq.123e4567-e89b-12d3-a456-426614174000")
+          example: eq.123e4567-e89b-12d3-a456-426614174000
+        - name: Prefer
+          in: header
+          schema:
+            type: string
+            enum: ["return=representation"]
+          description: Include to return updated records in response
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+            example:
+              title: "Updated Post Title"
+              content: "This content has been updated."
+      responses:
+        '200':
+          description: Records updated
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+              examples:
+                without_prefer:
+                  summary: Response without Prefer header
+                  value: []
+                with_prefer:
+                  summary: "Response with Prefer: return=representation"
+                  value:
+                    - id: "123e4567-e89b-12d3-a456-426614174000"
+                      title: "Updated Post Title"
+                      content: "This content has been updated."
+                      createdAt: "2025-01-01T00:00:00Z"
+                      updatedAt: "2025-01-21T11:00:00Z"
+        '404':
+          description: No records found to update
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+              example: []
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "VALIDATION_ERROR"
+                message: "Invalid field type"
+                statusCode: 400
+                nextActions: "Check field types match table schema"
+
+    delete:
+      summary: Delete Records
+      description: Delete records matching query filters
+      tags:
+        - Client
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - name: tableName
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Name of the table
+          example: posts
+        - name: id
+          in: query
+          schema:
+            type: string
+          description: Filter records by ID (e.g., "?id=eq.123e4567-e89b-12d3-a456-426614174000")
+          example: eq.123e4567-e89b-12d3-a456-426614174000
+        - name: Prefer
+          in: header
+          schema:
+            type: string
+            enum: ["return=representation"]
+          description: Include to return deleted records in response
+      responses:
+        '204':
+          description: Records deleted (without Prefer header)
+        '200':
+          description: Records deleted (with Prefer header)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+              examples:
+                records_deleted:
+                  summary: Records were deleted
+                  value:
+                    - id: "123e4567-e89b-12d3-a456-426614174000"
+                      title: "Deleted Post"
+                      createdAt: "2025-01-01T00:00:00Z"
+                      updatedAt: "2025-01-21T11:00:00Z"
+                no_records:
+                  summary: No records found to delete
+                  value: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - statusCode
+      properties:
+        error:
+          type: string
+          description: Error code for programmatic handling
+          example: "VALIDATION_ERROR"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Invalid input data"
+        statusCode:
+          type: integer
+          description: HTTP status code
+          example: 400
+        nextActions:
+          type: string
+          description: Suggested action to resolve the error
+          example: "Check the request body format"
+
+    Record:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Auto-generated UUID
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when record was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when record was last updated
+      additionalProperties: true
+      description: Base record structure with system fields
+
+security:
+  - bearerAuth: []
+  - apiKey: []

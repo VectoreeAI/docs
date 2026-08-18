@@ -1,0 +1,30 @@
+openapi: 3.0.3
+info:
+  title: VECTOREE Health API
+  version: 1.0.0
+
+paths:
+  /api/health:
+    get:
+      summary: Health check
+      description: Check if the API is running and healthy
+      tags:
+        - Client
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  service:
+                    type: string
+                    example: VECTOREE Backend
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2025-01-21T03:45:22.194Z"

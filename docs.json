@@ -1,0 +1,160 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Vectoree Docs",
+  "colors": {
+    "primary": "#07C983",
+    "light": "#4ADE80",
+    "dark": "#059669"
+  },
+  "appearance": {
+    "default": "dark"
+  },
+  "styling": {
+    "eyebrows": "section"
+  },
+  "seo": {
+    "metatags": {
+      "og:site_name": "Vectoree Docs",
+      "google-site-verification": "2dSsr0kxw61j9-qSOR0a1dq1PT6U1-2o3kiZMdsIf9g"
+    },
+    "indexing": "navigable"
+  },
+  "search": {
+    "prompt": "Search Vectoree docs..."
+  },
+  "favicon": "/favicon.png",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Docs",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": ["introduction", "products", "quickstart"]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Tables",
+            "openapi": "/openapi/tables.yaml"
+          },
+          {
+            "group": "Authentication",
+            "openapi": "/openapi/auth.yaml"
+          },
+          {
+            "group": "Records",
+            "openapi": "/openapi/records.yaml"
+          },
+          {
+            "group": "Storage",
+            "openapi": "/openapi/storage.yaml"
+          },
+          {
+            "group": "Model Gateway",
+            "openapi": "/openapi/ai.yaml"
+          },
+          {
+            "group": "Health",
+            "openapi": "/openapi/health.yaml"
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Community",
+          "href": "https://discord.gg/SgbKCtqEgT",
+          "icon": "discord"
+        },
+        {
+          "anchor": "Blog",
+          "href": "https://blog.vectoree.ai",
+          "icon": "newspaper"
+        },
+        {
+          "anchor": "Roadmap",
+          "href": "https://feedback.vectoree.ai/roadmap",
+          "icon": "route"
+        },
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/Vectoree/Vectoree",
+          "icon": "github"
+        }
+      ]
+    }
+  },
+  "redirects": [
+    { "source": "/", "destination": "/introduction" },
+    { "source": "/agent-native/skill", "destination": "/quickstart" },
+    { "source": "/mcp-setup", "destination": "/quickstart" },
+    { "source": "/core-concepts/ai/overview", "destination": "/products" },
+    { "source": "/core-concepts/ai/protocol-compatibility", "destination": "/products" },
+    { "source": "/core-concepts/authentication/overview", "destination": "/products" },
+    { "source": "/core-concepts/database/overview", "destination": "/products" },
+    { "source": "/core-concepts/database/migrations", "destination": "/quickstart" },
+    { "source": "/core-concepts/database/pgvector", "destination": "/products" },
+    { "source": "/core-concepts/storage/overview", "destination": "/products" },
+    { "source": "/core-concepts/storage/s3-compatibility", "destination": "/products" },
+    { "source": "/core-concepts/database/branching", "destination": "/quickstart" },
+    { "source": "/configuration/config-as-code", "destination": "/quickstart" },
+    { "source": "/core-concepts/deployments/overview", "destination": "/products" },
+    { "source": "/showcase", "destination": "/introduction" },
+    { "source": "/partnership", "destination": "/products" },
+    { "source": "/oauth-server", "destination": "/products" },
+    { "source": "/sdks/typescript/overview", "destination": "/quickstart" },
+    { "source": "/examples/overview", "destination": "/quickstart" },
+    { "source": "/core-concepts/functions/overview", "destination": "/products" },
+    { "source": "/core-concepts/realtime/overview", "destination": "/products" },
+    { "source": "/core-concepts/compute/overview", "destination": "/products" },
+    { "source": "/core-concepts/sites/overview", "destination": "/products" },
+    { "source": "/core-concepts/messaging/overview", "destination": "/products" },
+    { "source": "/core-concepts/payments/overview", "destination": "/products" },
+    { "source": "/core-concepts/analytics/overview", "destination": "/products" },
+    { "source": "/agent-native/cli-harness", "destination": "/quickstart" },
+    { "source": "/agent-native/diagnostics", "destination": "/quickstart" },
+    { "source": "/agent-native/config-as-code", "destination": "/quickstart" },
+    { "source": "/agent-native/branching", "destination": "/quickstart" },
+    { "source": "/deployment/deployment-security-guide", "destination": "/products" },
+    { "source": "/deployment/deploy-to-aws-ec2", "destination": "/products" },
+    { "source": "/deployment/deploy-to-azure-virtual-machines", "destination": "/products" },
+    { "source": "/deployment/deploy-to-containarium", "destination": "/products" },
+    { "source": "/deployment/deploy-to-google-cloud-compute-engine", "destination": "/products" }
+  ],
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
+    "href": "https://vectoree.ai"
+  },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "Get Started",
+      "href": "https://vectoree.ai/dashboard/login"
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "cursor",
+      "vscode"
+    ]
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/Vectoree_dev",
+      "github": "https://github.com/Vectoree/Vectoree",
+      "linkedin": "https://linkedin.com/company/vectoree"
+    }
+  }
+}

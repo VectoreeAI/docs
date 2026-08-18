@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Vee — Vectoree favicon (simplified for ≤32px)</title>
+  <desc>Simplified square robot face: head and eyes only, for favicon and small sizes</desc>
+  <rect x="6" y="10" width="48" height="44" fill="#101010"/>
+  <rect x="10" y="14" width="44" height="40" fill="#D8FF00" stroke="#101010" stroke-width="5"/>
+  <rect x="21" y="26" width="8" height="13" fill="#101010"/>
+  <rect x="37" y="26" width="8" height="13" fill="#101010"/>
+</svg>

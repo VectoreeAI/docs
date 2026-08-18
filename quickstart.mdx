@@ -1,0 +1,54 @@
+---
+title: "CLI setup"
+sidebarTitle: "CLI setup"
+description: "Install the skill, log in, and link a project."
+---
+
+You do not pass a project id on the command line. `link` asks you to pick or create a project, then writes a scoped API key under `.vectoree/`.
+
+## 1. Create a Cloud account
+
+Open [vectoree.ai](https://vectoree.ai/dashboard/login), sign in with Google or email, and make sure you have an organization.
+
+## 2. Install the Skill (for agents)
+
+```bash
+npx skills add VectoreeAI/vectoree-skills
+```
+
+Repo: [VectoreeAI/vectoree-skills](https://github.com/VectoreeAI/vectoree-skills).
+
+## 3. Login and link
+
+From your app repo:
+
+```bash
+npx @vectoree/cli login
+npx @vectoree/cli link
+```
+
+`login` opens a browser (PKCE). Headless CI: `npx @vectoree/cli login --use-device-code`, or set `VECTOREE_API_KEY` and skip login.
+
+Staging API: `VECTOREE_API_URL=https://vectoree.net`. Production default is `https://vectoree.ai`.
+
+## 4. Check the gateway
+
+```bash
+npx @vectoree/cli whoami
+npx @vectoree/cli ai status
+npx @vectoree/cli ai models list
+```
+
+Top up the org wallet in the dashboard before `ai chat` will succeed on paid models.
+
+## Useful commands
+
+```bash
+npx @vectoree/cli db list
+npx @vectoree/cli storage buckets list
+npx @vectoree/cli --help
+```
+
+Every command accepts `--json`. Destructive commands confirm unless you pass `--yes`.
+
+npm: [@vectoree/cli](https://www.npmjs.com/package/@vectoree/cli).

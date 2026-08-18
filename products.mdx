@@ -1,0 +1,39 @@
+---
+title: "Products"
+description: "What Vectoree Cloud ships in this launch."
+---
+
+This launch is four products on one project, plus a PAYG wallet for the gateway. Everything shares the same project API key after `vectoree link`.
+
+<CardGroup cols={2}>
+  <Card title="Model Gateway" icon="sparkles" href="/quickstart">
+    OpenAI-compatible API. Browse models, probe with `vectoree ai`, call chat from your server.
+  </Card>
+
+  <Card title="Authentication" icon="shield" href="/quickstart">
+    Email and Google sign-in for users of *your* app. Not the same as logging into Vectoree Cloud.
+  </Card>
+
+  <Card title="Database" icon="database" href="/quickstart">
+    Postgres per project. Tables, schema, and SQL from the dashboard or CLI.
+  </Card>
+
+  <Card title="Storage" icon="folder" href="/quickstart">
+    Object storage with buckets and signed access.
+  </Card>
+</CardGroup>
+
+## How you operate it
+
+<CardGroup cols={2}>
+  <Card title="Agent Skill" icon="sparkles" href="/quickstart">
+    `npx skills add VectoreeAI/vectoree-skills`. Scene playbooks for Cursor / Claude Code / Codex. The skill calls the CLI; it is not Skills Hub.
+  </Card>
+  <Card title="CLI" icon="terminal" href="/quickstart">
+    Atomic commands: `login`, `link`, `ai`, `db`, `storage`. Global `--json`.
+  </Card>
+</CardGroup>
+
+## Billing
+
+There is no monthly subscription in this launch. Top up the **organization wallet**, then usage on the model gateway deducts from it. Auth, Database, and Storage sit on shared infra with no separate meter yet.

@@ -1,0 +1,2068 @@
+openapi: 3.0.3
+info:
+  title: VECTOREE Authentication API
+  version: 2.0.0
+  description: Authentication endpoints with separated auth and profile tables
+
+paths:
+  /api/auth/public-config:
+    get:
+      summary: Get public authentication configuration
+      description: Get all public authentication configuration including OAuth providers and email auth settings (public endpoint)
+      tags:
+        - Client
+      responses:
+        '200':
+          description: Public authentication configuration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  oAuthProviders:
+                    type: array
+                    items:
+                      type: string
+                      enum: [google, github, discord, linkedin, facebook, instagram, tiktok, apple, x, spotify, microsoft]
+                  customOAuthProviders:
+                    type: array
+                    items:
+                      type: string
+                  requireEmailVerification:
+                    type: boolean
+                  passwordMinLength:
+                    type: integer
+                    minimum: 4
+                    maximum: 128
+                  requireNumber:
+                    type: boolean
+                  requireLowercase:
+                    type: boolean
+                  requireUppercase:
+                    type: boolean
+                  requireSpecialChar:
+                    type: boolean
+                  verifyEmailMethod:
+                    type: string
+                    enum: [code, link]
+                    description: Method for email verification (code = 6-digit OTP, link = magic link)
+                  resetPasswordMethod:
+                    type: string
+                    enum: [code, link]
+                    description: Method for password reset (code = 6-digit OTP + exchange flow, link = magic link)
+                  disableSignup:
+                    type: boolean
+                    description: When true, new user sign-ups are disabled. Existing users can still sign in.
+
+  /api/auth/profiles/current:
+    patch:
+      summary: Update current user's profile
+      description: Update the profile of the currently authenticated user
+      tags:
+        - Client
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - profile
+              properties:
+                profile:
+                  type: object
+                  additionalProperties: true
+                  description: Profile data (name, avatar_url, and any custom fields)
+                  properties:
+                    name:
+                      type: string
+                    avatar_url:
+                      type: string
+                      format: uri
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized - authentication required
+
+  /api/auth/profiles/{userId}:
+    get:
+      summary: Get user profile by ID
+      description: Get public profile information for a user by their ID (public endpoint)
+      tags:
+        - Client
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: User ID
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '400':
+          description: Invalid user ID format
+        '404':
+          description: User not found
+
+  /api/auth/config:
+    get:
+      summary: Get authentication configuration
+      description: Get current authentication settings including all configuration options (admin only)
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Authentication configuration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  requireEmailVerification:
+                    type: boolean
+                  passwordMinLength:
+                    type: integer
+                    minimum: 4
+                    maximum: 128
+                  requireNumber:
+                    type: boolean
+                  requireLowercase:
+                    type: boolean
+                  requireUppercase:
+                    type: boolean
+                  requireSpecialChar:
+                    type: boolean
+                  verifyEmailMethod:
+                    type: string
+                    enum: [code, link]
+                    description: Method for email verification (code = 6-digit OTP, link = magic link)
+                  resetPasswordMethod:
+                    type: string
+                    enum: [code, link]
+                    description: Method for password reset (code = 6-digit OTP + exchange flow, link = magic link)
+                  allowedRedirectUrls:
+                    type: array
+                    items:
+                      type: string
+                    description: List of allowed URLs for authentication redirects. If empty, all redirects are allowed for smoother development UX. This is not recommended in production.
+                  disableSignup:
+                    type: boolean
+                    description: When true, public sign-up endpoints (POST /api/auth/users and first-time OAuth) are rejected with 403 AUTH_SIGNUP_DISABLED. Admin-authenticated user creation is unaffected.
+                  createdAt:
+                    type: string
+                    format: date-time
+                  updatedAt:
+                    type: string
+                    format: date-time
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin only
+
+    put:
+      summary: Update authentication configuration
+      description: Update authentication settings (admin only)
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requireEmailVerification:
+                  type: boolean
+                passwordMinLength:
+                  type: integer
+                  minimum: 4
+                  maximum: 128
+                requireNumber:
+                  type: boolean
+                requireLowercase:
+                  type: boolean
+                requireUppercase:
+                  type: boolean
+                requireSpecialChar:
+                  type: boolean
+                verifyEmailMethod:
+                  type: string
+                  enum: [code, link]
+                  description: Method for email verification (code = 6-digit OTP, link = magic link)
+                resetPasswordMethod:
+                  type: string
+                  enum: [code, link]
+                  description: Method for password reset (code = 6-digit OTP + exchange flow, link = magic link)
+                allowedRedirectUrls:
+                  type: array
+                  items:
+                    type: string
+                  description: List of allowed URLs for authentication redirects. If empty, all redirects are allowed for smoother development UX. This is not recommended in production.
+                disableSignup:
+                  type: boolean
+                  description: When true, public sign-up endpoints (POST /api/auth/users and first-time OAuth) are rejected with 403 AUTH_SIGNUP_DISABLED. Admin-authenticated user creation is unaffected.
+      responses:
+        '200':
+          description: Configuration updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  requireEmailVerification:
+                    type: boolean
+                  passwordMinLength:
+                    type: integer
+                    minimum: 4
+                    maximum: 128
+                  requireNumber:
+                    type: boolean
+                  requireLowercase:
+                    type: boolean
+                  requireUppercase:
+                    type: boolean
+                  requireSpecialChar:
+                    type: boolean
+                  verifyEmailMethod:
+                    type: string
+                    enum: [code, link]
+                  resetPasswordMethod:
+                    type: string
+                    enum: [code, link]
+                  allowedRedirectUrls:
+                    type: array
+                    items:
+                      type: string
+                    description: List of allowed URLs for authentication redirects. If empty, all redirects are allowed for smoother development UX. This is not recommended in production.
+                  disableSignup:
+                    type: boolean
+                    description: When true, public sign-up endpoints (POST /api/auth/users and first-time OAuth) are rejected with 403 AUTH_SIGNUP_DISABLED. Admin-authenticated user creation is unaffected.
+                  createdAt:
+                    type: string
+                    format: date-time
+                  updatedAt:
+                    type: string
+                    format: date-time
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin only
+
+  /api/auth/users:
+    post:
+      summary: Register new user
+      description: Creates a new user account
+      tags:
+          - Client
+      parameters:
+        - name: client_type
+          in: query
+          schema:
+            type: string
+            enum: [web, mobile, desktop, server]
+            default: web
+          description: |
+            Client type determines how refresh tokens are returned:
+            - web: Refresh token stored in httpOnly cookie, csrfToken returned in response
+            - mobile/desktop/server: refreshToken returned directly in response body
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  description: Password meeting configured requirements (check /api/auth/email/config for current requirements)
+                  example: securepassword123
+                name:
+                  type: string
+                  example: John Doe
+                redirectTo:
+                  type: string
+                  format: uri
+                  description: >-
+                    Used for link-based email verification. The email link always
+                    opens an Vectoree backend endpoint first; after the token is
+                    verified, Vectoree redirects the browser to this URL. This URL
+                    must be included in allowedRedirectUrls. Recommended: use your
+                    app's sign-in page.
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/UserResponse'
+                  accessToken:
+                    type: string
+                    nullable: true
+                    description: JWT authentication token (null if email verification required)
+                  csrfToken:
+                    type: string
+                    nullable: true
+                    description: CSRF token for use with refresh endpoint (web clients only, null if email verification required)
+                  refreshToken:
+                    type: string
+                    nullable: true
+                    description: Refresh token for mobile/desktop/server clients (null for web clients or if email verification required)
+                  requireEmailVerification:
+                    type: boolean
+                    description: Whether email verification is required before login
+        '400':
+          description: Invalid request
+        '403':
+          description: Signups disabled — project has disabled new user registration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: AUTH_SIGNUP_DISABLED
+                message: User signups are disabled for this project.
+                statusCode: 403
+        '409':
+          description: User already exists
+
+    get:
+      summary: List all users (admin only)
+      description: Returns paginated list of users
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: offset
+          in: query
+          schema:
+            type: string
+            default: '0'
+          description: Number of records to skip
+        - name: limit
+          in: query
+          schema:
+            type: string
+            default: '10'
+          description: Maximum number of records to return
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search by email or name
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserResponse'
+                  pagination:
+                    type: object
+                    properties:
+                      offset:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin only
+
+    delete:
+      summary: Delete users (admin only)
+      description: Delete multiple users by their IDs
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userIds:
+                  type: array
+                  items:
+                    type: string
+              required:
+                - userIds
+      responses:
+        '200':
+          description: Users deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  deletedCount:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin only
+
+  /api/auth/users/{userId}:
+    get:
+      summary: Get specific user
+      description: Get user details by ID (admin only)
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: User ID
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Invalid user ID format
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin only
+        '404':
+          description: User not found
+
+  /api/auth/sessions:
+    post:
+      summary: User login
+      description: Authenticates user and returns access token. For web clients, sets httpOnly refresh token cookie. For mobile/desktop/server clients, returns refreshToken in response body.
+      tags:
+        - Client
+      parameters:
+        - name: client_type
+          in: query
+          schema:
+            type: string
+            enum: [web, mobile, desktop, server]
+            default: web
+          description: |
+            Client type determines how refresh tokens are returned:
+            - web: Refresh token stored in httpOnly cookie, csrfToken returned in response
+            - mobile/desktop/server: refreshToken returned directly in response body
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/UserResponse'
+                  accessToken:
+                    type: string
+                  csrfToken:
+                    type: string
+                    nullable: true
+                    description: CSRF token for use with refresh endpoint (web clients only)
+                  refreshToken:
+                    type: string
+                    nullable: true
+                    description: Refresh token for mobile/desktop/server clients (null for web clients)
+        '401':
+          description: Invalid credentials
+        '403':
+          description: Email verification required
+
+  /api/auth/refresh:
+    post:
+      summary: Refresh access token
+      description: |
+        Refresh access token using refresh token.
+        - Web clients: Use httpOnly refresh token cookie with X-CSRF-Token header
+        - Mobile/Desktop/Server clients: Send refreshToken in request body
+      tags:
+        - Client
+      parameters:
+        - name: client_type
+          in: query
+          schema:
+            type: string
+            enum: [web, mobile, desktop, server]
+            default: web
+          description: |
+            Client type determines how refresh tokens are handled:
+            - web: Refresh token from httpOnly cookie, requires X-CSRF-Token header
+            - mobile/desktop/server: refreshToken provided in request body, new refreshToken returned in response
+        - name: X-CSRF-Token
+          in: header
+          schema:
+            type: string
+          description: CSRF token received from login/register response (required for web clients only)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  description: Refresh token (required for mobile/desktop/server clients only)
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/UserResponse'
+                  accessToken:
+                    type: string
+                  csrfToken:
+                    type: string
+                    nullable: true
+                    description: New CSRF token for subsequent refresh requests (web clients only)
+                  refreshToken:
+                    type: string
+                    nullable: true
+                    description: New refresh token for mobile/desktop/server clients (must be persisted for next refresh)
+        '401':
+          description: No refresh token provided or user not found
+        '403':
+          description: Invalid CSRF token
+
+  /api/auth/logout:
+    post:
+      summary: Logout user
+      description: Logout and clear refresh token cookie
+      tags:
+        - Client
+      responses:
+        '200':
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+
+  /api/auth/sessions/current:
+    get:
+      summary: Get current session
+      description: |
+        Returns the currently authenticated user's basic info from the access token.
+        Project admin tokens return a projectAdmin session object instead of an auth.users row.
+
+        This endpoint does not refresh expired access tokens by itself.
+        For browser apps using the TypeScript SDK, call `auth.getCurrentUser()`
+        during startup. The SDK will use the httpOnly refresh cookie automatically
+        when it can refresh the session. Server, mobile, and other non-browser
+        clients should call `/api/auth/refresh` explicitly.
+      tags:
+        - Client
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current session info
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    required:
+                      - user
+                    additionalProperties: false
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/UserResponse'
+                  - type: object
+                    required:
+                      - projectAdmin
+                    additionalProperties: false
+                    properties:
+                      projectAdmin:
+                        $ref: '#/components/schemas/ProjectAdminResponse'
+        '401':
+          description: Unauthorized
+
+  /api/auth/admin/sessions:
+    post:
+      summary: Admin login
+      description: Authenticates admin user for dashboard access
+      tags:
+        - Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: admin
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Admin login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projectAdmin:
+                    $ref: '#/components/schemas/ProjectAdminResponse'
+                  accessToken:
+                    type: string
+                  csrfToken:
+                    type: string
+                    description: CSRF token for `/api/auth/admin/refresh`
+        '401':
+          description: Invalid credentials
+        '403':
+          description: User is not an admin
+
+  /api/auth/admin/sessions/exchange:
+    post:
+      summary: Exchange cloud provider authorization code for admin session
+      description: Verifies an authorization code/JWT from from VECTOREE Cloud platform and issues an internal admin session token with project_admin role
+      tags:
+        - Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+              properties:
+                code:
+                  type: string
+                  description: Authorization code or JWT from the VECTOREE
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      responses:
+        '200':
+          description: Cloud authorization verified, admin session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projectAdmin:
+                    $ref: '#/components/schemas/ProjectAdminResponse'
+                  accessToken:
+                    type: string
+                    description: Internal JWT for admin authentication
+                  csrfToken:
+                    type: string
+                    description: CSRF token for `/api/auth/admin/refresh`
+        '400':
+          description: Invalid authorization code or JWT verification failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/admin/refresh:
+    post:
+      summary: Refresh admin dashboard access token
+      description: Uses the dashboard-only httpOnly `vectoree_admin_refresh_token` cookie with an `X-CSRF-Token` header.
+      tags:
+        - Admin
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+          description: CSRF token returned from admin login or admin refresh
+      responses:
+        '200':
+          description: Admin token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projectAdmin:
+                    $ref: '#/components/schemas/ProjectAdminResponse'
+                  accessToken:
+                    type: string
+                  csrfToken:
+                    type: string
+                    description: CSRF token for the next admin refresh request
+        '401':
+          description: No admin refresh token provided or project admin not found
+        '403':
+          description: Invalid CSRF token
+
+  /api/auth/admin/logout:
+    post:
+      summary: Logout admin dashboard session
+      description: Clears the dashboard-only `vectoree_admin_refresh_token` cookie.
+      tags:
+        - Admin
+      responses:
+        '200':
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+
+  /api/auth/tokens/anon:
+    post:
+      summary: Get anon key (deprecated)
+      deprecated: true
+      description: >-
+        Deprecated - use GET /api/metadata/anon-key instead. Returns the
+        project's opaque anon key (`anon_...`) under the legacy `accessToken`
+        field for backward compatibility. The anon key is a non-secret client
+        identifier that maps requests to the `anon` role; it replaces the
+        former non-expiring anonymous JWT and can be rotated via
+        POST /api/secrets/anon-key/rotate (admin only).
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Anon key retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    description: Opaque anon key (legacy field name kept for compatibility)
+                    example: "anon_1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcd"
+                  message:
+                    type: string
+                    description: Success message
+                    example: "Anon key retrieved successfully (deprecated route, use GET /api/metadata/anon-key)"
+        '401':
+          description: Unauthorized - requires authentication
+        '403':
+          description: Forbidden - admin access required
+        '404':
+          description: Anon key not initialized
+
+  /api/auth/email/send-verification:
+    post:
+      summary: Send email verification (code or link based on config)
+      description: Send email verification using the method configured in auth settings (verifyEmailMethod). When method is 'code', sends a 6-digit numeric code. When method is 'link', sends a browser verification link that goes through an Vectoree backend endpoint first. Prevents user enumeration by returning success even if email doesn't exist.
+      tags:
+        - Client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                redirectTo:
+                  type: string
+                  format: uri
+                  description: >-
+                    Used for link-based email verification. The email link always
+                    opens an Vectoree backend endpoint first; after the token is
+                    verified, Vectoree redirects the browser to this URL. This URL
+                    must be included in allowedRedirectUrls. Recommended: use your
+                    app's sign-in page.
+      responses:
+        '202':
+          description: Verification email sent (if email exists). Message varies based on configured method.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: "If your email is registered, we have sent you a verification code/link. Please check your inbox."
+        '400':
+          description: Invalid request
+
+  /api/auth/email/verify-link:
+    get:
+      summary: Verify email from browser link click
+      description: |
+        Browser-oriented link verification flow.
+
+        This endpoint is intended for users clicking verification links in email.
+        It validates the token on the backend and redirects the browser to the
+        stored, validated `redirectTo` URL with the verification result.
+
+        Redirect query params:
+        - Success: `vectoree_status=success&vectoree_type=verify_email`
+        - Error: `vectoree_status=error&vectoree_type=verify_email&vectoree_error=...`
+        - `vectoree_status`: `success` or `error`
+        - `vectoree_type`: always `verify_email`
+        - `vectoree_error`: present only on error, human-readable message
+
+        Recommended handling: use your sign-in page as `redirectTo`. When the
+        redirect arrives with `vectoree_status=success`, show a confirmation message
+        and ask the user to sign in with their email and password.
+      tags:
+        - Client
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 64-character email verification token from the email link
+      responses:
+        '302':
+          description: Browser redirected to the stored redirect URL
+        '400':
+          description: Invalid verification token or redirect target
+
+  /api/auth/email/verify:
+    post:
+      summary: Verify email with code
+      description: |
+        Verify email address with a 6-digit code.
+
+        Successfully verified users will receive a session token.
+
+        Browser email clicks should use `GET /api/auth/email/verify-link`.
+        `POST /api/auth/email/verify` is the JSON API for 6-digit code submission.
+      tags:
+        - Client
+      parameters:
+        - name: client_type
+          in: query
+          schema:
+            type: string
+            enum: [web, mobile, desktop, server]
+            default: web
+          description: |
+            Client type determines how refresh tokens are returned:
+            - web: Refresh token stored in httpOnly cookie, csrfToken returned in response
+            - mobile/desktop/server: refreshToken returned directly in response body
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - otp
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User email address
+                  example: user@example.com
+                otp:
+                  type: string
+                  pattern: '^\d{6}$'
+                  description: 6-digit verification code
+                  example: "123456"
+      responses:
+        '200':
+          description: Email verified successfully, session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/UserResponse'
+                  accessToken:
+                    type: string
+                    description: JWT authentication token
+                  csrfToken:
+                    type: string
+                    nullable: true
+                    description: CSRF token for use with refresh endpoint (web clients only)
+                  refreshToken:
+                    type: string
+                    nullable: true
+                    description: Refresh token for mobile/desktop/server clients (null for web clients)
+        '400':
+          description: Invalid verification code or token
+        '401':
+          description: Verification code/token expired or invalid
+
+  /api/auth/email/send-reset-password:
+    post:
+      summary: Send password reset (code or link based on config)
+      description: Send password reset email using the method configured in auth settings (resetPasswordMethod). When method is 'code', sends a 6-digit numeric code for two-step flow. When method is 'link', sends a browser reset link that goes through an Vectoree backend endpoint first. Prevents user enumeration by returning success even if email doesn't exist.
+      tags:
+        - Client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                redirectTo:
+                  type: string
+                  format: uri
+                  description: >-
+                    Used for link-based password reset. The email link always
+                    opens an Vectoree backend endpoint first; Vectoree then
+                    redirects the browser to this URL with the reset token in
+                    the query string. This URL must be included in
+                    allowedRedirectUrls. Recommended: use your app's dedicated
+                    reset-password page.
+      responses:
+        '202':
+          description: Password reset email sent (if email exists). Message varies based on configured method.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: "If your email is registered, we have sent you a password reset code/link. Please check your inbox."
+        '400':
+          description: Invalid request
+
+  /api/auth/email/exchange-reset-password-token:
+    post:
+      summary: Exchange reset password code for reset token
+      description: |
+        Step 1 of two-step password reset flow (only used when resetPasswordMethod is 'code'):
+        1. Verify the 6-digit code sent to user's email
+        2. Return a reset token that can be used to actually reset the password
+
+        This endpoint is not used when resetPasswordMethod is 'link', because the browser reset-link flow uses the emailed link token directly.
+      tags:
+        - Client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - code
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                code:
+                  type: string
+                  pattern: '^\d{6}$'
+                  description: 6-digit numeric code from email
+                  example: "123456"
+      responses:
+        '200':
+          description: Code verified successfully, reset token returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Reset token to be used in reset-password endpoint
+                  expiresAt:
+                    type: string
+                    format: date-time
+                    description: Token expiration timestamp
+        '400':
+          description: Invalid request
+        '401':
+          description: Invalid or expired code
+
+  /api/auth/email/reset-password-link:
+    get:
+      summary: Open password reset flow from browser link click
+      description: |
+        Browser-oriented password reset link flow.
+
+        This endpoint is intended for users clicking password reset links in email.
+        It validates the token on the backend and redirects the browser to the
+        stored, validated `redirectTo` URL with the reset token in the query string.
+
+        Redirect query params:
+        - Ready: `token=...&vectoree_status=ready&vectoree_type=reset_password`
+        - Error: `vectoree_status=error&vectoree_type=reset_password&vectoree_error=...`
+        - `token`: present only when `vectoree_status=ready`
+        - `vectoree_status`: `ready` or `error`
+        - `vectoree_type`: always `reset_password`
+        - `vectoree_error`: present only on error, human-readable message
+
+        Your app should render the reset-password form only when `vectoree_status=ready`
+        and `token` is present.
+      tags:
+        - Client
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 64-character password reset token from the email link
+      responses:
+        '302':
+          description: Browser redirected to the stored redirect URL
+        '400':
+          description: Invalid reset token or redirect target
+
+  /api/auth/email/reset-password:
+    post:
+      summary: Reset password with token
+      description: |
+        Reset user password with a token. The token can be:
+        - Magic link token (64-character hex token from send-reset-password when method is 'link')
+        - Reset token (from exchange-reset-password-token after code verification when method is 'code')
+
+        Both token types use RESET_PASSWORD purpose and are verified the same way.
+
+        Flow summary:
+        - Code method: send-reset-password → exchange-reset-password-token → reset-password (with resetToken)
+        - Link method: send-reset-password → GET /api/auth/email/reset-password-link → reset-password
+      tags:
+        - Client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - newPassword
+                - otp
+              properties:
+                newPassword:
+                  type: string
+                  description: New password meeting configured requirements
+                  example: newSecurePassword123
+                otp:
+                  type: string
+                  description: Reset token (either from magic link or from exchange-reset-password-token endpoint)
+                  example: "a1b2c3d4..."
+      responses:
+        '200':
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Password reset successfully"
+        '400':
+          description: Invalid request or password requirements not met
+        '401':
+          description: Verification code/token expired or invalid
+
+  /api/auth/oauth/configs:
+    get:
+      summary: List all OAuth configurations
+      description: Get all configured OAuth providers (admin only)
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of OAuth configurations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OAuthConfig'
+                  count:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin only
+
+    post:
+      summary: Create OAuth configuration
+      description: Create a new OAuth provider configuration (admin only)
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - provider
+              properties:
+                provider:
+                  type: string
+                  enum: [google, github, discord, linkedin, facebook, instagram, tiktok, apple, x, spotify, microsoft]
+                clientId:
+                  type: string
+                clientSecret:
+                  type: string
+                redirectUri:
+                  type: string
+                scopes:
+                  type: array
+                  items:
+                    type: string
+                useSharedKey:
+                  type: boolean
+      responses:
+        '200':
+          description: OAuth configuration created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthConfig'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin only
+
+  /api/auth/oauth/{provider}/config:
+    get:
+      summary: Get OAuth configuration for specific provider
+      description: Get OAuth configuration including client secret (admin only)
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, github, discord, linkedin, facebook, instagram, tiktok, apple, x, spotify, microsoft]
+      responses:
+        '200':
+          description: OAuth configuration
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/OAuthConfig'
+                  - type: object
+                    properties:
+                      clientSecret:
+                        type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin only
+        '404':
+          description: Configuration not found
+
+    put:
+      summary: Update OAuth configuration
+      description: Update OAuth provider configuration (admin only)
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, github, discord, linkedin, facebook, instagram, tiktok, apple, x, spotify, microsoft]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                clientSecret:
+                  type: string
+                redirectUri:
+                  type: string
+                scopes:
+                  type: array
+                  items:
+                    type: string
+                useSharedKey:
+                  type: boolean
+      responses:
+        '200':
+          description: Configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthConfig'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin only
+        '404':
+          description: Configuration not found
+
+    delete:
+      summary: Delete OAuth configuration
+      description: Delete OAuth provider configuration (admin only)
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, github, discord, linkedin, facebook, instagram, tiktok, apple, x, spotify, microsoft]
+      responses:
+        '200':
+          description: Configuration deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin only
+        '404':
+          description: Configuration not found
+
+  /api/auth/oauth/{provider}:
+    get:
+      summary: Initiate OAuth flow (PKCE)
+      description: |
+        Generate OAuth authorization URL for any supported provider using PKCE flow.
+
+        For mobile/desktop/server clients using PKCE:
+        1. Generate code_verifier (random string, 43-128 chars)
+        2. Generate code_challenge = Base64URL(SHA256(code_verifier))
+        3. Call this endpoint with code_challenge
+        4. After OAuth callback, use /api/auth/oauth/exchange with code_verifier
+      tags:
+        - Client
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, github, discord, linkedin, facebook, instagram, tiktok, apple, x, spotify, microsoft]
+        - name: redirect_uri
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uri
+          description: URL to redirect after authentication (receives vectoree_code parameter)
+        - name: code_challenge
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            PKCE code challenge for mobile/desktop/server clients.
+            Generate using: Base64URL(SHA256(code_verifier))
+            Required for secure token exchange in native apps or trusted server-side clients.
+      responses:
+        '200':
+          description: OAuth authorization URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authUrl:
+                    type: string
+                    format: uri
+                    description: URL to redirect user for OAuth provider login
+        '400':
+          description: Invalid request or provider not supported
+        '500':
+          description: OAuth not configured
+
+  /api/auth/oauth/exchange:
+    post:
+      summary: Exchange OAuth code for tokens (PKCE)
+      description: |
+        Exchange the vectoree_code (received from OAuth callback) for access and refresh tokens.
+
+        This endpoint is used for PKCE flow in mobile/desktop/server clients:
+        1. After OAuth callback, your redirect_uri receives `vectoree_code` parameter
+        2. Call this endpoint with the code and your original code_verifier
+        3. Receive access token and refresh token in response
+
+        The code_verifier must match the code_challenge sent during OAuth initiation.
+      tags:
+        - Client
+      parameters:
+        - name: client_type
+          in: query
+          schema:
+            type: string
+            enum: [web, mobile, desktop, server]
+            default: web
+          description: |
+            Client type determines how refresh tokens are returned:
+            - web: Refresh token stored in httpOnly cookie, csrfToken returned in response
+            - mobile/desktop/server: refreshToken returned directly in response body
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+                - code_verifier
+              properties:
+                code:
+                  type: string
+                  description: The vectoree_code received from OAuth callback redirect
+                  example: "abc123..."
+                code_verifier:
+                  type: string
+                  description: |
+                    The original code_verifier used to generate code_challenge.
+                    Must be 43-128 characters, using [A-Za-z0-9-._~]
+                  example: "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+      responses:
+        '200':
+          description: Tokens exchanged successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/UserResponse'
+                  accessToken:
+                    type: string
+                    description: JWT access token for API authentication
+                  refreshToken:
+                    type: string
+                    description: Refresh token for obtaining new access tokens
+        '400':
+          description: Invalid request - missing code or code_verifier
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Invalid or expired code, or code_verifier mismatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/oauth/shared/callback/{state}:
+    get:
+      summary: Shared OAuth callback handler
+      description: Handles OAuth callbacks from Vectoree Cloud shared OAuth
+      tags:
+        - Client
+      parameters:
+        - name: state
+          in: path
+          required: true
+          schema:
+            type: string
+          description: JWT state parameter
+        - name: success
+          in: query
+          schema:
+            type: string
+          description: Success flag
+        - name: error
+          in: query
+          schema:
+            type: string
+          description: Error message
+        - name: payload
+          in: query
+          schema:
+            type: string
+          description: Base64 encoded user payload
+      responses:
+        '302':
+          description: Redirect to application with access token or error
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+
+  /api/auth/oauth/{provider}/callback:
+    get:
+      summary: Provider-specific OAuth callback (GET)
+      description: |
+        OAuth callback endpoint for provider-specific flows (most providers use GET).
+
+        Response varies based on the original OAuth initiation:
+        - With code_challenge (PKCE): Redirects with `vectoree_code` for exchange endpoint
+        - Without code_challenge (web): Redirects with `access_token` and sets httpOnly cookie
+      tags:
+        - Client
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, github, discord, linkedin, facebook, instagram, tiktok, apple, x, spotify, microsoft]
+        - name: code
+          in: query
+          schema:
+            type: string
+          description: Authorization code from OAuth provider
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+          description: JWT state with redirect URI and optional code_challenge
+        - name: token
+          in: query
+          schema:
+            type: string
+          description: Direct ID token (for some providers)
+      responses:
+        '302':
+          description: |
+            Redirect to application.
+            - PKCE flow: redirect_uri?vectoree_code={code}&user_id={id}&email={email}&name={name}
+            - Web flow: redirect_uri?access_token={token}&user_id={id}&email={email}&name={name}&csrf_token={csrf}
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+                description: Redirect URL with authentication parameters
+
+    post:
+      summary: Provider-specific OAuth callback (POST)
+      description: |
+        OAuth callback endpoint for providers that use POST (e.g., Apple with form_post response mode).
+
+        Response varies based on the original OAuth initiation:
+        - With code_challenge (PKCE): Redirects with `vectoree_code` for exchange endpoint
+        - Without code_challenge (web): Redirects with `access_token` and sets httpOnly cookie
+      tags:
+        - Client
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, github, discord, linkedin, facebook, instagram, tiktok, apple, x, spotify, microsoft]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - state
+              properties:
+                code:
+                  type: string
+                  description: Authorization code from OAuth provider
+                state:
+                  type: string
+                  description: JWT state with redirect URI and optional code_challenge
+                id_token:
+                  type: string
+                  description: ID token (for Apple Sign In)
+      responses:
+        '302':
+          description: |
+            Redirect to application.
+            - PKCE flow: redirect_uri?vectoree_code={code}&user_id={id}&email={email}&name={name}
+            - Web flow: redirect_uri?access_token={token}&user_id={id}&email={email}&name={name}&csrf_token={csrf}
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+                description: Redirect URL with authentication parameters
+
+  /api/auth/oauth/custom/configs:
+    get:
+      summary: List all custom OAuth configurations
+      description: Get all configured custom OAuth providers (admin only)
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of custom OAuth configurations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CustomOAuthConfig'
+                  count:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin only
+
+    post:
+      summary: Create custom OAuth configuration
+      description: Create a new custom OAuth provider configuration (admin only)
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - key
+                - name
+                - discoveryEndpoint
+                - clientId
+                - clientSecret
+              properties:
+                key:
+                  type: string
+                name:
+                  type: string
+                discoveryEndpoint:
+                  type: string
+                  format: uri
+                clientId:
+                  type: string
+                clientSecret:
+                  type: string
+      responses:
+        '200':
+          description: Custom OAuth configuration created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomOAuthConfig'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin only
+        '409':
+          description: Configuration already exists
+
+  /api/auth/oauth/custom/{key}/config:
+    get:
+      summary: Get custom OAuth configuration
+      description: Get a custom OAuth configuration including client secret (admin only)
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Custom OAuth configuration
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/CustomOAuthConfig'
+                  - type: object
+                    properties:
+                      clientSecret:
+                        type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin only
+        '404':
+          description: Configuration not found
+
+    put:
+      summary: Update custom OAuth configuration
+      description: Update a custom OAuth provider configuration (admin only)
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                discoveryEndpoint:
+                  type: string
+                  format: uri
+                clientId:
+                  type: string
+                clientSecret:
+                  type: string
+      responses:
+        '200':
+          description: Custom OAuth configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomOAuthConfig'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin only
+        '404':
+          description: Configuration not found
+
+    delete:
+      summary: Delete custom OAuth configuration
+      description: Delete a custom OAuth provider configuration (admin only)
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Configuration deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin only
+        '404':
+          description: Configuration not found
+
+  /api/auth/oauth/custom/{key}:
+    get:
+      summary: Initiate custom OAuth flow (PKCE)
+      description: Generate OAuth authorization URL for a configured custom OAuth provider using PKCE flow
+      tags:
+        - Client
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: redirect_uri
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uri
+          description: URL to redirect after authentication (receives vectoree_code parameter)
+        - name: code_challenge
+          in: query
+          required: false
+          schema:
+            type: string
+          description: PKCE code challenge for mobile/desktop/server clients
+      responses:
+        '200':
+          description: OAuth authorization URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authUrl:
+                    type: string
+                    format: uri
+        '400':
+          description: Invalid request
+        '404':
+          description: Custom OAuth provider not found
+
+  /api/auth/oauth/custom/{key}/callback:
+    get:
+      summary: Custom OAuth callback (GET)
+      description: OAuth callback endpoint for custom OAuth providers
+      tags:
+        - Client
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Authorization code from the custom OAuth provider
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Signed OAuth state payload
+      responses:
+        '302':
+          description: Redirect to application after custom OAuth completion
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+                description: Redirect URL with authentication parameters
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+
+  schemas:
+    ProjectAdminResponse:
+      type: object
+      required:
+        - subject
+        - username
+      properties:
+        subject:
+          type: string
+          example: local:admin
+        username:
+          type: string
+          example: admin
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        profile:
+          type: object
+          nullable: true
+          additionalProperties: true
+          description: User profile data (name, avatar_url, and custom fields)
+          properties:
+            name:
+              type: string
+            avatar_url:
+              type: string
+              format: uri
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: true
+          description: System metadata (device ID, login IP, etc.)
+        emailVerified:
+          type: boolean
+        providers:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProfileResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: User ID
+        profile:
+          type: object
+          nullable: true
+          additionalProperties: true
+          description: User profile data (can contain custom fields)
+          properties:
+            name:
+              type: string
+            avatar_url:
+              type: string
+              format: uri
+
+    OAuthConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        provider:
+          type: string
+          enum: [google, github, discord, linkedin, facebook, instagram, tiktok, apple, x, spotify, microsoft]
+        clientId:
+          type: string
+          nullable: true
+        redirectUri:
+          type: string
+          nullable: true
+        scopes:
+          type: array
+          items:
+            type: string
+          nullable: true
+        useSharedKey:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CustomOAuthConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        key:
+          type: string
+        name:
+          type: string
+        discoveryEndpoint:
+          type: string
+          format: uri
+        clientId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    AuthRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        passwordHash:
+          type: string
+          description: SHA256 hash of password
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProfileRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        authId:
+          type: string
+          format: uuid
+          description: Foreign key to auth table
+        name:
+          type: string
+        avatar_url:
+          type: string
+          nullable: true
+        bio:
+          type: string
+          nullable: true
+        metadata:
+          type: object
+          description: JSONB field for flexible data
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - statusCode
+      properties:
+        error:
+          type: string
+          description: Error code for programmatic handling
+          example: "VALIDATION_ERROR"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Email is already in use"
+        statusCode:
+          type: integer
+          description: HTTP status code
+          example: 400
+        nextActions:
+          type: string
+          description: Suggested action to resolve the error
+          example: "Please use a different email address"

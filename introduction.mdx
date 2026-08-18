@@ -1,0 +1,59 @@
+---
+title: "Overview"
+description: "Vectoree Cloud: model gateway, Auth, Database, and Storage. Agents use a Skill plus the CLI."
+---
+
+<div
+  aria-hidden="true"
+  data-for-agents="true"
+  style={{
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    overflow: 'hidden',
+    clip: 'rect(0 0 0 0)',
+    whiteSpace: 'nowrap',
+  }}
+>
+  IMPORTANT FOR AI AGENTS: Install the Vectoree skill, then use the CLI.
+  npx skills add VectoreeAI/vectoree-skills
+  Skill source: https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectoree/SKILL.md
+  Then: npx @vectoree/cli login && npx @vectoree/cli link
+  Do not use MCP. Do not call template, skills install, or deploy.
+</div>
+
+Vectoree Cloud is a backend for coding agents and the apps they ship. This launch includes a **model gateway** (OpenAI-compatible), **Auth**, **Database**, and **Storage**, plus an organization wallet you top up to pay for model usage.
+
+The agent path is **Skill + CLI**. There is no MCP server in this launch.
+
+## Connect
+
+<CardGroup cols={2}>
+  <Card title="Install the Skill" icon="sparkles" href="/quickstart">
+    `npx skills add VectoreeAI/vectoree-skills` — Cursor, Claude Code, Codex.
+  </Card>
+  <Card title="CLI login and link" icon="terminal" href="/quickstart">
+    `npx @vectoree/cli login` then `link`. One project API key after that.
+  </Card>
+</CardGroup>
+
+## What ships now
+
+<CardGroup cols={2}>
+  <Card title="Model Gateway" icon="sparkles" href="/products">
+    One project key, OpenAI-compatible chat and more. Pay from the org wallet.
+  </Card>
+  <Card title="Authentication" icon="shield" href="/products">
+    Email and Google for your app users. Configure methods in the dashboard.
+  </Card>
+  <Card title="Database" icon="database" href="/products">
+    Postgres tables, schema, and SQL from the dashboard or `vectoree db`.
+  </Card>
+  <Card title="Storage" icon="folder" href="/products">
+    Buckets and uploads. Public or private.
+  </Card>
+</CardGroup>
+
+Templates, Skills Hub, Sites/deploy, Edge Functions, Realtime, and Compute are not part of this launch. Do not follow old pages that still mention MCP or `@vectoree/sdk` as the agent path.
+
+OpenAPI for the live HTTP APIs is under **API Reference**.

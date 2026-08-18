@@ -1,0 +1,604 @@
+openapi: 3.0.3
+info:
+  title: VECTOREE Tables API
+  version: 1.0.0
+
+paths:
+  /api/database/tables:
+    get:
+      summary: List Tables
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      responses:
+        '200':
+          description: List of table names
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+                - "posts"
+                - "comments"
+                - "categories"
+
+    post:
+      summary: Create Table
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tableName
+                - columns
+              properties:
+                tableName:
+                  type: string
+                columns:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - name
+                      - type
+                      - nullable
+                    properties:
+                      name:
+                        type: string
+                      type:
+                        type: string
+                        enum: [string, datetime, integer, float, boolean, uuid, json, file]
+                      nullable:
+                        type: boolean
+                      unique:
+                        type: boolean
+                      defaultValue:
+                        type: string
+                foreignKeys:
+                  type: array
+                  description: Table-level foreign key constraints
+                  items:
+                    $ref: '#/components/schemas/ForeignKeyConstraint'
+                rlsEnabled:
+                  type: boolean
+                  default: false
+                  description: Enable Row Level Security on the table
+      responses:
+        '201':
+          description: Table created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  table_name:
+                    type: string
+              example:
+                message: "Table created successfully"
+                tableName: "posts"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "VALIDATION_ERROR"
+                message: "Table name already exists"
+                statusCode: 400
+                nextActions: "Choose a different table name"
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "INVALID_FIELD_TYPE"
+                message: "Invalid field type: 'text'. Valid types are: string, integer, float, boolean, datetime, uuid, json, file"
+                statusCode: 422
+                nextActions: "Use one of the valid field types"
+
+  /api/database/tables/{tableName}/schema:
+    get:
+      summary: Get Table Schema
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - name: tableName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Table schema
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  table_name:
+                    type: string
+                  columns:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        type:
+                          type: string
+                        nullable:
+                          type: boolean
+                        unique:
+                          type: boolean
+                        default:
+                          type: string
+                          nullable: true
+                        isPrimaryKey:
+                          type: boolean
+                  foreignKeys:
+                    type: array
+                    description: Table-level foreign key constraints (one entry per constraint)
+                    items:
+                      $ref: '#/components/schemas/ForeignKeyConstraint'
+              example:
+                tableName: "posts"
+                columns:
+                  - name: "id"
+                    type: "uuid"
+                    nullable: false
+                    unique: true
+                    default: "gen_random_uuid()"
+                    isPrimaryKey: true
+                  - name: "title"
+                    type: "string"
+                    nullable: false
+                    unique: false
+                    default: null
+                    isPrimaryKey: false
+                  - name: "userId"
+                    type: "uuid"
+                    nullable: false
+                    unique: false
+                    default: null
+                    isPrimaryKey: false
+                foreignKeys:
+                  - constraintName: "fk_userId_auth_users_id"
+                    referenceTable: "auth.users"
+                    referenceColumns:
+                      - sourceColumn: "userId"
+                        referenceColumn: "id"
+                    onDelete: "CASCADE"
+                    onUpdate: "CASCADE"
+        '404':
+          description: Table not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "TABLE_NOT_FOUND"
+                message: "Table 'nonexistent' does not exist"
+                statusCode: 404
+                nextActions: "Check table name and try again"
+
+    patch:
+      summary: Update Table Schema
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - name: tableName
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                addColumns:
+                  type: array
+                  description: Add new columns to the table
+                  items:
+                    type: object
+                    required:
+                      - columnName
+                      - type
+                    properties:
+                      columnName:
+                        type: string
+                        description: Name of the new column
+                      type:
+                        type: string
+                        enum: [string, integer, float, boolean, datetime, uuid, json, file]
+                        description: Data type of the column
+                      isNullable:
+                        type: boolean
+                        default: true
+                        description: Whether the column allows NULL values
+                      isUnique:
+                        type: boolean
+                        default: false
+                        description: Whether the column values must be unique
+                      defaultValue:
+                        type: string
+                        description: Default value for the column
+                dropColumns:
+                  type: array
+                  description: Remove columns from the table
+                  items:
+                    type: string
+                    description: Name of the column to drop
+                updateColumns:
+                  type: array
+                  description: Modify existing columns (rename or change default)
+                  items:
+                    type: object
+                    required:
+                      - columnName
+                    properties:
+                      columnName:
+                        type: string
+                        description: Current name of the column
+                      newColumnName:
+                        type: string
+                        description: New name for the column (optional)
+                        minLength: 1
+                        maxLength: 64
+                      defaultValue:
+                        type: string
+                        description: New default value for the column (optional)
+                addForeignKeys:
+                  type: array
+                  description: Add foreign key constraints (one entry per constraint; composite keys list multiple column mappings)
+                  items:
+                    $ref: '#/components/schemas/ForeignKeyConstraint'
+                dropForeignKeys:
+                  type: array
+                  description: Constraint names of foreign keys to drop
+                  items:
+                    type: string
+                    description: Name of the foreign key constraint to drop
+                renameTable:
+                  type: object
+                  description: Rename the table
+                  required:
+                    - newTableName
+                  properties:
+                    newTableName:
+                      type: string
+                      description: New name for the table
+                      minLength: 1
+                      maxLength: 64
+      responses:
+        '200':
+          description: Table schema updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message
+                  tableName:
+                    type: string
+                    description: Name of the updated table
+                  operations:
+                    type: array
+                    description: List of operations performed
+                    items:
+                      type: string
+              example:
+                message: "Table schema updated successfully"
+                tableName: "posts"
+                operations: 
+                  - "added 2 columns"
+                  - "dropped 1 columns"
+                  - "renamed 1 columns"
+                  - "added 1 foreign keys"
+                  - "dropped 1 foreign keys"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                columnExists:
+                  value:
+                    error: "COLUMN_EXISTS"
+                    message: "Column 'title' already exists in table 'posts'"
+                    statusCode: 400
+                    nextActions: "Choose a different column name or drop it first"
+                columnNotFound:
+                  value:
+                    error: "COLUMN_NOT_FOUND"
+                    message: "Column 'nonexistent' not found in table 'posts'"
+                    statusCode: 400
+                    nextActions: "Check column name with GET /api/tables/{tableName}/schema"
+                foreignKeyExists:
+                  value:
+                    error: "FOREIGN_KEY_EXISTS"
+                    message: "Foreign key on column 'user_id' already exists"
+                    statusCode: 400
+                    nextActions: "Drop the existing foreign key first or use a different column"
+        '404':
+          description: Table not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "TABLE_NOT_FOUND"
+                message: "Table 'nonexistent' does not exist"
+                statusCode: 404
+                nextActions: "Check table name and try again"
+
+  /api/database/tables/{tableName}:
+    delete:
+      summary: Delete Table
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - name: tableName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Table deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  table_name:
+                    type: string
+              example:
+                message: "Table deleted successfully"
+                tableName: "posts"
+        '404':
+          description: Table not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "TABLE_NOT_FOUND"
+                message: "Table 'nonexistent' does not exist"
+                statusCode: 404
+                nextActions: "Check table name and try again"
+
+  /api/database/migrations:
+    get:
+      summary: List Database Migrations
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      responses:
+        '200':
+          description: List successful custom migrations
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - migrations
+                properties:
+                  migrations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Migration'
+              example:
+                migrations:
+                  - version: "20260416170500"
+                    name: "create_posts_table"
+                    statements:
+                      - "CREATE TABLE posts (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), title TEXT NOT NULL);"
+                    createdAt: "2026-04-16T17:05:00.000Z"
+
+    post:
+      summary: Create and Execute Database Migration
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - version
+                - name
+                - sql
+              properties:
+                version:
+                  type: string
+                  description: Numeric migration version. Accepts Drizzle-style sequential prefixes (e.g. `0001`) or a `YYYYMMDDHHmmss` timestamp. Versions are compared numerically.
+                  pattern: '^\d{1,64}$'
+                  maxLength: 64
+                name:
+                  type: string
+                  description: Migration name
+                  minLength: 1
+                sql:
+                  type: string
+                  description: SQL text to parse and execute immediately
+                  minLength: 1
+            example:
+              version: "20260416170500"
+              name: "create_posts_table"
+              sql: "CREATE TABLE posts (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), title TEXT NOT NULL);"
+      responses:
+        '201':
+          description: Migration executed and recorded successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Migration'
+                  - type: object
+                    required:
+                      - message
+                    properties:
+                      message:
+                        type: string
+              example:
+                version: "20260416170500"
+                name: "create_posts_table"
+                statements:
+                  - "CREATE TABLE posts (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), title TEXT NOT NULL);"
+                createdAt: "2026-04-16T17:05:00.000Z"
+                message: "Migration executed successfully"
+        '400':
+          description: Invalid migration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidPayload:
+                  value:
+                    error: "INVALID_INPUT"
+                    message: "sql: Migration SQL is required"
+                    statusCode: 400
+                transactionStatement:
+                  value:
+                    error: "DATABASE_FORBIDDEN"
+                    message: "Custom migrations cannot manage their own transactions."
+                    statusCode: 400
+        '409':
+          description: Migration version already exists or is not newer than the latest applied migration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "ALREADY_EXISTS"
+                message: "Migration version already exists."
+                statusCode: 409
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  
+  schemas:
+    ForeignKeyConstraint:
+      type: object
+      description: A table-level foreign key constraint. One entry per constraint; composite keys list multiple column mappings.
+      required:
+        - referenceTable
+        - referenceColumns
+        - onDelete
+        - onUpdate
+      properties:
+        constraintName:
+          type: string
+          description: Constraint name. Returned when reading the schema; derived by the backend on create.
+        referenceTable:
+          type: string
+          minLength: 1
+          description: Table being referenced
+        referenceColumns:
+          type: array
+          minItems: 1
+          description: Ordered (source → reference) column pairs
+          items:
+            type: object
+            required:
+              - sourceColumn
+              - referenceColumn
+            properties:
+              sourceColumn:
+                type: string
+                description: Column in the current table
+              referenceColumn:
+                type: string
+                description: Column in the referenced table
+        onDelete:
+          type: string
+          enum: [CASCADE, SET NULL, SET DEFAULT, NO ACTION, RESTRICT]
+        onUpdate:
+          type: string
+          enum: [CASCADE, SET NULL, SET DEFAULT, NO ACTION, RESTRICT]
+    Migration:
+      type: object
+      required:
+        - version
+        - name
+        - statements
+        - createdAt
+      properties:
+        version:
+          type: string
+          pattern: '^\d{1,64}$'
+        name:
+          type: string
+        statements:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - statusCode
+      properties:
+        error:
+          type: string
+          description: Error code for programmatic handling
+        message:
+          type: string
+          description: Human-readable error message
+        statusCode:
+          type: integer
+          description: HTTP status code
+        nextActions:
+          type: string
+          description: Suggested action to resolve the error

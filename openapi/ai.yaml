@@ -1,0 +1,686 @@
+openapi: 3.0.3
+info:
+  title: VECTOREE AI API
+  version: 1.0.0
+  description: Model Gateway helper APIs for OpenRouter key provisioning, model discovery, and deprecated compatibility proxy routes
+
+paths:
+  /api/ai/models:
+    get:
+      summary: Get all available AI models
+      description: Returns the normalized OpenRouter model catalog fetched from OpenRouter with output_modalities=all.
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Flat array of available models from the OpenRouter catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListModelsResponse'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Failed to get models list
+
+  /api/ai/overview:
+    get:
+      summary: Get Model Gateway overview
+      description: Returns key-level OpenRouter usage and activity time series when the key has activity access.
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Model Gateway overview
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIOverview'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Failed to fetch overview
+
+  /api/ai/openrouter/api-key:
+    get:
+      summary: Get active OpenRouter API key
+      description: Returns the active OpenRouter API key details for admin copy workflows.
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Active OpenRouter API key details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpenRouterKeyResponse'
+        '400':
+          description: Missing OpenRouter API key
+        '401':
+          description: Unauthorized
+        '500':
+          description: Failed to fetch API key details
+
+  /api/ai/chat/completion:
+    post:
+      summary: Generate chat completion (deprecated)
+      deprecated: true
+      description: Deprecated compatibility proxy. New integrations should call https://openrouter.ai/api/v1/chat/completions directly with the provisioned OpenRouter key.
+      tags:
+        - Client
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Chat completion response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCompletionResponse'
+            text/event-stream:
+              schema:
+                type: string
+                description: Server-sent events stream for streaming responses
+        '400':
+          description: Invalid request - missing model or messages
+        '401':
+          description: Unauthorized
+        '500':
+          description: Failed to get response
+
+  /api/ai/image/generation:
+    post:
+      summary: Generate images (deprecated)
+      deprecated: true
+      description: Deprecated compatibility proxy. New integrations should use OpenRouter image-capable models directly with the provisioned OpenRouter key.
+      tags:
+        - Client
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageGenerationOptions'
+      responses:
+        '200':
+          description: Images generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  model:
+                    type: string
+                    description: Model used for generation
+                  images:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OpenRouterImageMessage'
+                  text:
+                    type: string
+                    description: Text content from multimodal models
+                  count:
+                    type: integer
+                    description: Number of images generated
+                  metadata:
+                    type: object
+                    properties:
+                      model:
+                        type: string
+                      revisedPrompt:
+                        type: string
+                      usage:
+                        $ref: '#/components/schemas/TokenUsage'
+                  nextActions:
+                    type: string
+                    example: Images have been generated successfully. Use the returned URLs or base64 data to access them.
+        '400':
+          description: Invalid request - missing model or prompt
+        '401':
+          description: Unauthorized
+        '500':
+          description: Failed to generate image
+
+  /api/ai/embeddings:
+    post:
+      summary: Generate embeddings (deprecated)
+      deprecated: true
+      description: Deprecated compatibility proxy. New integrations should call https://openrouter.ai/api/v1/embeddings directly with the provisioned OpenRouter key.
+      tags:
+        - Client
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmbeddingsRequest'
+      responses:
+        '200':
+          description: Embeddings generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmbeddingsResponse'
+        '400':
+          description: Invalid request - missing model or input
+        '401':
+          description: Unauthorized
+        '500':
+          description: Failed to generate embeddings
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ChatMessage:
+      type: object
+      required:
+        - role
+      properties:
+        role:
+          type: string
+          enum: [user, assistant, system, tool]
+          description: Role of the message sender
+        content:
+          type: string
+          nullable: true
+          description: Message content (nullable for assistant messages with tool_calls)
+        tool_calls:
+          type: array
+          description: Tool calls made by the assistant (assistant messages only)
+          items:
+            $ref: '#/components/schemas/ToolCall'
+        tool_call_id:
+          type: string
+          description: ID of the tool call being responded to (tool messages only)
+
+    ChatRequest:
+      type: object
+      required:
+        - model
+        - messages
+      properties:
+        model:
+          type: string
+          description: OpenRouter model identifier
+          example: openai/gpt-4
+        messages:
+          type: array
+          description: Array of messages for conversation (supports text, images, audio, and files/PDFs)
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+        stream:
+          type: boolean
+          default: false
+          description: Enable streaming response via Server-Sent Events
+        temperature:
+          type: number
+          minimum: 0
+          maximum: 2
+          description: Controls randomness in generation
+        maxTokens:
+          type: integer
+          description: Maximum number of tokens to generate
+        topP:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Nucleus sampling parameter
+        webSearch:
+          $ref: '#/components/schemas/WebSearchPlugin'
+        fileParser:
+          $ref: '#/components/schemas/FileParserPlugin'
+        thinking:
+          type: boolean
+          description: Enable extended reasoning capabilities (appends :thinking to model ID if not already present). Not every model supports this, only works with Anthropic models with the :thinking suffix.
+        tools:
+          type: array
+          description: Tool definitions for function calling
+          items:
+            $ref: '#/components/schemas/Tool'
+        toolChoice:
+          description: 'Controls tool usage: auto, none, required, or a specific function'
+          oneOf:
+            - type: string
+              enum: [auto, none, required]
+            - type: object
+              required:
+                - type
+                - function
+              properties:
+                type:
+                  type: string
+                  enum: [function]
+                function:
+                  type: object
+                  required:
+                    - name
+                  properties:
+                    name:
+                      type: string
+        parallelToolCalls:
+          type: boolean
+          description: Allow the model to call multiple tools in parallel
+
+    ChatCompletionResponse:
+      type: object
+      properties:
+        text:
+          type: string
+          description: AI model response content
+        tool_calls:
+          type: array
+          description: Tool calls requested by the model (present when the model invokes tools)
+          items:
+            $ref: '#/components/schemas/ToolCall'
+        annotations:
+          type: array
+          description: URL citations from web search results (present when webSearch is enabled)
+          items:
+            $ref: '#/components/schemas/UrlCitationAnnotation'
+        metadata:
+          type: object
+          properties:
+            model:
+              type: string
+            usage:
+              $ref: '#/components/schemas/TokenUsage'
+
+    TokenUsage:
+      type: object
+      properties:
+        promptTokens:
+          type: integer
+        completionTokens:
+          type: integer
+        totalTokens:
+          type: integer
+
+    WebSearchPlugin:
+      type: object
+      required:
+        - enabled
+      properties:
+        enabled:
+          type: boolean
+          description: Enable web search integration
+        engine:
+          type: string
+          enum: [native, exa]
+          description: |
+            Search engine selection:
+            - native: Use provider's built-in web search (OpenAI, Anthropic, Perplexity, xAI)
+            - exa: Use Exa's search API
+            - undefined: Auto-select (native if available, otherwise Exa)
+        maxResults:
+          type: integer
+          minimum: 1
+          maximum: 10
+          default: 5
+          description: Maximum number of search results to include
+        searchPrompt:
+          type: string
+          description: Custom prompt for attaching search results to the message
+
+    FileParserPlugin:
+      type: object
+      required:
+        - enabled
+      properties:
+        enabled:
+          type: boolean
+          description: Enable file parsing for PDFs in messages
+        pdf:
+          type: object
+          properties:
+            engine:
+              type: string
+              enum: [pdf-text, mistral-ocr, native]
+              description: |
+                PDF processing engine:
+                - pdf-text: Best for well-structured PDFs with clear text content (Free)
+                - mistral-ocr: Best for scanned documents or PDFs with images ($2 per 1,000 pages)
+                - native: Only for models with native file support (charged as input tokens)
+                If not specified, defaults to native if available, otherwise mistral-ocr
+
+    Tool:
+      type: object
+      required:
+        - type
+        - function
+      properties:
+        type:
+          type: string
+          enum: [function]
+        function:
+          $ref: '#/components/schemas/FunctionDefinition'
+
+    FunctionDefinition:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The name of the function to call
+        description:
+          type: string
+          description: A description of what the function does
+        parameters:
+          type: object
+          description: JSON Schema describing the function parameters
+
+    ToolCall:
+      type: object
+      required:
+        - id
+        - type
+        - function
+      properties:
+        id:
+          type: string
+          description: Unique identifier for this tool call
+        type:
+          type: string
+          enum: [function]
+        function:
+          type: object
+          required:
+            - name
+            - arguments
+          properties:
+            name:
+              type: string
+              description: The name of the function called
+            arguments:
+              type: string
+              description: JSON string of the function arguments
+
+    FileContent:
+      type: object
+      description: File content for PDFs and other documents
+      required:
+        - type
+        - file
+      properties:
+        type:
+          type: string
+          enum: [file]
+        file:
+          type: object
+          required:
+            - filename
+            - file_data
+          properties:
+            filename:
+              type: string
+              description: Filename with extension (e.g., "document.pdf")
+              example: document.pdf
+            file_data:
+              type: string
+              description: |
+                File data can be:
+                - Public URL: "https://example.com/document.pdf"
+                - Base64 data URL: "data:application/pdf;base64,..."
+              example: "https://example.com/document.pdf"
+
+    UrlCitationAnnotation:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [url_citation]
+        urlCitation:
+          type: object
+          properties:
+            url:
+              type: string
+              description: URL of the cited source
+            title:
+              type: string
+              description: Title of the cited page
+            content:
+              type: string
+              description: Relevant content snippet from the source
+            startIndex:
+              type: integer
+              description: Start character index in response text where citation applies
+            endIndex:
+              type: integer
+              description: End character index in response text where citation applies
+
+    ImageGenerationOptions:
+      type: object
+      required:
+        - model
+        - prompt
+      properties:
+        model:
+          type: string
+          description: OpenRouter model identifier for image generation
+          example: openai/dall-e-3
+        prompt:
+          type: string
+          description: Text prompt describing the desired image
+          example: "A serene landscape with mountains and a lake at sunset"
+
+    OpenRouterImageMessage:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [image_url]
+        image_url:
+          type: object
+          properties:
+            url:
+              type: string
+              description: Can be a direct URL or data:image base64 URL
+
+    ListModelsResponse:
+      type: array
+      description: Normalized OpenRouter model catalog returned by GET /api/ai/models.
+      items:
+        $ref: '#/components/schemas/AIModel'
+
+    AIModel:
+      type: object
+      properties:
+        id:
+          type: string
+          example: openai/gpt-4o
+        created:
+          type: integer
+        inputModality:
+          type: array
+          items:
+            type: string
+          example: [text, image]
+        outputModality:
+          type: array
+          items:
+            type: string
+          example: [text]
+        provider:
+          type: string
+          example: openrouter
+        modelId:
+          type: string
+          example: openai/gpt-4o
+        inputPrice:
+          type: number
+          description: Input price per million tokens in USD when token pricing is available.
+        outputPrice:
+          type: number
+          description: Output price per million tokens in USD when token pricing is available.
+        inputPriceLabel:
+          type: string
+          description: Human-readable input pricing label, such as "$2.50 / 1M tokens" or "Free", when available.
+        outputPriceLabel:
+          type: string
+          description: Human-readable output pricing label, such as "$10.00 / 1M tokens" or "Free", when available.
+
+    OpenRouterKeyResponse:
+      type: object
+      properties:
+        apiKey:
+          type: string
+          description: Active OpenRouter API key for admin copy workflows
+        maskedKey:
+          type: string
+          description: Masked OpenRouter API key for display
+
+    AIOverviewMetricPoint:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: number
+
+    AIOverview:
+      type: object
+      properties:
+        key:
+          type: object
+          properties:
+            label:
+              type: string
+            limit:
+              type: number
+              nullable: true
+            limitRemaining:
+              type: number
+              nullable: true
+            limitReset:
+              type: string
+              nullable: true
+            usage:
+              type: number
+            usageDaily:
+              type: number
+            usageWeekly:
+              type: number
+            usageMonthly:
+              type: number
+            isFreeTier:
+              type: boolean
+            observabilityAvailable:
+              type: boolean
+            observabilityError:
+              type: string
+        charts:
+          type: object
+          properties:
+            spend:
+              type: array
+              items:
+                $ref: '#/components/schemas/AIOverviewMetricPoint'
+            requests:
+              type: array
+              items:
+                $ref: '#/components/schemas/AIOverviewMetricPoint'
+            tokens:
+              type: array
+              items:
+                $ref: '#/components/schemas/AIOverviewMetricPoint'
+    EmbeddingsRequest:
+      type: object
+      required:
+        - model
+        - input
+      properties:
+        model:
+          type: string
+          description: Embedding model identifier
+          example: google/gemini-embedding-001
+        input:
+          oneOf:
+            - type: string
+              description: Single text input to embed
+            - type: array
+              items:
+                type: string
+              description: Array of text inputs to embed
+          example: "Hello world"
+        encoding_format:
+          type: string
+          enum: [float, base64]
+          default: float
+          description: The format to return the embeddings in. Can be either float or base64.
+        dimensions:
+          type: integer
+          minimum: 0
+          description: The number of dimensions the resulting output embeddings should have. Only supported in certain models.
+
+    EmbeddingsResponse:
+      type: object
+      properties:
+        object:
+          type: string
+          enum: [list]
+          description: Object type, always "list"
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmbeddingObject'
+        metadata:
+          type: object
+          properties:
+            model:
+              type: string
+              description: The model used for embedding
+              example: text-embedding-ada-002
+            usage:
+              $ref: '#/components/schemas/TokenUsage'
+
+    EmbeddingObject:
+      type: object
+      properties:
+        object:
+          type: string
+          enum: [embedding]
+          description: Object type, always "embedding"
+        embedding:
+          type: array
+          items:
+            type: number
+          description: The embedding vector (array of floats)
+        index:
+          type: integer
+          description: Index of this embedding in the input array
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error message
+        details:
+          type: string
+          description: Additional error details
+        code:
+          type: string
+          description: Error code for programmatic handling
