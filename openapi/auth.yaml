@@ -9,55 +9,6 @@ servers:
     description: Production
 
 paths:
-  /api/auth/public-config:
-    get:
-      summary: Get public authentication configuration
-      description: Get all public authentication configuration including OAuth providers and email auth settings (public endpoint)
-      tags:
-        - Client
-      responses:
-        '200':
-          description: Public authentication configuration
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  oAuthProviders:
-                    type: array
-                    items:
-                      type: string
-                      enum: [google, github, discord, linkedin, facebook, instagram, tiktok, apple, x, spotify, microsoft]
-                  customOAuthProviders:
-                    type: array
-                    items:
-                      type: string
-                  requireEmailVerification:
-                    type: boolean
-                  passwordMinLength:
-                    type: integer
-                    minimum: 4
-                    maximum: 128
-                  requireNumber:
-                    type: boolean
-                  requireLowercase:
-                    type: boolean
-                  requireUppercase:
-                    type: boolean
-                  requireSpecialChar:
-                    type: boolean
-                  verifyEmailMethod:
-                    type: string
-                    enum: [code, link]
-                    description: Method for email verification (code = 6-digit OTP, link = magic link)
-                  resetPasswordMethod:
-                    type: string
-                    enum: [code, link]
-                    description: Method for password reset (code = 6-digit OTP + exchange flow, link = magic link)
-                  disableSignup:
-                    type: boolean
-                    description: When true, new user sign-ups are disabled. Existing users can still sign in.
-
   /api/auth/profiles/current:
     patch:
       summary: Update current user's profile
