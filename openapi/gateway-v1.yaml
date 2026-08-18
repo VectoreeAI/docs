@@ -1,0 +1,356 @@
+openapi: 3.0.3
+info:
+  title: VECTOREE Model Gateway v1
+  version: 1.1.0
+  description: |
+    OpenAI / Anthropic / Gemini compatible Model Gateway.
+
+    Authenticate with a **scoped project API key** (`sk-ve-v1-...`) that has
+    `gateway:chat` (inference) or `gateway:models` (list). Instance master keys
+    (`ik_...`) and publishable keys (`pk_` / `anon_`) are rejected.
+
+    Organization wallet billing applies when enabled (default). Optional per-key
+    `rpmLimit` returns HTTP 429 with `Retry-After`. Errors use the OpenAI shape
+    `{ "error": { "message", "type", "code" } }`.
+
+servers:
+  - url: https://vectoree.ai
+    description: Production
+
+paths:
+  /api/v1/models:
+    get:
+      summary: List models
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OpenAI-shaped model list
+        '401':
+          $ref: '#/components/responses/GatewayError'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /api/v1/chat/completions:
+    post:
+      summary: Chat completions (text + multimodal input)
+      description: |
+        Supports vision content parts on messages (image_url).
+        Set `stream: true` for SSE (`text/event-stream`) with OpenAI chunk payloads
+        and a terminal `data: [DONE]` event.
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [model, messages]
+              properties:
+                model:
+                  type: string
+                messages:
+                  type: array
+                  items:
+                    type: object
+                stream:
+                  type: boolean
+                temperature:
+                  type: number
+                max_tokens:
+                  type: integer
+      responses:
+        '200':
+          description: Chat completion or SSE stream
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /api/v1/responses:
+    post:
+      summary: OpenAI Responses API (stateless subset)
+      description: Does not support `previous_response_id`.
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Responses payload or SSE stream
+
+  /api/v1/messages:
+    post:
+      summary: Anthropic Messages API
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Anthropic Messages payload or SSE stream
+
+  /api/v1/gemini/generateContent:
+    post:
+      summary: Gemini generateContent
+      description: Model is supplied in the JSON body (not the path).
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Gemini generateContent response
+
+  /api/v1/gemini/streamGenerateContent:
+    post:
+      summary: Gemini generateContent (SSE)
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Gemini SSE stream
+
+  /api/v1/embeddings:
+    post:
+      summary: Create embeddings
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [model, input]
+              properties:
+                model:
+                  type: string
+                input:
+                  oneOf:
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+                encoding_format:
+                  type: string
+                  enum: [float, base64]
+                dimensions:
+                  type: integer
+      responses:
+        '200':
+          description: Embedding vectors
+
+  /api/v1/images:
+    post:
+      summary: Generate images
+      description: |
+        Sync by default. Pass `async: true` or `Prefer: respond-async` for a job.
+        Send `Idempotency-Key` to safely retry after client/proxy timeouts.
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            example: respond-async
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [model, prompt]
+              properties:
+                model:
+                  type: string
+                prompt:
+                  type: string
+                async:
+                  type: boolean
+                aspect_ratio:
+                  type: string
+                resolution:
+                  type: string
+                n:
+                  type: integer
+      responses:
+        '200':
+          description: Generated image payload
+        '202':
+          description: Async job accepted (`polling_url`)
+
+  /api/v1/images/jobs/{jobId}:
+    get:
+      summary: Poll async / recoverable image job
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job status and result when completed
+
+  /api/v1/videos:
+    post:
+      summary: Submit video generation job
+      description: Asynchronous. Poll `GET /api/v1/videos/{jobId}` until status is completed.
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [model]
+              properties:
+                model:
+                  type: string
+                prompt:
+                  type: string
+                duration:
+                  type: integer
+                resolution:
+                  type: string
+                aspect_ratio:
+                  type: string
+                frame_images:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '200':
+          description: Job id and polling_url
+
+  /api/v1/videos/{jobId}:
+    get:
+      summary: Poll video generation job
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: model
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Optional logical model slug to pin provider routing
+      responses:
+        '200':
+          description: Job status payload
+
+  /api/v1/videos/{jobId}/content:
+    get:
+      summary: Download generated video bytes
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: index
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: model
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Video binary
+          content:
+            video/mp4:
+              schema:
+                type: string
+                format: binary
+
+  /api/v1/audio/speech:
+    post:
+      summary: Text to speech
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Binary audio
+
+  /api/v1/audio/transcriptions:
+    post:
+      summary: Speech to text
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Transcription payload
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Scoped project API key `sk-ve-v1-...` (not `ik_...`).
+  responses:
+    GatewayError:
+      description: OpenAI-shaped error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OpenAIError'
+    RateLimited:
+      description: Key RPM or upstream rate limit
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds until the fixed RPM window resets
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OpenAIError'
+  schemas:
+    OpenAIError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [message, type]
+          properties:
+            message:
+              type: string
+            type:
+              type: string
+            code:
+              type: string
+              nullable: true
+            param:
+              type: string
+              nullable: true

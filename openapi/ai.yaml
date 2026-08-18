@@ -4,6 +4,10 @@ info:
   version: 1.0.0
   description: Model Gateway helper APIs for OpenRouter key provisioning, model discovery, and deprecated compatibility proxy routes
 
+servers:
+  - url: https://vectoree.ai
+    description: Production
+
 paths:
   /api/ai/models:
     get:

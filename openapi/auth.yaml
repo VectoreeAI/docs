@@ -4,6 +4,10 @@ info:
   version: 2.0.0
   description: Authentication endpoints with separated auth and profile tables
 
+servers:
+  - url: https://vectoree.ai
+    description: Production
+
 paths:
   /api/auth/public-config:
     get:

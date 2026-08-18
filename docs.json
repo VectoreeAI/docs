@@ -56,7 +56,7 @@
           },
           {
             "group": "Model Gateway",
-            "openapi": "/openapi/ai.yaml"
+            "openapi": "/openapi/gateway-v1.yaml"
           },
           {
             "group": "Health",

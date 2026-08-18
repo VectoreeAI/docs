@@ -4,6 +4,10 @@ info:
   version: 2.0.0
   description: PostgREST-style database record operations
 
+servers:
+  - url: https://vectoree.ai
+    description: Production
+
 paths:
   /api/database/records/{tableName}:
     get:

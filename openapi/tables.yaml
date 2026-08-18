@@ -3,6 +3,10 @@ info:
   title: VECTOREE Tables API
   version: 1.0.0
 
+servers:
+  - url: https://vectoree.ai
+    description: Production
+
 paths:
   /api/database/tables:
     get:

@@ -3,6 +3,10 @@ info:
   title: VECTOREE Health API
   version: 1.0.0
 
+servers:
+  - url: https://vectoree.ai
+    description: Production
+
 paths:
   /api/health:
     get:
@@ -21,10 +25,13 @@ paths:
                   status:
                     type: string
                     example: ok
+                  version:
+                    type: string
+                    example: "2.2.6"
                   service:
                     type: string
-                    example: VECTOREE Backend
+                    example: VECTOREE OSS Backend
                   timestamp:
                     type: string
                     format: date-time
-                    example: "2025-01-21T03:45:22.194Z"
+                    example: "2026-08-18T05:30:03.375Z"

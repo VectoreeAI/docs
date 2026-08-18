@@ -4,6 +4,10 @@ info:
   version: 2.0.0
   description: Bucket-based storage system similar to S3
 
+servers:
+  - url: https://vectoree.ai
+    description: Production
+
 paths:
   /api/storage/buckets:
     get:
