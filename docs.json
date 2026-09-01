@@ -85,8 +85,8 @@
             "openapi": "/openapi/gateway-v1.yaml"
           },
           {
-            "group": "Tool Hub",
-            "openapi": "/openapi/tool-hub.yaml"
+            "group": "AI",
+            "openapi": "/openapi/ai.yaml"
           },
           {
             "group": "Health",
