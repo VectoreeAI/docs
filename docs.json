@@ -58,6 +58,12 @@
             "pages": [
               "faq"
             ]
+          },
+          {
+            "group": "Changelog",
+            "pages": [
+              "changelog"
+            ]
           }
         ]
       },
@@ -92,12 +98,6 @@
             "group": "Health",
             "openapi": "/openapi/health.yaml"
           }
-        ]
-      },
-      {
-        "tab": "Changelog",
-        "pages": [
-          "changelog"
         ]
       }
     ],
