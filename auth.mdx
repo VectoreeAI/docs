@@ -1,0 +1,72 @@
+---
+title: "Authentication"
+description: "Add login to your app. This is not logging into Vectoree Cloud."
+---
+
+Vectoree has two login systems. Do not mix them.
+
+| | Vectoree Cloud (you) | Auth product (your users) |
+|---|---|---|
+| Who | You, org members, CLI | People who use the app you are building |
+| UI | [vectoree.ai/dashboard/login](https://vectoree.ai/dashboard/login) | Your own page, or REST with no UI |
+| CLI | `npx @vectoree/cli login` | `npx @vectoree/cli auth status` / `snippet` / `open` |
+| API | `POST /api/system/auth/signup` | `POST /api/auth/users`, `/sessions`, `/email/*`, `/oauth/google` |
+| Users table | `system.users` | `auth.users` (per project) |
+| Mail | Feishu SMTP (platform) | Resend, billed at $0.0005 per send, or your SMTP |
+
+If you said "log into Vectoree", use Cloud login. If you said "add login to my app", stay on this page.
+
+## Choose your login UI
+
+### Vectoree-hosted UI
+
+Use the project's Publishable Key (`pk_...`) in the browser. It identifies one
+project and is safe to expose. The hosted UI exchanges a successful login for
+an App user JWT.
+
+### Your own UI
+
+Your browser calls your own backend/BFF. The BFF calls Vectoree with a project
+API Key that has `auth:*` scope:
+
+```bash
+VECTOREE_API_KEY=sk-ve-v1-... # server only; never NEXT_PUBLIC_
+```
+
+Do not call Vectoree Auth directly from the custom browser UI and never expose
+the project API Key to an app user.
+
+## Add login to your app
+
+1. `npx @vectoree/cli login` then `npx @vectoree/cli link` (Cloud account, once).
+2. `npx @vectoree/cli auth status` to see email verification and which OAuth providers you configured.
+3. Email + password is on by default. New users get an **8-digit** email code before a session is issued.
+4. Google or GitHub: open [Authentication → Auth methods](https://vectoree.ai/dashboard/authentication/auth-methods) and paste **your** Client ID and Secret. Do not reuse Vectoree Cloud keys. Do not put secrets in the repo.
+5. Print a snippet:
+
+```bash
+npx @vectoree/cli auth snippet --ui
+npx @vectoree/cli auth snippet --rest --lang ts
+# --no-ui is accepted as an alias of --rest
+```
+
+`auth open` opens Auth methods. `auth open --docs` opens this page.
+
+## Identity
+
+Store app users only in Vectoree's `auth.users`. Do not `CREATE TABLE users`. On your business tables, `user_id` is the Auth JWT `sub`.
+
+The same email can have a separate account in project A and project B. An App JWT cannot call Cloud dashboard APIs, and a Cloud token cannot act as an app user.
+
+## Server-side REST for a custom UI
+
+Send the project API Key with `auth:*` as `Authorization: Bearer`. The key
+selects the project; Auth endpoints do not accept `X-Project-Id`. Never call
+`POST /api/system/auth/signup` from your app.
+
+- `POST /api/auth/users` register
+- `POST /api/auth/sessions` password login
+- `POST /api/auth/email/send-verification` then `POST /api/auth/email/verify` with the 8-digit code
+- `GET /api/auth/oauth/google` (only after you configured your own Google app)
+
+See the TypeScript REST notes: `npx @vectoree/cli docs get auth-sdk`.

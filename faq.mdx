@@ -1,0 +1,59 @@
+---
+title: "FAQ"
+description: "Common questions about billing, connection, models, data, and what ships in 1.0."
+---
+
+## Billing
+
+**Does it cost money?**  
+Sign-up is free. Model calls are billed per token. This launch uses a prepaid wallet — you top up before using paid models.
+
+**How do I top up?**  
+Dashboard > **Organization > Billing** > Stripe checkout. The amount enters the org wallet.
+
+**What if my balance runs out?**  
+Model and tool calls return a clear insufficient-balance error. Top up to resume.
+
+**Where do I see pricing?**  
+Dashboard > **Model Plaza**. Each model shows its unit price per 1M tokens.
+
+## Connection
+
+**`link` won't connect?**  
+Make sure you ran `login` first. Confirm you are in the directory you want to bind to the project.
+
+**Can't log in / no verification code?**  
+Check your spam folder. If the issue persists, confirm the platform SMTP is configured and contact support.
+
+**Key invalid error?**  
+Check that the key is complete, not deleted, and belongs to the current project.
+
+## Models
+
+**What are `vectoree/free` and `vectoree/auto`?**  
+`free` is a free trial model for testing connectivity. `auto` is smart routing that picks a provider by cost or latency.
+
+**Why does the same model have different prices?**  
+Prices vary by call type, region, and time slot (peak / off-peak), matching the upstream provider's pricing.
+
+**Can I use TTS / STT / image / video models?**  
+Yes. Use `ai models list --output-modality speech` to find the right slug. Do not send a TTS slug to `ai chat`.
+
+## Data and security
+
+**Where is my data stored?**  
+In Vectoree-managed storage (Postgres and object storage). Access is controlled via RLS and private buckets.
+
+**What if my API key leaks?**  
+Delete the key in the dashboard immediately and create a new one. Keys belong on your server, never in the browser bundle.
+
+**Can I delete a project?**  
+Yes, but deletion is destructive. Follow the dashboard confirmation prompts.
+
+## What ships in this launch
+
+**What is included in 1.0?**  
+Model Gateway, Auth, Database, Storage, Tool Hub (hosted MCP), org wallet billing, CLI + Agent Skill, Templates, and Google / email login.
+
+**What is not yet available?**  
+Deployment, Edge Functions, Realtime, and Compute are not part of this launch. Skills Hub was replaced by Tool Hub.

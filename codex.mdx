@@ -1,0 +1,203 @@
+---
+title: "Integrate with Codex"
+description: "One command to switch OpenAI Codex (CLI or ChatGPT desktop) to the Vectoree Model Gateway."
+---
+
+Use this when you want **Codex** to call models through Vectoree instead of a ChatGPT account or another provider. This is separate from app backend setup (`login` / `link`).
+
+You need a Vectoree account. The setup script signs you in with the same **device-code** flow as `npx @vectoree/cli login --use-device-code`, then lets you pick:
+
+1. **Project key** (`sk-ve-v1-...`) — pick a project and mint a scoped gateway key
+2. **Employee key** (`ek-ve-v1-...`) — pick an org where you have an active Employee AI seat (rotates that seat's key)
+3. **Paste** an existing key (or set `VECTOREE_API_KEY` / reuse `.vectoree/config.json` from `vectoree link`)
+
+Do not use the instance master key (`ik_`).
+
+## One-click install (recommended)
+
+Copy one of these into your terminal. The script backs up `~/.codex`, writes a model catalog, and only touches the provider keys Codex needs.
+
+### macOS / Linux
+
+```bash
+bash <(curl -fsSL https://vectoree.ai/scripts/codex-vectoree-setup.sh)
+```
+
+### Windows (PowerShell)
+
+```powershell
+irm https://vectoree.ai/scripts/codex-vectoree-setup.ps1 | iex
+```
+
+### Paste this prompt to an agent
+
+If you would rather have Cursor, Claude Code, or another agent run the switch for you:
+
+```text
+Point my Codex CLI at Vectoree as the model provider.
+Run the one-click setup (macOS/Linux):
+  bash <(curl -fsSL https://vectoree.ai/scripts/codex-vectoree-setup.sh)
+Or on Windows PowerShell:
+  irm https://vectoree.ai/scripts/codex-vectoree-setup.ps1 | iex
+I already have (or you can create) a project API key (sk-ve-v1-...).
+Follow C07 in the Vectoree skill if the script is unavailable:
+https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectoree/scenarios/model-gateway.md
+```
+
+## Prerequisites
+
+1. Install Codex CLI (`npm install -g @openai/codex`) or the ChatGPT desktop app.
+2. Launch it once so `~/.codex` exists.
+3. Have a Vectoree account ready. Prefer menu **1** (project key) or **2** (employee key) so the script opens a browser and mints the key. Optional: set `VECTOREE_API_KEY` to skip login.
+
+## What the menu does
+
+| Choice | Action |
+| --- | --- |
+| `1`–`5` | Install / switch to a curated model slug |
+| `c` | Enter any gateway model slug (for example `anthropic/claude-opus-4.6`) |
+| `r` | Restore the pre-install config and exit Vectoree / API-provider mode |
+
+Type `y` on first install. Optional env: `VECTOREE_API_KEY`, `VECTOREE_BASE_URL` (default `https://vectoree.ai/api/v1/`), `CODEX_HOME`.
+
+## Desktop vs CLI
+
+| Client | After install |
+| --- | --- |
+| **Codex CLI** | Uses Vectoree normally via `model_providers.vectoree` |
+| **ChatGPT desktop** | Uses API-key auth (`preferred_auth_method=apikey`); model picker shows **Custom**; ChatGPT-account history UI may look empty |
+
+Local sessions under `~/.codex/sessions` are not deleted. To restore ChatGPT defaults, re-run the script, choose `r` (newest `backup-vectoree*` folder), then fully quit and reopen ChatGPT / Codex.
+
+Each install writes a new timestamped backup (`backup-vectoree-YYYYMMDD-HHMMSS`). A leftover older backup no longer blocks reinstall.
+
+## Verify
+
+- Codex CLI: startup banner shows `model: <your-slug>`
+- ChatGPT desktop: model picker shows **Custom**
+
+If Codex returns `BILLING_PRICE_NOT_CONFIGURED`, the slug is wrong or unpriced. Check **Admin → Models**, or ask an agent to run `npx @vectoree/cli ai models search`. OpenRouter `*-latest` aliases often need the `~` prefix.
+
+## Tools (web search / apply_patch)
+
+Vectoree's `/api/v1/responses` path keeps Codex **custom** tools (freeform `apply_patch`, etc.) and re-renders them as `custom_tool_call` so the client can execute them. Hosted **web_search** is fulfilled by Vectoree's Tool Hub search when the instance has a search provider API key configured; otherwise that tool is dropped and surfaced in `X-Vectoree-Degraded-Fields`.
+
+If search is unavailable on your instance, disable it in `~/.codex/config.toml`:
+
+```toml
+web_search = "disabled"
+```
+
+---
+
+## Manual configuration
+
+If you prefer not to use the one-click script — for example inside a locked-down CI runner or a remote server with no browser — you can edit the two Codex config files directly.
+
+You will need a **Vectoree API key** (`sk-ve-v1-...`) from Dashboard → Projects → API Keys, or an **employee key** (`ek-ve-v1-...`) from your org admin.
+
+### Step 1 — Edit `~/.codex/config.toml`
+
+Open (or create) `~/.codex/config.toml` and set the following top-level keys:
+
+```toml
+model                  = "deepseek/deepseek-v4-pro"
+model_provider         = "vectoree"
+preferred_auth_method  = "apikey"
+forced_login_method    = "api"
+model_reasoning_effort = "high"
+model_catalog_json     = "~/.codex/models.json"
+```
+
+Then add the provider section:
+
+```toml
+[model_providers.vectoree]
+name = "Vectoree"
+base_url = "https://vectoree.ai/api/v1/"
+wire_api = "responses"
+experimental_bearer_token = "sk-ve-v1-xxxxxxxxxxxxxxxx"
+```
+
+### Step 2 — Create `~/.codex/models.json`
+
+Codex needs a model catalog so it can resolve the `model` slug. Create `~/.codex/models.json` with at least one entry matching the slug you chose:
+
+```json
+{
+  "models": [
+    {
+      "slug": "deepseek/deepseek-v4-pro",
+      "display_name": "DeepSeek V4 Pro",
+      "context_window": 1048576,
+      "max_context_window": 1048576,
+      "supports_reasoning_summaries": true,
+      "default_reasoning_level": "high",
+      "supported_reasoning_levels": [
+        { "effort": "low",  "description": "Fast responses with lighter reasoning" },
+        { "effort": "high", "description": "Extra high reasoning depth" },
+        { "effort": "max",  "description": "Maximum reasoning depth" }
+      ],
+      "supports_search_tool": true,
+      "apply_patch_tool_type": "freeform",
+      "supports_parallel_tool_calls": true,
+      "visibility": "list",
+      "minimal_client_version": "0.144.0",
+      "supported_in_api": true
+    }
+  ]
+}
+```
+
+Add one entry per model slug you plan to use. The `slug` must exactly match what your Vectoree gateway is configured to route.
+
+### Config field reference
+
+#### `~/.codex/config.toml` — top-level keys
+
+| Key | Value | Description |
+| --- | --- | --- |
+| `model` | string (e.g. `"deepseek/deepseek-v4-pro"`) | The default model slug Codex sends to the gateway. Must exist in `models.json`. |
+| `model_provider` | `"vectoree"` | Tells Codex to use the `vectoree` provider block below. |
+| `preferred_auth_method` | `"apikey"` | Forces API-key auth instead of ChatGPT account login. Required for desktop. |
+| `forced_login_method` | `"api"` | Prevents the ChatGPT desktop app from falling back to account auth. |
+| `model_reasoning_effort` | `"high"` | Default reasoning level. Can be `"low"`, `"high"`, or `"max"`. |
+| `model_catalog_json` | `"~/.codex/models.json"` | Path to the model catalog file. Can be absolute if `CODEX_HOME` is overridden. |
+
+#### `~/.codex/config.toml` — `[model_providers.vectoree]`
+
+| Key | Value | Description |
+| --- | --- | --- |
+| `name` | `"Vectoree"` | Display name shown in the Codex UI. |
+| `base_url` | `"https://vectoree.ai/api/v1/"` | Vectoree gateway endpoint. Must end with `/`. Override with `VECTOREE_BASE_URL` if self-hosting. |
+| `wire_api` | `"responses"` | Uses the OpenAI Responses API wire format. Do not change. |
+| `experimental_bearer_token` | `"sk-ve-v1-..."` | Your Vectoree API key. Sent as `Authorization: Bearer <key>`. |
+
+#### `~/.codex/models.json` — entry fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `slug` | string | Model identifier matching the gateway. Must match `model` in `config.toml`. |
+| `display_name` | string | Human-readable name shown in the model picker. |
+| `context_window` | number | Maximum input tokens. |
+| `max_context_window` | number | Absolute ceiling including output. |
+| `supports_reasoning_summaries` | boolean | Whether the model emits reasoning summaries. |
+| `default_reasoning_level` | string | Default effort: `"low"`, `"high"`, or `"max"`. |
+| `supported_reasoning_levels` | array | Available effort levels with descriptions. |
+| `supports_search_tool` | boolean | Whether web search is available. |
+| `apply_patch_tool_type` | `"freeform"` | Enables freeform patch application. |
+| `supports_parallel_tool_calls` | boolean | Whether parallel tool calls are allowed. |
+| `visibility` | `"list"` | Shows the model in the picker. Use `"hidden"` to hide. |
+| `minimal_client_version` | string | Minimum Codex client version. |
+| `supported_in_api` | boolean | Whether the model is available via the API. |
+
+### Restore
+
+To undo manual configuration, delete the `[model_providers.vectoree]` section and the top-level keys you added. If you had a previous `config.toml`, restore it from the backup the one-click script created (look under `~/.codex/backup-vectoree-*`).
+
+Fully quit and reopen ChatGPT / Codex afterward so the desktop UI reloads account mode.
+
+## Related
+
+- [CLI setup](/quickstart) — skill install, `login`, `link`, Tool Hub MCP
+- Agent playbook C07: [model-gateway.md](https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectoree/scenarios/model-gateway.md)

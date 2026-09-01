@@ -31,7 +31,33 @@
         "groups": [
           {
             "group": "Getting Started",
-            "pages": ["introduction", "products", "quickstart"]
+            "pages": [
+              "introduction",
+              "products",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "models",
+              "auth",
+              "database",
+              "storage",
+              "billing"
+            ]
+          },
+          {
+            "group": "Agent Integrations",
+            "pages": [
+              "codex"
+            ]
+          },
+          {
+            "group": "FAQ",
+            "pages": [
+              "faq"
+            ]
           }
         ]
       },
@@ -59,9 +85,19 @@
             "openapi": "/openapi/gateway-v1.yaml"
           },
           {
+            "group": "Tool Hub",
+            "openapi": "/openapi/tool-hub.yaml"
+          },
+          {
             "group": "Health",
             "openapi": "/openapi/health.yaml"
           }
+        ]
+      },
+      {
+        "tab": "Changelog",
+        "pages": [
+          "changelog"
         ]
       }
     ],
@@ -86,7 +122,10 @@
     }
   },
   "redirects": [
-    { "source": "/", "destination": "/introduction" }
+    {
+      "source": "/",
+      "destination": "/introduction"
+    }
   ],
   "logo": {
     "light": "/logo/light.svg",

@@ -1,0 +1,37 @@
+---
+title: "Storage"
+description: "Object storage with public and private buckets. Upload and manage files from CLI or dashboard."
+---
+
+Vectoree provides object storage for files and images. Create buckets, mark them public or private, and upload from the CLI or dashboard.
+
+## Common commands
+
+```bash
+# List buckets
+npx @vectoree/cli storage buckets list
+
+# Create a public bucket (for avatars, public images)
+npx @vectoree/cli storage buckets create uploads --public
+
+# Upload a file
+npx @vectoree/cli storage upload uploads ./avatar.png
+
+# List files in a bucket
+npx @vectoree/cli storage ls uploads
+```
+
+## Public vs private
+
+| Type | Use case | Access |
+|---|---|---|
+| public | Avatars, public images, static assets | Anyone with the URL |
+| private | User-private files, knowledge base sources | Requires a signed URL (time-limited, authenticated) |
+
+<Warning>
+  Put user-sensitive files in a private bucket. Do not default everything to public for convenience.
+</Warning>
+
+## Dashboard
+
+Use the dashboard **Storage** tab to manage buckets and upload files in a web interface.

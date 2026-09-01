@@ -1,0 +1,76 @@
+---
+title: "Model Gateway"
+description: "One OpenAI-compatible endpoint for multiple models. Pay per token from the org wallet."
+---
+
+The Model Gateway gives you one OpenAI-compatible API endpoint and one project API key to call multiple providers. Browse models in the dashboard, probe with the CLI, or call chat from your server.
+
+## Call from your app
+
+Use any OpenAI-compatible SDK. Change `base_url` and `api_key`:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://vectoree.ai/api/v1",
+    api_key="sk-ve-v1-your-key",
+)
+
+resp = client.chat.completions.create(
+    model="vectoree/auto",
+    messages=[{"role": "user", "content": "Hello"}],
+)
+print(resp.choices[0].message.content)
+```
+
+<Warning>
+  API keys belong on your server, never in the browser bundle. Do not use `NEXT_PUBLIC_` for Vectoree keys.
+</Warning>
+
+## Key concepts
+
+| Concept | Description |
+|---|---|
+| `base_url` | `https://vectoree.ai/api/v1` (OpenAI-compatible format) |
+| `model` | Model slug. `vectoree/auto` routes by cost/latency; `vectoree/free` for free trial |
+| Token | Billing unit. Both input and output tokens are billed |
+| API Key | Machine credential. Create multiple per environment in the dashboard |
+
+## Browse and probe
+
+```bash
+npx @vectoree/cli ai models list
+npx @vectoree/cli ai models search --input-modality speech
+npx @vectoree/cli ai chat "ping"
+npx @vectoree/cli ai status
+```
+
+The dashboard **Model Plaza** lists all models with pricing, provider, and status. Use **Playground** to test the same prompt across multiple models side by side.
+
+## Special slugs
+
+| Slug | What it does |
+|---|---|
+| `vectoree/free` | Free trial model for testing connectivity |
+| `vectoree/auto` | Smart routing — picks provider by cost or latency |
+
+## Multi-modal endpoints
+
+Beyond text chat (`/api/v1/chat/completions`), the same key accesses:
+
+- `/api/v1/audio/speech` — Text-to-speech (TTS)
+- `/api/v1/audio/transcriptions` — Speech-to-text (STT)
+- `/api/v1/images` — Image generation
+- `/api/v1/videos` — Video generation
+- `/api/v1/embeddings` — Text embeddings
+
+Use `ai models list --output-modality speech` to find TTS slugs. Do not send a TTS slug to `ai chat`.
+
+## Pricing
+
+- Each model shows its price per 1M tokens in Model Plaza
+- Prices vary by **call type, region, and time slot (peak / off-peak)**
+- Billing = actual tokens consumed x unit price, deducted from the org wallet
+
+See [Billing](/billing) for wallet top-up and usage details.

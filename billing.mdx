@@ -1,0 +1,41 @@
+---
+title: "Billing"
+description: "Top up the org wallet, pay per token for model and tool usage. Transparent and usage-based."
+---
+
+There is no monthly subscription in this launch. You top up the **organization wallet** and usage on the model gateway and Tool Hub deducts from it. Auth, Database, and Storage sit on shared infrastructure with no separate metering yet.
+
+## How it works
+
+```text
+Organization wallet (top up via Stripe)
+  -> Each model call bills by token
+  -> Each Tool Hub call bills per use
+  -> Balance and usage visible in dashboard
+```
+
+## Top up
+
+1. Open the dashboard and go to **Organization > Billing**
+2. Pay via Stripe — the amount goes into the org wallet
+3. Check balance with `npx @vectoree/cli ai status`
+
+## Usage
+
+- Dashboard **Organization > Usage** shows every call: model, token count, and cost
+- `npx @vectoree/cli ai status` shows gateway connectivity and wallet balance from the CLI
+
+## Insufficient balance
+
+When the wallet runs out, model and tool calls return a clear **insufficient balance** error — they do not silently succeed. Top up the wallet to resume.
+
+## PAYG vs subscription
+
+| | Subscription | PAYG wallet (Vectoree 1.0) |
+|---|---|---|
+| Cost | Fixed monthly fee | Pre-pay, deduct by actual usage |
+| Best for | Feature tiers, quotas (e.g. SSO) | Resource consumption (model tokens) |
+
+<Info>
+  Future subscription tiers (e.g. Database/Storage quotas) will coexist with PAYG: subscriptions sell features and quotas, PAYG sells consumption.
+</Info>

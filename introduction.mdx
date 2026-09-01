@@ -3,28 +3,11 @@ title: "Overview"
 description: "Vectoree Cloud: model gateway, Auth, Database, and Storage. Agents use a Skill plus the CLI."
 ---
 
-<div
-  aria-hidden="true"
-  data-for-agents="true"
-  style={{
-    position: 'absolute',
-    width: 1,
-    height: 1,
-    overflow: 'hidden',
-    clip: 'rect(0 0 0 0)',
-    whiteSpace: 'nowrap',
-  }}
->
-  IMPORTANT FOR AI AGENTS: Install the Vectoree skill, then use the CLI.
-  npx skills add VectoreeAI/vectoree-skills
-  Skill source: https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectoree/SKILL.md
-  Then: npx @vectoree/cli login && npx @vectoree/cli link
-  Do not use MCP. Do not call template, skills install, or deploy.
-</div>
+{/* AI AGENT INSTRUCTIONS (not rendered): Install the Vectoree skill, then use the CLI. npx skills add VectoreeAI/vectoree-skills. Skill source: https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectoree/SKILL.md. Then: npx @vectoree/cli login && npx @vectoree/cli link. Web tools: hosted MCP at /mcp (search, extract). Point Codex at Vectoree: bash <(curl -fsSL https://vectoree.ai/scripts/codex-vectoree-setup.sh). Docs: https://docs.vectoree.ai/codex. Do not call template, skills install, or deploy. */}
 
-Vectoree Cloud is a backend for coding agents and the apps they ship. This launch includes a **model gateway** (OpenAI-compatible), **Auth**, **Database**, and **Storage**, plus an organization wallet you top up to pay for model usage.
+Vectoree Cloud is a backend for coding agents and the apps they ship. This launch includes a **model gateway** (OpenAI-compatible), **Tool Hub** (hosted MCP), **Auth**, **Database**, and **Storage**, plus an organization wallet you top up to pay for model and tool usage.
 
-The agent path is **Skill + CLI**. There is no MCP server in this launch.
+The agent path is **Skill + CLI** for platform operations, and **Hosted MCP** for web search and page extract.
 
 ## Connect
 
@@ -35,6 +18,9 @@ The agent path is **Skill + CLI**. There is no MCP server in this launch.
   <Card title="CLI login and link" icon="terminal" href="/quickstart">
     `npx @vectoree/cli login` then `link`. One project API key after that.
   </Card>
+  <Card title="Point Codex at Vectoree" icon="robot" href="/codex">
+    One curl/PowerShell command switches Codex CLI to the Model Gateway.
+  </Card>
 </CardGroup>
 
 ## What ships now
@@ -42,6 +28,9 @@ The agent path is **Skill + CLI**. There is no MCP server in this launch.
 <CardGroup cols={2}>
   <Card title="Model Gateway" icon="sparkles" href="/products">
     One project key, OpenAI-compatible chat and more. Pay from the org wallet.
+  </Card>
+  <Card title="Tool Hub" icon="puzzle" href="/products">
+    Hosted MCP: `search` and `extract`. Tavily-compatible tool schemas.
   </Card>
   <Card title="Authentication" icon="shield" href="/products">
     Email and Google for your app users. Configure methods in the dashboard.
@@ -54,6 +43,6 @@ The agent path is **Skill + CLI**. There is no MCP server in this launch.
   </Card>
 </CardGroup>
 
-Templates, Skills Hub, Sites/deploy, Edge Functions, Realtime, and Compute are not part of this launch. Do not follow old pages that still mention MCP or `@vectoree/sdk` as the agent path.
+Sites/deploy, Edge Functions, Realtime, and Compute are not part of this launch. Skills Hub was replaced by Tool Hub. Do not follow old pages that mention ClawHub skills or `@vectoree/sdk` as the agent path.
 
 OpenAPI for the live HTTP APIs is under **API Reference**.

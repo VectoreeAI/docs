@@ -3,15 +3,19 @@ title: "Products"
 description: "What Vectoree Cloud ships in this launch."
 ---
 
-This launch is four products on one project, plus a PAYG wallet for the gateway. Everything shares the same project API key after `vectoree link`.
+This launch is five products on one project, plus a PAYG wallet for the gateway and Tool Hub. Everything shares the same project API key after `vectoree link`.
 
 <CardGroup cols={2}>
   <Card title="Model Gateway" icon="sparkles" href="/quickstart">
     OpenAI-compatible API. Browse models, probe with `vectoree ai`, call chat from your server.
   </Card>
 
+  <Card title="Tool Hub" icon="puzzle" href="/quickstart">
+    Hosted MCP for `search` and `extract`. Tavily-compatible parameters. Billed from the org wallet.
+  </Card>
+
   <Card title="Authentication" icon="shield" href="/quickstart">
-    Email and Google sign-in for users of *your* app. Not the same as logging into Vectoree Cloud.
+    Email and Google sign-in for users of *your* app. Not the same as logging into Vectoree Cloud. See [Authentication](/auth).
   </Card>
 
   <Card title="Database" icon="database" href="/quickstart">
@@ -27,13 +31,16 @@ This launch is four products on one project, plus a PAYG wallet for the gateway.
 
 <CardGroup cols={2}>
   <Card title="Agent Skill" icon="sparkles" href="/quickstart">
-    `npx skills add VectoreeAI/vectoree-skills`. Scene playbooks for Cursor / Claude Code / Codex. The skill calls the CLI; it is not Skills Hub.
+    `npx skills add VectoreeAI/vectoree-skills`. Scene playbooks for Cursor / Claude Code / Codex. Platform ops via CLI; **web tools via Tool Hub MCP**.
   </Card>
   <Card title="CLI" icon="terminal" href="/quickstart">
-    Atomic commands: `login`, `link`, `ai`, `db`, `storage`. Global `--json`.
+    `npx @vectoree/cli`. Atomic commands: `login` (Cloud), `auth` (your app's users), `link`, `ai`, `db`, `storage`, `tools`. `ai chat` is text; TTS/STT/image/video/embed have their own probes. Global `--json`.
+  </Card>
+  <Card title="Codex → Vectoree" icon="robot" href="/codex">
+    One-click script points Codex CLI at the Model Gateway. Copy the command or paste the agent prompt.
   </Card>
 </CardGroup>
 
 ## Billing
 
-There is no monthly subscription in this launch. Top up the **organization wallet**, then usage on the model gateway deducts from it. Auth, Database, and Storage sit on shared infra with no separate meter yet.
+There is no monthly subscription in this launch. Top up the **organization wallet**, then usage on the model gateway and Tool Hub deducts from it. Auth, Database, and Storage sit on shared infra with no separate meter yet.

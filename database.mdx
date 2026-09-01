@@ -1,0 +1,43 @@
+---
+title: "Database"
+description: "Managed Postgres with row-level security. Multi-tenant isolation without glue code."
+---
+
+Vectoree provides a managed Postgres database per project. Create tables, query, and run SQL from the dashboard or CLI. Row-level security (RLS) integrates with Auth so each user only sees their own rows.
+
+## Common commands
+
+```bash
+# List tables
+npx @vectoree/cli db list
+
+# Show table schema
+npx @vectoree/cli db schema <table>
+
+# Create a table
+npx @vectoree/cli db create --name todos --columns "title:text, done:boolean"
+
+# Insert data
+npx @vectoree/cli db insert todos --data '{"title":"Write docs","done":false}'
+
+# Query rows
+npx @vectoree/cli db query todos --limit 20
+```
+
+<Warning>
+  Running custom SQL with `db sql` prompts for confirmation (or pass `--yes`). Dropping tables is destructive — confirm carefully.
+</Warning>
+
+## Row-level security (RLS)
+
+RLS is the mechanism that lets you serve multiple users from one database without cross-data leaks. When a user logs in through [Authentication](/auth), their identity becomes a row-level filter: user A and user B store rows in the same table, but neither can query the other's data.
+
+This is why Auth and Database are one system — the login identity flows directly into the database access layer. No glue code to map external user IDs to your tables.
+
+## Vectors and embeddings
+
+The database supports `pgvector` for storing text embeddings. This enables retrieval-augmented generation (RAG): convert your knowledge base into vectors, store them, and retrieve relevant context before the model answers.
+
+## Dashboard
+
+Use the dashboard **Database** tab to browse tables, view schemas, and run SQL queries in a web editor.
