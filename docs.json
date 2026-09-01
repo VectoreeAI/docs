@@ -52,18 +52,6 @@
             "pages": [
               "codex"
             ]
-          },
-          {
-            "group": "FAQ",
-            "pages": [
-              "faq"
-            ]
-          },
-          {
-            "group": "Changelog",
-            "pages": [
-              "changelog"
-            ]
           }
         ]
       },
@@ -117,6 +105,16 @@
           "anchor": "GitHub",
           "href": "https://github.com/VectoreeAI/",
           "icon": "github"
+        },
+        {
+          "anchor": "FAQ",
+          "href": "https://docs.vectoree.ai/faq",
+          "icon": "help-circle"
+        },
+        {
+          "anchor": "Changelog",
+          "href": "https://docs.vectoree.ai/changelog",
+          "icon": "list"
         }
       ]
     }
