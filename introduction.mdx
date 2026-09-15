@@ -15,17 +15,52 @@ When the agent is ready, the same project gets a public URL ([Deploy](/deploy)) 
 
 The path is the agent. Vectoree is what you connect so it can think, remember, and later be used by other people.
 
-```mermaid
-flowchart LR
-  A["1 · Your agent<br/>Write or improve it locally"]
-  B["2 · Connect Vectoree<br/>Skill + CLI, one Cloud project"]
-  C["3 · Equip the backend<br/>Models · login · data · files"]
-  D["4 · Let others use it<br/>Deploy · Coming soon"]
-  E["5 · Get paid<br/>Payments · Coming soon"]
-  A --> B --> C --> D --> E
-```
+<div className="ve-journey" role="img" aria-label="Build an agent in five steps: start with your agent, connect Vectoree, equip the backend, let others use it, then get paid.">
+  <div className="ve-journey__track">
+    <div className="ve-journey__step">
+      <span className="ve-journey__idx">01</span>
+      <span className="ve-journey__title">Your agent</span>
+      <span className="ve-journey__hint">Write or improve it locally</span>
+    </div>
+    <div className="ve-journey__wire" aria-hidden="true"></div>
+    <div className="ve-journey__step">
+      <span className="ve-journey__idx">02</span>
+      <span className="ve-journey__title">Connect</span>
+      <span className="ve-journey__hint">Skill + CLI, one Cloud project</span>
+    </div>
+    <div className="ve-journey__wire" aria-hidden="true"></div>
+    <div className="ve-journey__step">
+      <span className="ve-journey__idx">03</span>
+      <span className="ve-journey__title">Equip</span>
+      <span className="ve-journey__hint">Give it a backend so it can run</span>
+      <div className="ve-journey__chips">
+        <span className="ve-journey__chip">Models</span>
+        <span className="ve-journey__chip">Auth</span>
+        <span className="ve-journey__chip">Data</span>
+        <span className="ve-journey__chip">Files</span>
+      </div>
+    </div>
+    <div className="ve-journey__wire" aria-hidden="true"></div>
+    <div className="ve-journey__step ve-journey__step--soon">
+      <span className="ve-journey__idx">04</span>
+      <span className="ve-journey__title">Share</span>
+      <span className="ve-journey__hint">A public URL others can open</span>
+      <span className="ve-journey__badge">Coming soon</span>
+    </div>
+    <div className="ve-journey__wire" aria-hidden="true"></div>
+    <div className="ve-journey__step ve-journey__step--soon">
+      <span className="ve-journey__idx">05</span>
+      <span className="ve-journey__title">Earn</span>
+      <span className="ve-journey__hint">The people who use it pay you</span>
+      <span className="ve-journey__badge">Coming soon</span>
+    </div>
+  </div>
+  <div className="ve-journey__legend">
+    <span><span className="ve-journey__swatch"></span> Live</span>
+    <span><span className="ve-journey__swatch ve-journey__swatch--soon"></span> Coming soon</span>
+  </div>
+</div>
 
-Steps 1–3 are live today. Share and earn attach to the same project.
 ## Connect
 
 <CardGroup cols={2}>
