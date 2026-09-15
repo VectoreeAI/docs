@@ -1,36 +1,24 @@
 ---
 title: "Connection"
 sidebarTitle: "Connection"
-description: "Existing project: 3 steps. New / template: 4 steps. Done when the Header reads Connected."
+description: "Same paths as Dashboard onboarding. Existing project: 3 steps. New / template: 4 steps."
 ---
 
-Pick how you want to start.
+How would you like to get started?
 
-Need a coding agent first? Install one, then come back:
-
-- [Claude Code](https://claude.ai/download)
-- [Cursor](https://cursor.com)
-- [GitHub Copilot](https://github.com/features/copilot)
-- [Windsurf](https://codeium.com/windsurf)
-- [Cline](https://cline.bot)
+- **I have an existing project** — Get CLI & Prompt to connect your local codebase instantly. **3 steps.**
+- **I'm new / Start with a template** — Set up your AI Agent environment and pick a starter template. **4 steps.**
 
 ## I have an existing project
 
-Do these 3 steps.
-
 <Steps>
-  <Step title="1. Open your project folder">
-    Open the folder on your computer. Stay in that folder — not the parent directory.
+  <Step title="1. How you started">
+    You already have a local project. Next you will paste a prompt so the agent can login and link it.
   </Step>
-  <Step title="2. Copy CONNECT and paste it into your agent">
-    In the [Vectoree Dashboard](https://vectoree.ai/dashboard):
+  <Step title="2. Connect in your coding agent">
+    Paste the prompt into Cursor, Claude Code, or Codex. Your agent will login and link this project.
 
-    1. Look at the **top-left** project switcher. The name you see is the project you are connecting.
-    2. Click **CONNECT** at the **top-right**.
-    3. Copy **everything** in the window. Do not change any line.
-    4. Paste it into Cursor, Claude Code, or Codex.
-
-    The window looks like this. Your third line will show **your** project name and ID — copy that, do not type it yourself:
+    In the [Dashboard](https://vectoree.ai/dashboard), check the **top-left** project name, click **CONNECT** at the **top-right**, and copy the **whole** prompt. Do not edit the `Dashboard project:` line.
 
     ```text
     set up https://vectoree.ai/SKILL.md
@@ -39,77 +27,80 @@ Do these 3 steps.
     Dashboard project: Default project (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
     Follow the skill: login, link this directory, then run ai status.
     ```
+
+    The third line in **CONNECT** is already your project name and ID. Copy that. Do not type it from this page.
   </Step>
-  <Step title="3. Check the Header">
-    You are done when the top-right button says **Connected**.
+  <Step title="3. Verify connection">
+    We check that the project is linked. You are done when the Header says **Connected**.
   </Step>
 </Steps>
 
 ## I'm new / Start with a template
 
-Do these 4 steps. After you clone, you still need step 3 to connect.
-
 <Steps>
-  <Step title="1. Open a coding agent">
-    Install and open an agent. Download links are at the top of this page. Next you will paste a prompt into it.
+  <Step title="1. How you started">
+    You do not have a local project yet. First open an agent, then clone a starter. That starter prompt also login and link — then verify.
   </Step>
-  <Step title="2. Clone a starter">
-    Copy one of these prompts. Paste it into your agent. Wait until the project is on your computer.
+  <Step title="2. Open a coding agent">
+    Make sure a coding agent is installed and open. You will paste a prompt into it next.
+
+    Need to install one?
+
+    - [Claude Code](https://claude.ai/download)
+    - [Cursor](https://cursor.com)
+    - [GitHub Copilot](https://github.com/features/copilot)
+    - [Windsurf](https://codeium.com/windsurf)
+    - [Cline](https://cline.bot)
+  </Step>
+  <Step title="3. Start from a starter project">
+    Click a starter to copy its prompt. Paste it in your agent to **clone, login, and link**.
+
+    In the Dashboard, stay on the project in the **top-left**. The onboarding card (or **CONNECT**) fills `Dashboard project:` for you. Copy the prompt from there when you can. Do not type the project ID yourself.
 
     <AccordionGroup>
       <Accordion title="DeepTutor — Create my own AI learning coach">
-        Repo: [HKUDS/DeepTutor](https://github.com/HKUDS/DeepTutor)
-
         ```text
         set up https://vectoree.ai/SKILL.md
         Clone https://github.com/HKUDS/DeepTutor
         Replace model serving, search, login/signup, database, and storage with Vectoree.
+        Dashboard project: Default project (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+        Follow the skill: login, link this directory, then run ai status.
         ```
       </Accordion>
 
       <Accordion title="RAGFlow — Build a Q&A agent over my files">
-        Repo: [infiniflow/ragflow](https://github.com/infiniflow/ragflow)
-
         ```text
         set up https://vectoree.ai/SKILL.md
         Clone https://github.com/infiniflow/ragflow
         Replace model serving, search, login/signup, database, and storage with Vectoree.
+        Dashboard project: Default project (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+        Follow the skill: login, link this directory, then run ai status.
         ```
       </Accordion>
 
       <Accordion title="DeerFlow — Research, code, and long tasks">
-        Repo: [bytedance/deer-flow](https://github.com/bytedance/deer-flow)
-
         ```text
         set up https://vectoree.ai/SKILL.md
         Clone https://github.com/bytedance/deer-flow
         Replace model serving, search, login/signup, database, and storage with Vectoree.
+        Dashboard project: Default project (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+        Follow the skill: login, link this directory, then run ai status.
         ```
       </Accordion>
 
       <Accordion title="LibreChat — Private AI chat assistant">
-        Repo: [danny-avila/LibreChat](https://github.com/danny-avila/LibreChat)
-
         ```text
         set up https://vectoree.ai/SKILL.md
         Clone https://github.com/danny-avila/LibreChat
         Replace model serving, search, login/signup, database, and storage with Vectoree.
+        Dashboard project: Default project (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+        Follow the skill: login, link this directory, then run ai status.
         ```
       </Accordion>
     </AccordionGroup>
   </Step>
-  <Step title="3. Connect the cloned folder">
-    Open the folder the agent just cloned. Cloning is not connecting.
-
-    Then do the same as an existing project:
-
-    1. In the Dashboard, check the **top-left** project name.
-    2. Click **CONNECT** at the **top-right**.
-    3. Copy the **whole** prompt. Do not edit the `Dashboard project:` line.
-    4. Paste it into your agent **in the cloned folder**.
-  </Step>
-  <Step title="4. Check the Header">
-    You are done when the top-right button says **Connected**.
+  <Step title="4. Verify connection">
+    We check that the project is linked. You are done when the Header says **Connected**.
   </Step>
 </Steps>
 
