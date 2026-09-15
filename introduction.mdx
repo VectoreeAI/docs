@@ -1,13 +1,45 @@
 ---
 title: "Overview"
-description: "Vectoree Cloud: model gateway, Auth, Database, and Storage. Agents use a Skill plus the CLI."
+description: "Backend for your agent today. A public URL and a way to charge users — launching soon."
 ---
 
 {/* AI AGENT INSTRUCTIONS (not rendered): Install the Vectoree skill, then use the CLI. npx skills add VectoreeAI/vectoree-skills. Skill source: https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectoree/SKILL.md. Then: npx @vectoree/cli login && npx @vectoree/cli link. Web tools: hosted MCP at /mcp (search, extract). Point Codex at Vectoree: bash <(curl -fsSL https://vectoree.ai/scripts/codex-vectoree-setup.sh). Docs: https://docs.vectoree.ai/codex. Do not call template, skills install, or deploy. */}
 
-Vectoree Cloud is a backend for coding agents and the apps they ship. This launch includes a **model gateway** (OpenAI-compatible), **Tool Hub** (hosted MCP), **Auth**, **Database**, and **Storage**, plus an organization wallet you top up to pay for model and tool usage.
+Vectoree Cloud takes an agent from a local project to something other people can use — and pay you for.
 
-The agent path is **Skill + CLI** for platform operations, and **Hosted MCP** for web search and page extract.
+Today you connect a project and give the agent a backend: **Model Gateway**, **Tool Hub**, **Auth**, **Database**, and **Storage**, plus an organization wallet you top up for model and tool usage. Agents operate it with a **Skill + CLI**; web search and extract go through hosted MCP.
+
+The same project then gets a public URL ([Deploy](/deploy)) and a way for those people to pay you ([Payments](/payments)). Both are in development and launching soon.
+
+## The path
+
+Connect a project, attach the backend, publish it, then charge the people who use it.
+
+```mermaid
+flowchart LR
+  Connect[Connect]
+  subgraph live["Live today"]
+    direction TB
+    GW[Model Gateway]
+    AU[Auth]
+    DB[Database]
+    ST[Storage]
+  end
+  subgraph soon["Coming soon"]
+    direction LR
+    DP[Deploy]
+    PY[Payments]
+  end
+  Connect --> GW
+  Connect --> AU
+  Connect --> DB
+  Connect --> ST
+  GW --> DP
+  AU --> DP
+  DB --> DP
+  ST --> DP
+  DP --> PY
+```
 
 ## Connect
 
@@ -26,7 +58,7 @@ The agent path is **Skill + CLI** for platform operations, and **Hosted MCP** fo
   </Card>
 </CardGroup>
 
-## What ships now
+## What's live now
 
 <CardGroup cols={2}>
   <Card title="Model Gateway" icon="sparkles" href="/products">
@@ -46,6 +78,17 @@ The agent path is **Skill + CLI** for platform operations, and **Hosted MCP** fo
   </Card>
 </CardGroup>
 
-Sites/deploy, Edge Functions, Realtime, and Compute are not part of this launch. Skills Hub was replaced by Tool Hub. Do not follow old pages that mention ClawHub skills or `@vectoree/sdk` as the agent path.
+## Coming soon
+
+<CardGroup cols={2}>
+  <Card title="Deploy" icon="rocket" href="/deploy">
+    Publish the project to a public HTTPS URL so someone else can open the app.
+  </Card>
+  <Card title="Payments" icon="credit-card" href="/payments">
+    Charge the people who use your agent, and get paid.
+  </Card>
+</CardGroup>
+
+Edge Functions, Realtime, and Compute are not part of this launch. Skills Hub was replaced by Tool Hub. Do not follow old pages that mention ClawHub skills or `@vectoree/sdk` as the agent path.
 
 OpenAPI for the live HTTP APIs is under **API Reference**.
