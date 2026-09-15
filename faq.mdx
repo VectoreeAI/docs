@@ -1,6 +1,6 @@
 ---
 title: "FAQ"
-description: "Common questions about billing, connection, models, data, and what ships in 1.0."
+description: "Common questions about billing, connection, the $5.00 welcome credit, models, data, and what ships in 1.0."
 ---
 
 ## Billing
@@ -17,7 +17,29 @@ Model and tool calls return a clear insufficient-balance error. Top up to resume
 **Where do I see pricing?**  
 Dashboard > **Model Plaza**. Each model shows its unit price per 1M tokens.
 
+**Did the $5.00 welcome credit arrive?**  
+A successful connect always binds the workspace. The $5.00 welcome credit is a separate first-time organization grant with its own eligibility rules. See the Connection question below, or [Connect & troubleshoot](/connect).
+
 ## Connection
+
+Step-by-step linking, Header heartbeat, team members, and CLI fixes: [Connect & troubleshoot](/connect).
+
+**Connected, but no $5.00 welcome credit?**  
+`🟢 Project Successfully Connected!` means the workspace is bound. The $5.00 credit is a separate first-time org grant. When it is not issued, one of these usually applies:
+
+1. **Not the org Owner (team member connecting)**  
+   Welcome credit is org-level. Members connecting to a shared project use the existing shared balance — a second personal grant is not issued.
+
+2. **Organization already funded (Org Funded)**  
+   The $5.00 credit is for unpaid, first-time orgs. A prior top-up or card-on-file marks the org as paid, so the free grant does not apply.
+
+3. **Device or account grant limit (Device/Account Limit)**  
+   The credit is once per real device (MAC/IP) and once per account lifetime. A later connect still binds the workspace; the payout is skipped silently.
+
+4. **Email not verified (Email Unverified)**  
+   Unverified or disposable emails hold the grant. Verify (or bind a regular address in account settings) and the balance unlocks in real time.
+
+Check **Organization > Billing** on the org that owns the project. More detail: [Connect & troubleshoot](/connect).
 
 **`link` won't connect?**  
 Make sure you ran `login` first. Confirm you are in the directory you want to bind to the project.
@@ -27,6 +49,9 @@ Check your spam folder. If the issue persists, confirm the platform SMTP is conf
 
 **Key invalid error?**  
 Check that the key is complete, not deleted, and belongs to the current project.
+
+**Dashboard stays on CONNECT while the CLI succeeded?**  
+The Header is project-scoped. Match the top-left project switcher to `npx @vectoree/cli current`, then click **CONNECT** to force a probe. Details: [Connect & troubleshoot](/connect).
 
 ## Models
 
