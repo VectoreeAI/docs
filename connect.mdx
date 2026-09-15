@@ -4,44 +4,91 @@ sidebarTitle: "Connection"
 description: "Connect an existing project or a starter template. Done when the Header reads Connected."
 ---
 
-How would you like to get started? Pick a path, paste the prompt into your coding agent, and stop when the Header reads **Connected**.
+How would you like to get started? Same split as Dashboard onboarding. Paste a prompt into your coding agent, then stop when the Header reads **Connected**.
 
 **CONNECT** means this account has not verified the current Dashboard project yet.
 
+Need an agent? Install and open one, then come back:
+
+- [Claude Code](https://claude.ai/download)
+- [Cursor](https://cursor.com)
+- [GitHub Copilot](https://github.com/features/copilot)
+- [Windsurf](https://codeium.com/windsurf)
+- [Cline](https://cline.bot)
+
 ## I have an existing project
 
-<Steps>
-  <Step title="Open that folder">
-    Work in the project directory, not a parent folder.
-  </Step>
-  <Step title="Paste the prompt into your agent">
-    In the Dashboard, click **CONNECT**. Copy the prompt and paste it into Cursor, Claude Code, Codex, or any coding agent:
+Open that project folder. In the Dashboard, click **CONNECT**, or copy the prompt below. Paste it into Cursor, Claude Code, or Codex. The agent runs `login`, links this directory, then `ai status`.
 
-    ```text
-    set up https://vectoree.ai/SKILL.md
+```text
+set up https://vectoree.ai/SKILL.md
 
-    Connect Vectoree as the backend for this project.
-    Dashboard project: <name> (<projectId>)
-    Follow the skill: login, link this directory, then run ai status.
-    ```
-  </Step>
-  <Step title="Confirm">
-    The Header on that project reads **Connected**.
-  </Step>
-</Steps>
+Connect Vectoree as the backend for this project.
+Follow the skill: login, link this directory, then run ai status.
+```
+
+If the Dashboard modal includes a `Dashboard project: <name> (<projectId>)` line, keep it so the agent links the project you have open.
+
+Done when the Header on that project reads **Connected**.
 
 ## I'm new / Start with a template
 
-<Steps>
-  <Step title="Open a coding agent">
-    Install and open Cursor, Claude Code, Codex, or another coding agent.
-  </Step>
-  <Step title="Pick a starter and paste the prompt">
-    In Dashboard onboarding, choose DeepTutor, RAGFlow, DeerFlow, or LibreChat. Paste the copied prompt into your agent. It clones the starter, points it at Vectoree, then login / link / `ai status`.
-  </Step>
-  <Step title="Confirm">
-    The Header on that project reads **Connected**.
-  </Step>
-</Steps>
+### Open a coding agent
+
+Make sure a coding agent is installed and open. You will paste a prompt into it next. Still need one? Use the download links above.
+
+### Start from a starter
+
+Click a starter to copy its prompt. Paste it in your agent to clone, login, and link.
+
+<AccordionGroup>
+  <Accordion title="DeepTutor — Create my own AI learning coach">
+    Repo: [HKUDS/DeepTutor](https://github.com/HKUDS/DeepTutor)
+
+    ```text
+    set up https://vectoree.ai/SKILL.md
+    Clone https://github.com/HKUDS/DeepTutor
+    Replace model serving, search, login/signup, database, and storage with Vectoree.
+    Follow the skill: login, link this directory, then run ai status.
+    ```
+  </Accordion>
+
+  <Accordion title="RAGFlow — Build a Q&A agent over my files">
+    Repo: [infiniflow/ragflow](https://github.com/infiniflow/ragflow)
+
+    ```text
+    set up https://vectoree.ai/SKILL.md
+    Clone https://github.com/infiniflow/ragflow
+    Replace model serving, search, login/signup, database, and storage with Vectoree.
+    Follow the skill: login, link this directory, then run ai status.
+    ```
+  </Accordion>
+
+  <Accordion title="DeerFlow — Research, code, and long tasks">
+    Repo: [bytedance/deer-flow](https://github.com/bytedance/deer-flow)
+
+    ```text
+    set up https://vectoree.ai/SKILL.md
+    Clone https://github.com/bytedance/deer-flow
+    Replace model serving, search, login/signup, database, and storage with Vectoree.
+    Follow the skill: login, link this directory, then run ai status.
+    ```
+  </Accordion>
+
+  <Accordion title="LibreChat — Private AI chat assistant">
+    Repo: [danny-avila/LibreChat](https://github.com/danny-avila/LibreChat)
+
+    ```text
+    set up https://vectoree.ai/SKILL.md
+    Clone https://github.com/danny-avila/LibreChat
+    Replace model serving, search, login/signup, database, and storage with Vectoree.
+    Follow the skill: login, link this directory, then run ai status.
+    ```
+  </Accordion>
+</AccordionGroup>
+
+If the Dashboard onboarding prompt includes a `Dashboard project: <name> (<projectId>)` line, keep it.
+
+Done when the Header on that project reads **Connected**.
 
 Something not working? See [FAQ](/faq).
