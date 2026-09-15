@@ -1,46 +1,31 @@
 ---
 title: "Overview"
-description: "Backend for your agent today. A public URL and a way to charge users — launching soon."
+description: "Use Vectoree to build and improve your agent — then let other people use it."
 ---
 
 {/* AI AGENT INSTRUCTIONS (not rendered): Install the Vectoree skill, then use the CLI. npx skills add VectoreeAI/vectoree-skills. Skill source: https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectoree/SKILL.md. Then: npx @vectoree/cli login && npx @vectoree/cli link. Web tools: hosted MCP at /mcp (search, extract). Point Codex at Vectoree: bash <(curl -fsSL https://vectoree.ai/scripts/codex-vectoree-setup.sh). Docs: https://docs.vectoree.ai/codex. Do not call template, skills install, or deploy. */}
 
-Vectoree Cloud takes an agent from a local project to something other people can use — and pay you for.
+Vectoree Cloud is how you **build and improve your own agent** — then put it in front of other people.
 
-Today you connect a project and give the agent a backend: **Model Gateway**, **Tool Hub**, **Auth**, **Database**, and **Storage**, plus an organization wallet you top up for model and tool usage. Agents operate it with a **Skill + CLI**; web search and extract go through hosted MCP.
+You write the agent locally with Cursor, Claude Code, or Codex. Vectoree is the backend you attach while you do that: **Model Gateway**, **Tool Hub**, **Auth**, **Database**, and **Storage**, on one project, paid from an organization wallet. Agents operate it with a **Skill + CLI**; web search and extract go through hosted MCP.
 
-The same project then gets a public URL ([Deploy](/deploy)) and a way for those people to pay you ([Payments](/payments)). Both are in development and launching soon.
+When the agent is ready, the same project gets a public URL ([Deploy](/deploy)) and a way for those people to pay you ([Payments](/payments)). Both are in development and launching soon.
 
-## The path
+## Build your agent
 
-Connect a project, attach the backend, publish it, then charge the people who use it.
+The path is the agent. Vectoree is what you connect so it can think, remember, and later be used by other people.
 
 ```mermaid
 flowchart LR
-  Connect[Connect]
-  subgraph live["Live today"]
-    direction TB
-    GW[Model Gateway]
-    AU[Auth]
-    DB[Database]
-    ST[Storage]
-  end
-  subgraph soon["Coming soon"]
-    direction LR
-    DP[Deploy]
-    PY[Payments]
-  end
-  Connect --> GW
-  Connect --> AU
-  Connect --> DB
-  Connect --> ST
-  GW --> DP
-  AU --> DP
-  DB --> DP
-  ST --> DP
-  DP --> PY
+  A["1 · Your agent<br/>Write or improve it locally"]
+  B["2 · Connect Vectoree<br/>Skill + CLI, one Cloud project"]
+  C["3 · Equip the backend<br/>Models · login · data · files"]
+  D["4 · Let others use it<br/>Deploy · Coming soon"]
+  E["5 · Get paid<br/>Payments · Coming soon"]
+  A --> B --> C --> D --> E
 ```
 
+Steps 1–3 are live today. Share and earn attach to the same project.
 ## Connect
 
 <CardGroup cols={2}>
