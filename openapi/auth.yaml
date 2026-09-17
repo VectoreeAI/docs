@@ -2,7 +2,14 @@ openapi: 3.0.3
 info:
   title: VECTOREE Authentication API
   version: 2.0.0
-  description: Authentication endpoints with separated auth and profile tables
+  description: |
+    Two login systems. Do not mix them.
+
+    - Cloud / Console: `/api/system/auth/*` for Dashboard developers.
+    - App Auth: `/api/auth/*` for people who use the app you are building.
+      Server calls use a project API key with `auth:*` as `Authorization: Bearer`.
+      Hosted Auth UI uses a publishable key (`pk_...`). After login, send the
+      App user JWT. The credential selects the project; do not send `X-Project-Id`.
 
 servers:
   - url: https://vectoree.ai
@@ -81,6 +88,40 @@ paths:
           description: Token refreshed
         '401':
           description: Invalid refresh token
+
+  /api/auth/methods:
+    get:
+      summary: Get public auth methods
+      description: |
+        Returns email/code settings and configured OAuth providers for the
+        project selected by the credential. Requires a publishable key or a
+        project API key with `auth:*`.
+      tags:
+        - Client
+      security:
+        - projectApiKey: []
+        - publishableKey: []
+      responses:
+        '200':
+          description: Auth methods for this project
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: boolean
+                  codeLength:
+                    type: integer
+                    example: 8
+                  verifyEmailMethod:
+                    type: string
+                  requireEmailVerification:
+                    type: boolean
+                  oauth:
+                    type: array
+                    items:
+                      type: string
 
   /api/auth/profiles/current:
     patch:
@@ -576,6 +617,46 @@ paths:
         '403':
           description: Email verification required
 
+  /api/auth/id-token:
+    post:
+      summary: Sign in with a native ID token
+      description: |
+        Google One Tap / native SDK ID token sign-in for tenant app users.
+        Requires a project API key with `auth:*` or a publishable key.
+        Currently `provider` must be `google`.
+      tags:
+        - Client
+      security:
+        - projectApiKey: []
+        - publishableKey: []
+      parameters:
+        - name: client_type
+          in: query
+          schema:
+            type: string
+            enum: [web, mobile, desktop, server]
+            default: web
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider, token]
+              properties:
+                provider:
+                  type: string
+                  example: google
+                token:
+                  type: string
+      responses:
+        '200':
+          description: Session created
+        '400':
+          description: Invalid provider or token
+        '401':
+          description: Authentication required
+
   /api/auth/refresh:
     post:
       summary: Refresh access token
@@ -818,8 +899,24 @@ paths:
           description: Invalid authorization code or JWT verification failed
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/admin/sessions/current:
+    get:
+      summary: Get current platform admin session
+      description: Returns the platform_admin / platform_ops identity from the admin JWT.
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Admin session
+        '401':
+          description: Missing admin token
+        '403':
+          description: Admin access required
 
   /api/auth/admin/refresh:
     post:
@@ -1214,6 +1311,77 @@ paths:
           description: Invalid request or password requirements not met
         '401':
           description: Verification code/token expired or invalid
+
+  /api/auth/smtp-config:
+    get:
+      summary: Get SMTP configuration
+      description: Project Auth SMTP config. Requires Console JWT or a project API key with `auth:*`.
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - projectApiKey: []
+      responses:
+        '200':
+          description: SMTP config
+        '401':
+          description: Authentication required
+    put:
+      summary: Update SMTP configuration
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - projectApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: SMTP config updated
+        '400':
+          description: Invalid input
+
+  /api/auth/email-templates:
+    get:
+      summary: List Auth email templates
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - projectApiKey: []
+      responses:
+        '200':
+          description: Email templates
+
+  /api/auth/email-templates/{type}:
+    put:
+      summary: Update an Auth email template
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - projectApiKey: []
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Template updated
 
   /api/auth/oauth/configs:
     get:
@@ -1926,15 +2094,19 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT
+      description: |
+        App user JWT after login (`aud=app`), or a Console JWT for Dashboard
+        admin routes. Paste the token only.
     projectApiKey:
       type: http
       scheme: bearer
-      description: Server-only project API Key with auth:* scope. The key selects the project.
+      description: |
+        Server-only project API key (`sk-ve-v1-...`) with `auth:*`. The key
+        selects the project. Paste the key only.
     publishableKey:
       type: http
       scheme: bearer
-      description: Project Publishable Key (pk_...) used by the Vectoree-hosted Auth UI.
+      description: Project Publishable Key (`pk_...`) used by the Vectoree-hosted Auth UI.
 
   schemas:
     ProjectAdminResponse:

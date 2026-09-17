@@ -1,7 +1,12 @@
 openapi: 3.0.3
 info:
   title: VECTOREE Tables API
-  version: 1.0.0
+  version: 1.1.0
+  description: |
+    Project database admin APIs. Authenticate with a project API key
+    (`sk-ve-v1-...`) that has `database` or `*` scope, sent as
+    `Authorization: Bearer`. Create Table requires `tableName` plus at least
+    one column (`columnName`, `type`, `isNullable`, `isUnique`).
 
 servers:
   - url: https://vectoree.ai
@@ -16,6 +21,8 @@ paths:
       security:
         - bearerAuth: []
         - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/SchemaQuery'
       responses:
         '200':
           description: List of table names
@@ -32,11 +39,17 @@ paths:
 
     post:
       summary: Create Table
+      description: |
+        Create a table in the project app schema. `id`, `created_at`, and
+        `updated_at` are added automatically. Column fields are `columnName`,
+        `type`, `isNullable`, and `isUnique` (not `name` / `nullable`).
       tags:
         - Admin
       security:
         - bearerAuth: []
         - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/SchemaQuery'
       requestBody:
         required: true
         content:
@@ -54,18 +67,19 @@ paths:
                   items:
                     type: object
                     required:
-                      - name
+                      - columnName
                       - type
-                      - nullable
+                      - isNullable
+                      - isUnique
                     properties:
-                      name:
+                      columnName:
                         type: string
                       type:
                         type: string
-                        enum: [string, datetime, integer, float, boolean, uuid, json, file]
-                      nullable:
+                        enum: [string, datetime, integer, float, boolean, uuid, json]
+                      isNullable:
                         type: boolean
-                      unique:
+                      isUnique:
                         type: boolean
                       defaultValue:
                         type: string
@@ -76,8 +90,20 @@ paths:
                     $ref: '#/components/schemas/ForeignKeyConstraint'
                 rlsEnabled:
                   type: boolean
-                  default: false
+                  default: true
                   description: Enable Row Level Security on the table
+            example:
+              tableName: todos
+              columns:
+                - columnName: title
+                  type: string
+                  isNullable: false
+                  isUnique: false
+                - columnName: done
+                  type: boolean
+                  isNullable: false
+                  isUnique: false
+              rlsEnabled: false
       responses:
         '201':
           description: Table created
@@ -130,6 +156,7 @@ paths:
           required: true
           schema:
             type: string
+        - $ref: '#/components/parameters/SchemaQuery'
       responses:
         '200':
           description: Table schema
@@ -217,6 +244,7 @@ paths:
           required: true
           schema:
             type: string
+        - $ref: '#/components/parameters/SchemaQuery'
       requestBody:
         required: true
         content:
@@ -238,7 +266,7 @@ paths:
                         description: Name of the new column
                       type:
                         type: string
-                        enum: [string, integer, float, boolean, datetime, uuid, json, file]
+                        enum: [string, integer, float, boolean, datetime, uuid, json]
                         description: Data type of the column
                       isNullable:
                         type: boolean
@@ -377,6 +405,7 @@ paths:
           required: true
           schema:
             type: string
+        - $ref: '#/components/parameters/SchemaQuery'
       responses:
         '200':
           description: Table deleted
@@ -403,6 +432,105 @@ paths:
                 message: "Table 'nonexistent' does not exist"
                 statusCode: 404
                 nextActions: "Check table name and try again"
+
+  /api/database/schemas:
+    get:
+      summary: List Database Schemas
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      responses:
+        '200':
+          description: Schemas visible to this project
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/database/functions:
+    get:
+      summary: List Database Functions
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/SchemaQuery'
+      responses:
+        '200':
+          description: Functions in the schema
+
+  /api/database/indexes:
+    get:
+      summary: List Database Indexes
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/SchemaQuery'
+      responses:
+        '200':
+          description: Indexes in the schema
+
+  /api/database/policies:
+    get:
+      summary: List Row Level Security Policies
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/SchemaQuery'
+      responses:
+        '200':
+          description: RLS policies in the schema
+
+  /api/database/triggers:
+    get:
+      summary: List Database Triggers
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/SchemaQuery'
+      responses:
+        '200':
+          description: Triggers in the schema
+
+  /api/database/rpc/{functionName}:
+    post:
+      summary: Call Database RPC
+      description: Forward a Postgres function call through PostgREST.
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - apiKey: []
+      parameters:
+        - name: functionName
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/SchemaQuery'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Function result
 
   /api/database/migrations:
     get:
@@ -519,6 +647,14 @@ paths:
                 statusCode: 409
 
 components:
+  parameters:
+    SchemaQuery:
+      name: schema
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Database schema. Defaults to the linked project's app schema.
   securitySchemes:
     bearerAuth:
       type: http

@@ -1,26 +1,65 @@
 openapi: 3.0.3
 info:
   title: Vectoree Tool Hub
-  version: 1.0.0
+  version: 1.1.0
   description: |
     Hosted MCP tools for web search and page extraction.
 
-    MCP (JSON-RPC) lives at `POST /mcp` with `Authorization: Bearer sk-ve-v1-...` and `tools:*` scope.
-    REST mirrors the same Tavily-compatible payloads at `/api/tools/v1/search` and `/api/tools/v1/extract`.
+    MCP (JSON-RPC) lives at `POST /mcp` with `Authorization: Bearer sk-ve-v1-...`
+    and `tools:*` scope. REST mirrors the same Tavily-compatible payloads.
+
 servers:
-  - url: https://vectoree.ai/api
+  - url: https://vectoree.ai
+    description: Production
+
 paths:
-  /tool-hub/tools:
+  /api/tool-hub/tools:
     get:
       summary: List Tool Hub catalog
       description: Dashboard-authenticated catalog of available tools.
+      tags:
+        - Tool Hub
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Tool list
-  /tools/v1/search:
+
+  /api/tool-hub/tools/{toolId}:
+    get:
+      summary: Get Tool Hub tool
+      tags:
+        - Tool Hub
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: toolId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tool details
+
+  /api/tool-hub/mcp-config:
+    get:
+      summary: Get Tool Hub MCP config
+      description: Config snippet for connecting an MCP client to `POST /mcp`.
+      tags:
+        - Tool Hub
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: MCP config
+
+  /api/tools/v1/search:
     post:
       summary: Web search
-      description: Tavily-compatible search. Bills organization wallet per request.
+      description: Tavily-compatible search. Bills organization wallet per request. Requires `tools:*`.
+      tags:
+        - Tool Hub
       security:
         - bearerAuth: []
       requestBody:
@@ -48,13 +87,19 @@ paths:
                   type: array
                   items:
                     type: string
+            example:
+              query: vectoree model gateway
+              max_results: 5
       responses:
         '200':
           description: Search results
-  /tools/v1/extract:
+
+  /api/tools/v1/extract:
     post:
       summary: Web extract
-      description: Tavily-compatible URL extraction. Bills per successful URL.
+      description: Tavily-compatible URL extraction. Bills per successful URL. Requires `tools:*`.
+      tags:
+        - Tool Hub
       security:
         - bearerAuth: []
       requestBody:
@@ -72,12 +117,53 @@ paths:
                 url:
                   type: string
                   format: uri
+            example:
+              urls:
+                - https://docs.vectoree.ai
       responses:
         '200':
           description: Extract results
+
+  /api/tools/v1/{toolId}/run:
+    post:
+      summary: Run a Tool Hub tool
+      tags:
+        - Tool Hub
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: toolId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Tool output
+
+  /mcp:
+    post:
+      summary: Tool Hub MCP JSON-RPC
+      description: 'Hosted MCP endpoint. Send Authorization: Bearer sk-ve-v1-... with tools:*.'
+      tags:
+        - Tool Hub
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: JSON-RPC response
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: sk-ve-v1
+      description: |
+        Project API key `sk-ve-v1-...` with `tools:*` (or `*`). Catalog routes
+        also accept a Console JWT. Paste the key only.

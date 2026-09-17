@@ -193,7 +193,9 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT
+      description: |
+        Console JWT or a project API key. New integrations should use
+        `/api/v1/*` (Model Gateway) instead of these deprecated AI routes.
 
   schemas:
     ChatMessage:

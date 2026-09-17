@@ -1,8 +1,12 @@
 openapi: 3.0.3
 info:
   title: VECTOREE Storage API
-  version: 2.0.0
-  description: Bucket-based storage system similar to S3
+  version: 2.1.0
+  description: |
+    Bucket-based object storage. Authenticate REST calls with a project API
+    key (`sk-ve-v1-...`) that has `storage` or `*` scope as
+    `Authorization: Bearer`. Path `{bucketName}` / `{objectKey}` must exist
+    except when creating a bucket. S3 protocol uses SigV4, not Bearer.
 
 servers:
   - url: https://vectoree.ai
@@ -15,6 +19,7 @@ paths:
       tags:
         - Admin
       security:
+        - bearerAuth: []
         - apiKey: []
       responses:
         '200':
@@ -37,6 +42,7 @@ paths:
       tags:
         - Admin
       security:
+        - bearerAuth: []
         - apiKey: []
       requestBody:
         required: true
@@ -104,6 +110,7 @@ paths:
       tags:
         - Admin
       security:
+        - bearerAuth: []
         - apiKey: []
       parameters:
         - name: bucketName
@@ -145,6 +152,7 @@ paths:
       tags:
         - Admin
       security:
+        - bearerAuth: []
         - apiKey: []
       parameters:
         - name: bucketName
@@ -206,6 +214,7 @@ paths:
       tags:
         - Admin
       security:
+        - bearerAuth: []
         - apiKey: []
       parameters:
         - name: bucketName
@@ -296,6 +305,7 @@ paths:
       tags:
         - Client
       security:
+        - bearerAuth: []
         - apiKey: []
       parameters:
         - name: bucketName
@@ -362,6 +372,7 @@ paths:
       tags:
         - Client
       security:
+        - bearerAuth: []
         - apiKey: []
       parameters:
         - name: bucketName
@@ -437,6 +448,7 @@ paths:
       tags:
         - Client
       security:
+        - bearerAuth: []
         - apiKey: []
       parameters:
         - name: bucketName
@@ -508,6 +520,7 @@ paths:
       tags:
         - Client
       security:
+        - bearerAuth: []
         - apiKey: []
       parameters:
         - name: bucketName
@@ -557,6 +570,7 @@ paths:
       tags:
         - Client
       security:
+        - bearerAuth: []
         - apiKey: []
       parameters:
         - name: bucketName
@@ -603,6 +617,7 @@ paths:
       tags:
         - Client
       security:
+        - bearerAuth: []
         - apiKey: []
       parameters:
         - name: bucketName
@@ -685,6 +700,7 @@ paths:
       tags:
         - Client
       security:
+        - bearerAuth: []
         - apiKey: []
       parameters:
         - name: bucketName
@@ -744,6 +760,7 @@ paths:
       tags:
         - Client
       security:
+        - bearerAuth: []
         - apiKey: []
       parameters:
         - name: bucketName
@@ -787,6 +804,7 @@ paths:
       tags:
         - S3 Access Keys
       security:
+        - bearerAuth: []
         - apiKey: []
       responses:
         '200':
@@ -819,6 +837,7 @@ paths:
       tags:
         - S3 Access Keys
       security:
+        - bearerAuth: []
         - apiKey: []
       responses:
         '200':
@@ -858,6 +877,7 @@ paths:
       tags:
         - S3 Access Keys
       security:
+        - bearerAuth: []
         - apiKey: []
       requestBody:
         required: false
@@ -912,6 +932,7 @@ paths:
       tags:
         - S3 Access Keys
       security:
+        - bearerAuth: []
         - apiKey: []
       parameters:
         - name: id
@@ -1054,10 +1075,17 @@ paths:
 
 components:
   securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: |
+        Project API key from Dashboard → API Keys, starting with `sk-ve-v1-`.
+        Requires `storage` or `*` scope. Paste the key only.
     apiKey:
       type: apiKey
       in: header
-      name: x-api-key
+      name: X-API-Key
+      description: Same project API key as Bearer. Fill one of the two, not both.
     s3SigV4:
       type: http
       scheme: aws4-hmac-sha256

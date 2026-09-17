@@ -2,6 +2,7 @@ openapi: 3.0.3
 info:
   title: VECTOREE Health API
   version: 1.0.0
+  description: Public liveness check. No authentication.
 
 servers:
   - url: https://vectoree.ai

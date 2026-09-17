@@ -7,7 +7,8 @@ info:
 
     Authenticate with a **scoped project API key** (`sk-ve-v1-...`) that has
     `gateway:chat` (inference) or `gateway:models` (list). Instance master keys
-    (`ik_...`) and publishable keys (`pk_`) are rejected.
+    (`ik_...`) and publishable keys (`pk_`) are rejected. Paste the key in
+    Bearer (no `Bearer ` prefix).
 
     Organization wallet billing applies when enabled (default). Optional per-key
     `rpmLimit` returns HTTP 429 with `Retry-After`. Errors use the OpenAI shape
@@ -321,7 +322,9 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-      description: Scoped project API key `sk-ve-v1-...` (not `ik_...`).
+      description: |
+        Project API key `sk-ve-v1-...` with `gateway:chat` or `gateway:models`.
+        Paste the key only. Do not use `pk_...` or `ik_...`.
   responses:
     GatewayError:
       description: OpenAI-shaped error
