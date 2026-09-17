@@ -33,28 +33,77 @@ Staging API: `VECTOREE_API_URL=https://vectoree.net`. Production default is `htt
 
 ## 4. Check the gateway
 
+Setup is done when chat works. Do not probe every modality here.
+
 ```bash
 npx @vectoree/cli whoami
-npx @vectoree/cli ai status
-npx @vectoree/cli ai models list
+npx @vectoree/cli ai chat "ping"
 ```
 
-Top up the org wallet in the dashboard before `ai chat` will succeed on paid models.
+If you already completed setup and `whoami` + `ai chat "ping"` succeed, skip `login` / `link`.
+
+Top up the org wallet in the dashboard before paid usage succeeds.
+
+### Optional: probe other modalities
+
+Only when you need that surface — do not send TTS slugs to `ai chat`:
+
+```bash
+npx @vectoree/cli ai models list --output-modality speech
+npx @vectoree/cli ai speech "hello" --model qwen/qwen-audio-3.0-tts-flash
+npx @vectoree/cli ai snippet --model qwen/qwen-audio-3.0-tts-flash
+```
+
+## 5. Connect Tool Hub MCP
+
+Use a scoped project key with `tools:*` (created by `link` or in Dashboard → API Keys). The CLI can write the MCP config:
+
+```bash
+npx @vectoree/cli tools status
+npx @vectoree/cli tools snippet --write --replace-search
+```
+
+`--write` defaults to Cursor (`.cursor/mcp.json`). Use `--client claude` for `.mcp.json`, or `--client vscode` for `.vscode/mcp.json`. `--replace-search` removes Tavily / Brave / Exa-style search servers so the agent uses Vectoree instead.
+
+Equivalent JSON:
+
+```json
+{
+  "mcpServers": {
+    "vectoree": {
+      "type": "http",
+      "url": "https://vectoree.ai/mcp",
+      "headers": {
+        "Authorization": "Bearer sk-ve-v1-..."
+      }
+    }
+  }
+}
+```
+
+Tools exposed: `search`, `extract` (Tavily-compatible parameters). REST probes: `npx @vectoree/cli tools search "<query>"` and `tools extract <url>`.
+
+## Point Codex at Vectoree
+
+To switch **Codex CLI** (or ChatGPT desktop) to the Vectoree Model Gateway, see [Point Codex at Vectoree](/codex). One-liner:
+
+```bash
+bash <(curl -fsSL https://vectoree.ai/scripts/codex-vectoree-setup.sh)
+```
+
+Windows PowerShell: `irm https://vectoree.ai/scripts/codex-vectoree-setup.ps1 | iex`.
 
 ## Useful commands
 
 ```bash
 npx @vectoree/cli db list
 npx @vectoree/cli storage buckets list
+npx @vectoree/cli tools status
 npx @vectoree/cli --help
 ```
+
+App Auth for *your app's* end users (not Cloud login): see [Authentication](/auth) (`auth status` / `auth snippet`).
 
 Every command accepts `--json`. Destructive commands confirm unless you pass `--yes`.
 
 npm: [@vectoree/cli](https://www.npmjs.com/package/@vectoree/cli).
-
-## Next
-
-Existing project or a starter: [Connection](/connect). Connection issues: [FAQ](/faq).
-
-The same project is what [Deploy](/deploy) and [Payments](/payments) attach to — both launching soon. The full path is on [Overview](/introduction).

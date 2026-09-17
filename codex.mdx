@@ -54,9 +54,11 @@ https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectore
 
 | Choice | Action |
 | --- | --- |
-| `1`–`5` | Install / switch to a curated model slug |
+| `1`–`7` | Install / switch to a curated chat model (`vectoree/auto` is 1, recommended) |
 | `c` | Enter any gateway model slug (for example `anthropic/claude-opus-4.6`) |
 | `r` | Restore the pre-install config and exit Vectoree / API-provider mode |
+
+Menu 1 is `vectoree/auto`. Then: `deepseek/deepseek-v4-pro`, `qwen/qwen3-max`, `qwen/qwen-plus`, `z-ai/glm-5.2`, `qwen/qwen3.5-plus-02-15`, `qwen/qwen3-coder-flash`. Video Hot SKUs are not in this list.
 
 Type `y` on first install. Optional env: `VECTOREE_API_KEY`, `VECTOREE_BASE_URL` (default `https://vectoree.ai/api/v1/`), `CODEX_HOME`.
 
@@ -101,7 +103,7 @@ You will need a **Vectoree API key** (`sk-ve-v1-...`) from Dashboard → Project
 Open (or create) `~/.codex/config.toml` and set the following top-level keys:
 
 ```toml
-model                  = "deepseek/deepseek-v4-pro"
+model                  = "vectoree/auto"
 model_provider         = "vectoree"
 preferred_auth_method  = "apikey"
 forced_login_method    = "api"
@@ -127,10 +129,10 @@ Codex needs a model catalog so it can resolve the `model` slug. Create `~/.codex
 {
   "models": [
     {
-      "slug": "deepseek/deepseek-v4-pro",
-      "display_name": "DeepSeek V4 Pro",
-      "context_window": 1048576,
-      "max_context_window": 1048576,
+      "slug": "vectoree/auto",
+      "display_name": "Vectoree Auto",
+      "context_window": 200000,
+      "max_context_window": 200000,
       "supports_reasoning_summaries": true,
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
@@ -157,7 +159,7 @@ Add one entry per model slug you plan to use. The `slug` must exactly match what
 
 | Key | Value | Description |
 | --- | --- | --- |
-| `model` | string (e.g. `"deepseek/deepseek-v4-pro"`) | The default model slug Codex sends to the gateway. Must exist in `models.json`. |
+| `model` | string (e.g. `"vectoree/auto"`) | The default model slug Codex sends to the gateway. Must exist in `models.json`. |
 | `model_provider` | `"vectoree"` | Tells Codex to use the `vectoree` provider block below. |
 | `preferred_auth_method` | `"apikey"` | Forces API-key auth instead of ChatGPT account login. Required for desktop. |
 | `forced_login_method` | `"api"` | Prevents the ChatGPT desktop app from falling back to account auth. |

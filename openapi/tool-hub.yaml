@@ -1,0 +1,83 @@
+openapi: 3.0.3
+info:
+  title: Vectoree Tool Hub
+  version: 1.0.0
+  description: |
+    Hosted MCP tools for web search and page extraction.
+
+    MCP (JSON-RPC) lives at `POST /mcp` with `Authorization: Bearer sk-ve-v1-...` and `tools:*` scope.
+    REST mirrors the same Tavily-compatible payloads at `/api/tools/v1/search` and `/api/tools/v1/extract`.
+servers:
+  - url: https://vectoree.ai/api
+paths:
+  /tool-hub/tools:
+    get:
+      summary: List Tool Hub catalog
+      description: Dashboard-authenticated catalog of available tools.
+      responses:
+        '200':
+          description: Tool list
+  /tools/v1/search:
+    post:
+      summary: Web search
+      description: Tavily-compatible search. Bills organization wallet per request.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query]
+              properties:
+                query:
+                  type: string
+                max_results:
+                  type: integer
+                  minimum: 1
+                  maximum: 20
+                time_range:
+                  type: string
+                  enum: [day, week, month, year]
+                include_domains:
+                  type: array
+                  items:
+                    type: string
+                exclude_domains:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Search results
+  /tools/v1/extract:
+    post:
+      summary: Web extract
+      description: Tavily-compatible URL extraction. Bills per successful URL.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                urls:
+                  type: array
+                  items:
+                    type: string
+                    format: uri
+                url:
+                  type: string
+                  format: uri
+      responses:
+        '200':
+          description: Extract results
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: sk-ve-v1

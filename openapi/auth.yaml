@@ -9,6 +9,79 @@ servers:
     description: Production
 
 paths:
+  /api/system/auth/signup:
+    post:
+      summary: Console user registration
+      description: Self-service signup for Vectoree Dashboard developers (`system.users`, `aud=console`). Not for tenant app users.
+      tags:
+        - System Auth
+      parameters:
+        - name: client_type
+          in: query
+          schema:
+            type: string
+            enum: [web, mobile, desktop, server]
+            default: web
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                name:
+                  type: string
+      responses:
+        '201':
+          description: User created
+        '400':
+          description: Invalid input
+
+  /api/system/auth/sessions:
+    post:
+      summary: Console user login
+      description: Email/password login for Vectoree Dashboard developers. Does not accept project `pk_` or `auth:*` credentials.
+      tags:
+        - System Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+        '401':
+          description: Invalid credentials
+        '403':
+          description: Project credentials rejected
+
+  /api/system/auth/refresh:
+    post:
+      summary: Refresh Console session
+      description: Uses `vectoree_system_refresh_token` cookie (path `/api/system/auth`) for web clients.
+      tags:
+        - System Auth
+      responses:
+        '200':
+          description: Token refreshed
+        '401':
+          description: Invalid refresh token
+
   /api/auth/profiles/current:
     patch:
       summary: Update current user's profile
@@ -110,7 +183,7 @@ paths:
                   verifyEmailMethod:
                     type: string
                     enum: [code, link]
-                    description: Method for email verification (code = 6-digit OTP, link = magic link)
+                    description: Method for email verification (code = 8-digit OTP, link = magic link)
                   resetPasswordMethod:
                     type: string
                     enum: [code, link]
@@ -165,7 +238,7 @@ paths:
                 verifyEmailMethod:
                   type: string
                   enum: [code, link]
-                  description: Method for email verification (code = 6-digit OTP, link = magic link)
+                  description: Method for email verification (code = 8-digit OTP, link = magic link)
                 resetPasswordMethod:
                   type: string
                   enum: [code, link]
@@ -236,6 +309,9 @@ paths:
       description: Creates a new user account
       tags:
           - Client
+      security:
+        - projectApiKey: []
+        - publishableKey: []
       parameters:
         - name: client_type
           in: query
@@ -440,9 +516,15 @@ paths:
   /api/auth/sessions:
     post:
       summary: User login
-      description: Authenticates user and returns access token. For web clients, sets httpOnly refresh token cookie. For mobile/desktop/server clients, returns refreshToken in response body.
+      description: |
+        Authenticates a tenant app user in the selected project. Requires a project
+        publishable key (`pk_`) or project API key with `auth:*` scope in the
+        Authorization header. Sets `vectoree_refresh_token` (path `/api/auth`) for web clients.
       tags:
         - Client
+      security:
+        - projectApiKey: []
+        - publishableKey: []
       parameters:
         - name: client_type
           in: query
@@ -612,6 +694,50 @@ paths:
         '401':
           description: Unauthorized
 
+  /api/auth/admin/users:
+    post:
+      summary: Create an app user as a project administrator
+      description: |
+        Creates a user in the selected project, bypassing the public signup
+        switch. Dashboard sessions may call this route with X-Project-Id.
+        Project API Keys must have auth:* and select their project from the key.
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+        - projectApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                name:
+                  type: string
+                autoConfirm:
+                  type: boolean
+                  default: false
+                redirectTo:
+                  type: string
+                  format: uri
+      responses:
+        '200':
+          description: User created
+        '400':
+          description: Invalid request
+        '401':
+          description: Authentication required
+        '403':
+          description: auth:* or project administrator access required
+
   /api/auth/admin/sessions:
     post:
       summary: Admin login
@@ -747,50 +873,15 @@ paths:
                   message:
                     type: string
 
-  /api/auth/tokens/anon:
-    post:
-      summary: Get anon key (deprecated)
-      deprecated: true
-      description: >-
-        Deprecated - use GET /api/metadata/anon-key instead. Returns the
-        project's opaque anon key (`anon_...`) under the legacy `accessToken`
-        field for backward compatibility. The anon key is a non-secret client
-        identifier that maps requests to the `anon` role; it replaces the
-        former non-expiring anonymous JWT and can be rotated via
-        POST /api/secrets/anon-key/rotate (admin only).
-      tags:
-        - Admin
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Anon key retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  accessToken:
-                    type: string
-                    description: Opaque anon key (legacy field name kept for compatibility)
-                    example: "anon_1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcd"
-                  message:
-                    type: string
-                    description: Success message
-                    example: "Anon key retrieved successfully (deprecated route, use GET /api/metadata/anon-key)"
-        '401':
-          description: Unauthorized - requires authentication
-        '403':
-          description: Forbidden - admin access required
-        '404':
-          description: Anon key not initialized
-
   /api/auth/email/send-verification:
     post:
       summary: Send email verification (code or link based on config)
-      description: Send email verification using the method configured in auth settings (verifyEmailMethod). When method is 'code', sends a 6-digit numeric code. When method is 'link', sends a browser verification link that goes through an Vectoree backend endpoint first. Prevents user enumeration by returning success even if email doesn't exist.
+      description: Send email verification using the method configured in auth settings (verifyEmailMethod). When method is 'code', sends an 8-digit numeric code. When method is 'link', sends a browser verification link that goes through an Vectoree backend endpoint first. Prevents user enumeration by returning success even if email doesn't exist.
       tags:
         - Client
+      security:
+        - projectApiKey: []
+        - publishableKey: []
       requestBody:
         required: true
         content:
@@ -868,14 +959,17 @@ paths:
     post:
       summary: Verify email with code
       description: |
-        Verify email address with a 6-digit code.
+        Verify email address with an 8-digit code.
 
         Successfully verified users will receive a session token.
 
         Browser email clicks should use `GET /api/auth/email/verify-link`.
-        `POST /api/auth/email/verify` is the JSON API for 6-digit code submission.
+        `POST /api/auth/email/verify` is the JSON API for 8-digit code submission.
       tags:
         - Client
+      security:
+        - projectApiKey: []
+        - publishableKey: []
       parameters:
         - name: client_type
           in: query
@@ -905,7 +999,7 @@ paths:
                 otp:
                   type: string
                   pattern: '^\d{6}$'
-                  description: 6-digit verification code
+                  description: 8-digit verification code
                   example: "123456"
       responses:
         '200':
@@ -939,6 +1033,9 @@ paths:
       description: Send password reset email using the method configured in auth settings (resetPasswordMethod). When method is 'code', sends a 6-digit numeric code for two-step flow. When method is 'link', sends a browser reset link that goes through an Vectoree backend endpoint first. Prevents user enumeration by returning success even if email doesn't exist.
       tags:
         - Client
+      security:
+        - projectApiKey: []
+        - publishableKey: []
       requestBody:
         required: true
         content:
@@ -989,6 +1086,9 @@ paths:
         This endpoint is not used when resetPasswordMethod is 'link', because the browser reset-link flow uses the emailed link token directly.
       tags:
         - Client
+      security:
+        - projectApiKey: []
+        - publishableKey: []
       requestBody:
         required: true
         content:
@@ -1078,6 +1178,9 @@ paths:
         - Link method: send-reset-password → GET /api/auth/email/reset-password-link → reset-password
       tags:
         - Client
+      security:
+        - projectApiKey: []
+        - publishableKey: []
       requestBody:
         required: true
         content:
@@ -1824,10 +1927,14 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    apiKey:
-      type: apiKey
-      in: header
-      name: x-api-key
+    projectApiKey:
+      type: http
+      scheme: bearer
+      description: Server-only project API Key with auth:* scope. The key selects the project.
+    publishableKey:
+      type: http
+      scheme: bearer
+      description: Project Publishable Key (pk_...) used by the Vectoree-hosted Auth UI.
 
   schemas:
     ProjectAdminResponse:

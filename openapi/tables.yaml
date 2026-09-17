@@ -523,10 +523,15 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
+      description: |
+        Project API key from Dashboard → API Keys, starting with `sk-ve-v1-`.
+        Paste the key only (no `Bearer ` prefix). Requires `database` or `*` scope.
+        Alternative: a Console JWT from Dashboard login. Do not use `pk_...`.
     apiKey:
       type: apiKey
       in: header
       name: X-API-Key
+      description: Same project API key as Bearer. Fill one of the two, not both.
   
   schemas:
     ForeignKeyConstraint:

@@ -1,0 +1,54 @@
+---
+title: "Auth REST"
+description: "Call Vectoree Auth for users of your app."
+---
+
+This is **your app's** users (`auth.users`). It is not Vectoree Cloud login (`POST /api/system/auth/signup`, `/dashboard/login`, `vectoree login`).
+
+Do not create a `users` table. Put `user_id` on your business tables and store the Auth JWT `sub`.
+
+## Headers
+
+- Custom UI BFF: `Authorization: Bearer <project API key with auth:*>`
+- Hosted UI: project Publishable Key (`pk_...`) stays in the browser
+- After login: `Authorization: Bearer <accessToken>` (claim `aud` is `app`)
+
+The custom UI must call your own BFF. Keep `VECTOREE_API_KEY` in a server-only
+environment variable. Auth does not accept `X-Project-Id`; the API key itself
+selects the project.
+
+## Register
+
+`POST /api/auth/users`
+
+```json
+{ "email": "user@example.com", "password": "Passw0rd!" }
+```
+
+Call this from the BFF with `?client_type=server`. Return only the resulting
+user session to the browser; never return the project API Key.
+
+Email verification is on by default. The response has `requireEmailVerification: true` and no session until the user submits the 8-digit code.
+
+## Verify email
+
+`POST /api/auth/email/send-verification` with `{ "email": "user@example.com" }`
+
+`POST /api/auth/email/verify` with `{ "email": "user@example.com", "otp": "12345678" }`
+
+That issues the App session.
+
+## Password login
+
+`POST /api/auth/sessions` with `{ "email": "user@example.com", "password": "Passw0rd!" }`
+
+## OAuth
+
+Configure Google/GitHub at [Authentication → Auth methods](https://vectoree.ai/dashboard/authentication/auth-methods) with **your** Client ID and Secret. Then `GET /api/auth/oauth/google` (PKCE). `GET /api/auth/methods` lists what is enabled.
+
+## CLI
+
+```bash
+npx @vectoree/cli auth status
+npx @vectoree/cli auth snippet --rest --lang ts
+```

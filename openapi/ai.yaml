@@ -515,6 +515,17 @@ components:
           example: openai/gpt-4o
         created:
           type: integer
+          description: Unix seconds when the model row was created (listing time).
+        releasedAt:
+          type: integer
+          description: Unix seconds of the operator-set catalog release date. Drives the New sticker.
+        isHot:
+          type: boolean
+          description: Operator-set Hot flag. Pins the model in the recommended catalog sort.
+        requestCount:
+          type: integer
+          minimum: 0
+          description: Successful gateway requests in the last 30 days. Used for catalog ranking only.
         inputModality:
           type: array
           items:

@@ -33,7 +33,7 @@ print(resp.choices[0].message.content)
 | Concept | Description |
 |---|---|
 | `base_url` | `https://vectoree.ai/api/v1` (OpenAI-compatible format) |
-| `model` | Model slug. `vectoree/auto` routes by cost/latency; `vectoree/free` for free trial |
+| `model` | Model slug. Omit it or use `vectoree/auto` to route by cost/availability |
 | Token | Billing unit. Both input and output tokens are billed |
 | API Key | Machine credential. Create multiple per environment in the dashboard |
 
@@ -52,8 +52,7 @@ The dashboard **Model Plaza** lists all models with pricing, provider, and statu
 
 | Slug | What it does |
 |---|---|
-| `vectoree/free` | Free trial model for testing connectivity |
-| `vectoree/auto` | Smart routing — picks provider by cost or latency |
+| `vectoree/auto` | Default. Smart routing — picks a cheap or available catalog model |
 
 ## Multi-modal endpoints
 

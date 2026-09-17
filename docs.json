@@ -34,8 +34,7 @@
             "pages": [
               "introduction",
               "products",
-              "quickstart",
-              "connect"
+              "quickstart"
             ]
           },
           {
@@ -45,9 +44,7 @@
               "auth",
               "database",
               "storage",
-              "billing",
-              "deploy",
-              "payments"
+              "billing"
             ]
           },
           {
@@ -57,10 +54,9 @@
             ]
           },
           {
-            "group": "Resources",
+            "group": "FAQ",
             "pages": [
-              "faq",
-              "changelog"
+              "faq"
             ]
           }
         ]
@@ -89,13 +85,19 @@
             "openapi": "/openapi/gateway-v1.yaml"
           },
           {
-            "group": "AI",
-            "openapi": "/openapi/ai.yaml"
+            "group": "Tool Hub",
+            "openapi": "/openapi/tool-hub.yaml"
           },
           {
             "group": "Health",
             "openapi": "/openapi/health.yaml"
           }
+        ]
+      },
+      {
+        "tab": "Changelog",
+        "pages": [
+          "changelog"
         ]
       }
     ],

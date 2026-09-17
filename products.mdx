@@ -1,11 +1,9 @@
 ---
 title: "Products"
-description: "Five backend products live today. Deploy and Payments are next, on the same project."
+description: "What Vectoree Cloud ships in this launch."
 ---
 
-The live launch is five products on one project, plus a PAYG wallet for the gateway and Tool Hub. Everything shares the same project API key after `vectoree link`.
-
-[Deploy](/deploy) (a public URL) and [Payments](/payments) (your users pay you) are in development and launching soon. They attach to this same project.
+This launch is five products on one project, plus a PAYG wallet for the gateway and Tool Hub. Everything shares the same project API key after `vectoree link`.
 
 <CardGroup cols={2}>
   <Card title="Model Gateway" icon="sparkles" href="/quickstart">
@@ -16,8 +14,8 @@ The live launch is five products on one project, plus a PAYG wallet for the gate
     Hosted MCP for `search` and `extract`. Tavily-compatible parameters. Billed from the org wallet.
   </Card>
 
-  <Card title="Authentication" icon="shield" href="/quickstart">
-    Email and Google sign-in for users of *your* app. Not the same as logging into Vectoree Cloud. See [Authentication](/auth).
+  <Card title="Authentication" icon="shield" href="/auth">
+    Email and Google sign-in for users of *your* app. Not the same as logging into Vectoree Cloud.
   </Card>
 
   <Card title="Database" icon="database" href="/quickstart">
@@ -46,16 +44,3 @@ The live launch is five products on one project, plus a PAYG wallet for the gate
 ## Billing
 
 There is no monthly subscription in this launch. Top up the **organization wallet**, then usage on the model gateway and Tool Hub deducts from it. Auth, Database, and Storage sit on shared infra with no separate meter yet.
-
-This wallet is you paying Vectoree. Charging the people who use your app is [Payments](/payments), coming soon.
-
-## Coming soon
-
-<CardGroup cols={2}>
-  <Card title="Deploy" icon="rocket" href="/deploy">
-    Publish the project to a public HTTPS URL. Launching soon.
-  </Card>
-  <Card title="Payments" icon="credit-card" href="/payments">
-    Charge the people who use the agent. Launching soon.
-  </Card>
-</CardGroup>

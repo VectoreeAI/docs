@@ -1,6 +1,6 @@
 ---
 title: "FAQ"
-description: "Common questions about billing, connection, the $5.00 welcome credit, models, data, and what ships now."
+description: "Common questions about billing, connection, models, data, and what ships in 1.0."
 ---
 
 ## Billing
@@ -17,31 +17,7 @@ Model and tool calls return a clear insufficient-balance error. Top up to resume
 **Where do I see pricing?**  
 Dashboard > **Model Plaza**. Each model shows its unit price per 1M tokens.
 
-**Did the $5.00 welcome credit arrive?**  
-Connection and the welcome credit are separate. A successful connect binds the workspace even when the $5.00 is not issued.
-
-`🟢 Project Successfully Connected!` means the workspace is bound. When the credit is not issued, one of these usually applies:
-
-1. **Not the org Owner (team member connecting)**  
-   Welcome credit is org-level. Members connecting to a shared project use the existing shared balance — a second personal grant is not issued.
-
-2. **Organization already funded (Org Funded)**  
-   The $5.00 credit is for unpaid, first-time orgs. A prior top-up or card-on-file marks the org as paid, so the free grant does not apply.
-
-3. **Device or account grant limit (Device/Account Limit)**  
-   The credit is once per real device (MAC/IP) and once per account lifetime. A later connect still binds the workspace; the payout is skipped silently.
-
-4. **Email not verified (Email Unverified)**  
-   Unverified or disposable emails hold the grant. Verify (or bind a regular address in account settings) and the balance unlocks in real time.
-
-Check **Organization > Billing** on the org that owns the project.
-
 ## Connection
-
-How to connect: [Connection](/connect).
-
-**Header still says CONNECT after the agent finished?**  
-**Connected** is this account × the project open in the Dashboard. Open that project, then paste the **CONNECT** prompt again in the folder you mean to bind.
 
 **`link` won't connect?**  
 Make sure you ran `login` first. Confirm you are in the directory you want to bind to the project.
@@ -52,13 +28,10 @@ Check your spam folder. If the issue persists, confirm the platform SMTP is conf
 **Key invalid error?**  
 Check that the key is complete, not deleted, and belongs to the current project.
 
-**Unauthorized or token expired?**  
-Run `npx @vectoree/cli login --force`, then `whoami`, `current`, and `ai status`. If `current` is empty, `link` again. Headless: rotate `VECTOREE_API_KEY`.
-
 ## Models
 
-**What are `vectoree/free` and `vectoree/auto`?**  
-`free` is a free trial model for testing connectivity. `auto` is smart routing that picks a provider by cost or latency.
+**What is `vectoree/auto`?**  
+The default chat model. It routes to a cheap or available catalog model. Omit `model` on chat completions and the gateway uses `vectoree/auto`.
 
 **Why does the same model have different prices?**  
 Prices vary by call type, region, and time slot (peak / off-peak), matching the upstream provider's pricing.
@@ -80,10 +53,7 @@ Yes, but deletion is destructive. Follow the dashboard confirmation prompts.
 ## What ships in this launch
 
 **What is included in 1.0?**  
-Model Gateway, Auth, Database, Storage, Tool Hub (hosted MCP), org wallet billing, CLI + Agent Skill, and Google / email login.
+Model Gateway, Auth, Database, Storage, Tool Hub (hosted MCP), org wallet billing, CLI + Agent Skill, Templates, and Google / email login.
 
-**What is coming soon?**  
-[Deploy](/deploy) — a public HTTPS URL for the app. [Payments](/payments) — charge your end users and get paid. Both are in development and launching soon.
-
-**What is not in this launch?**  
-Edge Functions, Realtime, and Compute. Skills Hub was replaced by Tool Hub.
+**What is not yet available?**  
+Deployment, Edge Functions, Realtime, and Compute are not part of this launch. Skills Hub was replaced by Tool Hub.

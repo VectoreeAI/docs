@@ -7,7 +7,7 @@ info:
 
     Authenticate with a **scoped project API key** (`sk-ve-v1-...`) that has
     `gateway:chat` (inference) or `gateway:models` (list). Instance master keys
-    (`ik_...`) and publishable keys (`pk_` / `anon_`) are rejected.
+    (`ik_...`) and publishable keys (`pk_`) are rejected.
 
     Organization wallet billing applies when enabled (default). Optional per-key
     `rpmLimit` returns HTTP 429 with `Retry-After`. Errors use the OpenAI shape
@@ -26,7 +26,12 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          description: OpenAI-shaped model list
+          description: |
+            OpenAI-shaped model list. Each item includes the standard
+            `id` / `object` / `created` / `owned_by` fields, plus Vectoree
+            `inputModality` / `outputModality` and OpenRouter-style
+            `architecture.input_modalities` / `architecture.output_modalities`
+            so clients can filter TTS (`speech`), STT (`transcription`), video, etc.
         '401':
           $ref: '#/components/responses/GatewayError'
         '429':
