@@ -1,0 +1,170 @@
+.ve-journey {
+  --ve-accent: #07c983;
+  --ve-soon: color-mix(in srgb, var(--ve-accent) 55%, #888);
+  margin: 1.25rem 0 0.35rem;
+}
+
+.ve-journey__track {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.ve-journey__step {
+  flex: 1 1 0;
+  min-width: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.95rem 0.9rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--ve-accent) 28%, currentColor);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ve-accent) 7%, transparent);
+  overflow: hidden;
+}
+
+.ve-journey__step::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--ve-accent);
+}
+
+.ve-journey__step--soon {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--ve-accent) 38%, currentColor);
+  background: transparent;
+}
+
+.ve-journey__step--soon::before {
+  background: color-mix(in srgb, var(--ve-accent) 45%, transparent);
+}
+
+.ve-journey__idx {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ve-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.ve-journey__step--soon .ve-journey__idx {
+  color: var(--ve-soon);
+}
+
+.ve-journey__title {
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.ve-journey__hint {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  opacity: 0.72;
+}
+
+.ve-journey__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.28rem;
+  margin-top: 0.35rem;
+}
+
+.ve-journey__chip {
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  padding: 0.12rem 0.4rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--ve-accent) 32%, currentColor);
+  color: var(--ve-accent);
+}
+
+.ve-journey__badge {
+  align-self: flex-start;
+  margin-top: 0.2rem;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ve-soon);
+  border: 1px solid color-mix(in srgb, var(--ve-accent) 30%, currentColor);
+  border-radius: 999px;
+  padding: 0.12rem 0.42rem;
+}
+
+.ve-journey__wire {
+  flex: 0 0 16px;
+  align-self: center;
+  height: 1px;
+  margin: 0 2px;
+  background: color-mix(in srgb, var(--ve-accent) 70%, transparent);
+  position: relative;
+}
+
+.ve-journey__wire::after {
+  content: "";
+  position: absolute;
+  right: -3px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-top: 1px solid var(--ve-accent);
+  border-right: 1px solid var(--ve-accent);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.ve-journey__legend {
+  display: flex;
+  gap: 1rem;
+  margin: 0.7rem 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.ve-journey__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ve-journey__swatch {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 2px;
+  border: 1px solid color-mix(in srgb, var(--ve-accent) 50%, currentColor);
+  background: color-mix(in srgb, var(--ve-accent) 18%, transparent);
+}
+
+.ve-journey__swatch--soon {
+  background: transparent;
+  border-style: dashed;
+}
+
+@media (max-width: 860px) {
+  .ve-journey__track {
+    flex-direction: column;
+  }
+
+  .ve-journey__wire {
+    flex: 0 0 14px;
+    width: 1px;
+    height: 14px;
+    margin: 2px auto;
+    align-self: center;
+  }
+
+  .ve-journey__wire::after {
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: -3px;
+    transform: translateX(-50%) rotate(135deg);
+  }
+}

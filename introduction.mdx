@@ -1,13 +1,65 @@
 ---
 title: "Overview"
-description: "Vectoree Cloud: model gateway, Auth, Database, and Storage. Agents use a Skill plus the CLI."
+description: "Use Vectoree to build and improve your agent — then let other people use it."
 ---
 
 {/* AI AGENT INSTRUCTIONS (not rendered): Install the Vectoree skill, then use the CLI. npx skills add VectoreeAI/vectoree-skills. Skill source: https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectoree/SKILL.md. Then: npx @vectoree/cli login && npx @vectoree/cli link. Web tools: hosted MCP at /mcp (search, extract). Point Codex at Vectoree: bash <(curl -fsSL https://vectoree.ai/scripts/codex-vectoree-setup.sh). Docs: https://docs.vectoree.ai/codex. Do not call template, skills install, or deploy. */}
 
-Vectoree Cloud is a backend for coding agents and the apps they ship. This launch includes a **model gateway** (OpenAI-compatible), **Tool Hub** (hosted MCP), **Auth**, **Database**, and **Storage**, plus an organization wallet you top up to pay for model and tool usage.
+Vectoree Cloud is how you **build and improve your own agent** — then put it in front of other people.
 
-The agent path is **Skill + CLI** for platform operations, and **Hosted MCP** for web search and page extract.
+You write the agent locally with Cursor, Claude Code, or Codex. Vectoree is the backend you attach while you do that: **Model Gateway**, **Tool Hub**, **Auth**, **Database**, and **Storage**, on one project, paid from an organization wallet. Agents operate it with a **Skill + CLI**; web search and extract go through hosted MCP.
+
+When the agent is ready, the same project gets a public URL ([Deploy](/deploy)) and a way for those people to pay you ([Payments](/payments)). Both are in development and launching soon.
+
+## Build your agent
+
+The path is the agent. Vectoree is what you connect so it can think, remember, and later be used by other people.
+
+<div className="ve-journey" role="img" aria-label="Build an agent in five steps: start with your agent, connect Vectoree, equip the backend, let others use it, then get paid.">
+  <div className="ve-journey__track">
+    <div className="ve-journey__step">
+      <span className="ve-journey__idx">01</span>
+      <span className="ve-journey__title">Your agent</span>
+      <span className="ve-journey__hint">Write or improve it locally</span>
+    </div>
+    <div className="ve-journey__wire" aria-hidden="true"></div>
+    <div className="ve-journey__step">
+      <span className="ve-journey__idx">02</span>
+      <span className="ve-journey__title">Connect</span>
+      <span className="ve-journey__hint">Skill + CLI, one Cloud project</span>
+    </div>
+    <div className="ve-journey__wire" aria-hidden="true"></div>
+    <div className="ve-journey__step">
+      <span className="ve-journey__idx">03</span>
+      <span className="ve-journey__title">Equip</span>
+      <span className="ve-journey__hint">Give it a backend so it can run</span>
+      <div className="ve-journey__chips">
+        <span className="ve-journey__chip">Models</span>
+        <span className="ve-journey__chip">Auth</span>
+        <span className="ve-journey__chip">Data</span>
+        <span className="ve-journey__chip">Files</span>
+      </div>
+    </div>
+    <div className="ve-journey__wire" aria-hidden="true"></div>
+    <div className="ve-journey__step ve-journey__step--soon">
+      <span className="ve-journey__idx">04</span>
+      <span className="ve-journey__title">Share</span>
+      <span className="ve-journey__hint">A public URL others can open</span>
+      <span className="ve-journey__badge">Coming soon</span>
+    </div>
+    <div className="ve-journey__wire" aria-hidden="true"></div>
+    <div className="ve-journey__step ve-journey__step--soon">
+      <span className="ve-journey__idx">05</span>
+      <span className="ve-journey__title">Earn</span>
+      <span className="ve-journey__hint">The people who use it pay you</span>
+      <span className="ve-journey__badge">Coming soon</span>
+    </div>
+  </div>
+  <div className="ve-journey__legend">
+    <span><span className="ve-journey__swatch"></span> Live</span>
+    <span><span className="ve-journey__swatch ve-journey__swatch--soon"></span> Coming soon</span>
+  </div>
+</div>
 
 ## Connect
 
@@ -23,7 +75,7 @@ The agent path is **Skill + CLI** for platform operations, and **Hosted MCP** fo
   </Card>
 </CardGroup>
 
-## What ships now
+## What's live now
 
 <CardGroup cols={2}>
   <Card title="Model Gateway" icon="sparkles" href="/products">
@@ -43,6 +95,17 @@ The agent path is **Skill + CLI** for platform operations, and **Hosted MCP** fo
   </Card>
 </CardGroup>
 
-Sites/deploy, Edge Functions, Realtime, and Compute are not part of this launch. Skills Hub was replaced by Tool Hub. Do not follow old pages that mention ClawHub skills or `@vectoree/sdk` as the agent path.
+## Coming soon
+
+<CardGroup cols={2}>
+  <Card title="Deploy" icon="rocket" href="/deploy">
+    Publish the project to a public HTTPS URL so someone else can open the app.
+  </Card>
+  <Card title="Payments" icon="credit-card" href="/payments">
+    Charge the people who use your agent, and get paid.
+  </Card>
+</CardGroup>
+
+Edge Functions, Realtime, and Compute are not part of this launch. Skills Hub was replaced by Tool Hub. Do not follow old pages that mention ClawHub skills or `@vectoree/sdk` as the agent path.
 
 OpenAPI for the live HTTP APIs is under **API Reference**.

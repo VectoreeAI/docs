@@ -44,7 +44,9 @@
               "auth",
               "database",
               "storage",
-              "billing"
+              "billing",
+              "deploy",
+              "payments"
             ]
           },
           {
