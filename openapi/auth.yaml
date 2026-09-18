@@ -3,92 +3,18 @@ info:
   title: VECTOREE Authentication API
   version: 2.0.0
   description: |
-    Two login systems. Do not mix them.
+    App Auth APIs for people who use the app you are building.
+    Cloud / Dashboard login is not part of this reference.
 
-    - Cloud / Console: `/api/system/auth/*` for Dashboard developers.
-    - App Auth: `/api/auth/*` for people who use the app you are building.
-      Server calls use a project API key with `auth:*` as `Authorization: Bearer`.
-      Hosted Auth UI uses a publishable key (`pk_...`). After login, send the
-      App user JWT. The credential selects the project; do not send `X-Project-Id`.
+    Server calls use a project API key with `auth:*` as `Authorization: Bearer`.
+    Hosted Auth UI uses a publishable key (`pk_...`). After login, send the
+    App user JWT. The credential selects the project; do not send `X-Project-Id`.
 
 servers:
   - url: https://vectoree.ai
     description: Production
 
 paths:
-  /api/system/auth/signup:
-    post:
-      summary: Console user registration
-      description: Self-service signup for Vectoree Dashboard developers (`system.users`, `aud=console`). Not for tenant app users.
-      tags:
-        - System Auth
-      parameters:
-        - name: client_type
-          in: query
-          schema:
-            type: string
-            enum: [web, mobile, desktop, server]
-            default: web
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [email, password]
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-                name:
-                  type: string
-      responses:
-        '201':
-          description: User created
-        '400':
-          description: Invalid input
-
-  /api/system/auth/sessions:
-    post:
-      summary: Console user login
-      description: Email/password login for Vectoree Dashboard developers. Does not accept project `pk_` or `auth:*` credentials.
-      tags:
-        - System Auth
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [email, password]
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-      responses:
-        '200':
-          description: Login successful
-        '401':
-          description: Invalid credentials
-        '403':
-          description: Project credentials rejected
-
-  /api/system/auth/refresh:
-    post:
-      summary: Refresh Console session
-      description: Uses `vectoree_system_refresh_token` cookie (path `/api/system/auth`) for web clients.
-      tags:
-        - System Auth
-      responses:
-        '200':
-          description: Token refreshed
-        '401':
-          description: Invalid refresh token
-
   /api/auth/methods:
     get:
       summary: Get public auth methods
