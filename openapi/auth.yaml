@@ -825,8 +825,8 @@ paths:
           description: Invalid authorization code or JWT verification failed
           content:
             application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /api/auth/admin/sessions/current:
     get:
