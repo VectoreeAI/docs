@@ -1,0 +1,25 @@
+---
+title: "更新日志"
+description: "Vectoree Cloud 产品更新说明，只记录用户可见的变化。"
+---
+
+Vectoree Cloud 的产品更新说明，最新版本在上。本页不列出内部 git tag、commit hash 或代码 diff。
+
+---
+
+## 1.0.0 — 2026-09-04
+
+Vectoree Cloud 首次公开发布：专为 AI Agent 打造的开箱即用云端后端基础设施。无论你是在本地使用 Cursor、Claude Code 还是 Codex 编写 Agent，只需几秒连接，即可直接接入完整的云端能力栈，告别 5 个 SaaS 软件拼凑胶水代码的繁琐流程！
+
+**新功能概述**
+- **Skill + CLI（Agent 云端操控器官）**：通过执行 `npx skills add VectoreeAI/vectoree-skills` 并完成 `login` / `link`，让你的本地编程 Agent 拥有直接掌控和操纵云端项目的超级能力。
+- **[Model Gateway](/models)（全能模型网关）**：单 API Key 聚合全球 36+ 顶级大模型（OpenAI、Anthropic 等），提供 OpenAI 兼容接口、Model Plaza、极速智能路由 `vectoree/auto`，以及完整的语音（TTS/STT）、图像、视频与 Embeddings 多模态支持。
+- **Tool Hub（托管式 MCP 引擎）**：开箱即用的云端托管 MCP 服务（含 Web Search 与 Page Extract），按用量透明计费，直接从组织钱包自动扣除，彻底告别繁琐的第三方 API 账号管理。
+- **[Authentication](/auth)（一键身份认证）**：极速为你自己的 Agent 应用集成用户登录体系，无缝支持邮箱验证码与 Google 快捷登录，轻松搞定多租户与用户 Session 管理。
+- **[Database](/database)（项目专属 Postgres）**：开箱即用！每个项目分配独立的 PostgreSQL 数据库，支持在可视化控制台或通过 CLI 高效管理表结构、Schema 与执行 SQL。
+- **[Storage](/storage)（高性能对象存储）**：弹性高并发存储桶，灵活支持公开资源访问或安全签名授权后的私有访问。
+- **[PAYG 钱包](/billing)（零月费按量付）**：采用 Pay-As-You-Go 模式，支持 Stripe 充值，拒绝强制月度订阅；模型与 Tool Hub 用量从组织余额中统一按实扣除。
+
+> 💡 **首发限时福利**：本轮 Auth、Database 和 Storage 部署在高性能共享基础设施上，完全免费开放体验，暂不单独计量扣费！
+>
+> 📌 *注：云端部署（Deploy）与应用内支付 SDK（Payments）正处于极速迭代中，暂不在 1.0 开放范围内。*

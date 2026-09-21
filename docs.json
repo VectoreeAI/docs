@@ -25,82 +25,106 @@
   },
   "favicon": "/favicon.png",
   "navigation": {
-    "tabs": [
+    "languages": [
       {
-        "tab": "Docs",
-        "groups": [
+        "language": "en",
+        "default": true,
+        "tabs": [
           {
-            "group": "Getting Started",
-            "pages": [
-              "introduction",
-              "products",
-              "quickstart"
+            "tab": "Docs",
+            "groups": [
+              {
+                "group": "Getting Started",
+                "pages": [
+                  "introduction",
+                  "products",
+                  "quickstart"
+                ]
+              },
+              {
+                "group": "Features",
+                "pages": [
+                  "models",
+                  "auth",
+                  "database",
+                  "storage",
+                  "billing",
+                  "deploy",
+                  "payments"
+                ]
+              },
+              {
+                "group": "Agent Integrations",
+                "pages": [
+                  "codex"
+                ]
+              },
+              {
+                "group": "FAQ",
+                "pages": [
+                  "faq"
+                ]
+              }
             ]
           },
           {
-            "group": "Features",
-            "pages": [
-              "models",
-              "auth",
-              "database",
-              "storage",
-              "billing",
-              "deploy",
-              "payments"
+            "tab": "API Reference",
+            "groups": [
+              {
+                "group": "Tables",
+                "openapi": "/openapi/tables.yaml"
+              },
+              {
+                "group": "Authentication",
+                "openapi": "/openapi/auth.yaml"
+              },
+              {
+                "group": "Records",
+                "openapi": "/openapi/records.yaml"
+              },
+              {
+                "group": "Storage",
+                "openapi": "/openapi/storage.yaml"
+              },
+              {
+                "group": "Model Gateway",
+                "openapi": "/openapi/gateway-v1.yaml"
+              },
+              {
+                "group": "Tool Hub",
+                "openapi": "/openapi/tool-hub.yaml"
+              },
+              {
+                "group": "Health",
+                "openapi": "/openapi/health.yaml"
+              }
             ]
           },
           {
-            "group": "Agent Integrations",
+            "tab": "Changelog",
             "pages": [
-              "codex"
-            ]
-          },
-          {
-            "group": "FAQ",
-            "pages": [
-              "faq"
+              "changelog"
             ]
           }
         ]
       },
       {
-        "tab": "API Reference",
-        "groups": [
+        "language": "zh-CN",
+        "tabs": [
           {
-            "group": "Tables",
-            "openapi": "/openapi/tables.yaml"
-          },
-          {
-            "group": "Authentication",
-            "openapi": "/openapi/auth.yaml"
-          },
-          {
-            "group": "Records",
-            "openapi": "/openapi/records.yaml"
-          },
-          {
-            "group": "Storage",
-            "openapi": "/openapi/storage.yaml"
-          },
-          {
-            "group": "Model Gateway",
-            "openapi": "/openapi/gateway-v1.yaml"
-          },
-          {
-            "group": "Tool Hub",
-            "openapi": "/openapi/tool-hub.yaml"
-          },
-          {
-            "group": "Health",
-            "openapi": "/openapi/health.yaml"
+            "tab": "更新日志",
+            "pages": [
+              "zh-CN/changelog"
+            ]
           }
-        ]
-      },
-      {
-        "tab": "Changelog",
-        "pages": [
-          "changelog"
-        ]
+        ],
+        "navbar": {
+          "primary": {
+            "type": "button",
+            "label": "开始使用",
+            "href": "https://vectoree.ai/dashboard/login"
+          }
+        }
       }
     ],
     "global": {
