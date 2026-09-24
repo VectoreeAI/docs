@@ -103,7 +103,7 @@
           {
             "tab": "Changelog",
             "pages": [
-              "changelog/en"
+              "changelog"
             ]
           }
         ]
@@ -114,7 +114,7 @@
           {
             "tab": "更新日志",
             "pages": [
-              "changelog/zh-CN"
+              "zh-CN/changelog"
             ]
           }
         ],
