@@ -151,14 +151,6 @@
     {
       "source": "/",
       "destination": "/introduction"
-    },
-    {
-      "source": "/changelog",
-      "destination": "/changelog/en"
-    },
-    {
-      "source": "/zh-CN/changelog",
-      "destination": "/changelog/zh-CN"
     }
   ],
   "logo": {
