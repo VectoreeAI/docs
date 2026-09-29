@@ -1,0 +1,75 @@
+---
+title: "Model Gateway"
+description: "一个 OpenAI 兼容端点，接入多种模型。按 token 从组织钱包扣费。"
+---
+
+Model Gateway 提供一个 OpenAI 兼容的 API 端点和一把项目 API Key，用来调用多家模型。可在控制台浏览模型、用 CLI 探测，或从你的服务端调用 chat。
+
+## 在应用里调用
+
+使用任意 OpenAI 兼容 SDK。改 `base_url` 和 `api_key`：
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://vectoree.ai/api/v1",
+    api_key="sk-ve-v1-your-key",
+)
+
+resp = client.chat.completions.create(
+    model="vectoree/auto",
+    messages=[{"role": "user", "content": "Hello"}],
+)
+print(resp.choices[0].message.content)
+```
+
+<Warning>
+  API Key 只放在服务端，不要打进浏览器包。不要用 `NEXT_PUBLIC_` 暴露 Vectoree Key。
+</Warning>
+
+## 关键概念
+
+| 概念 | 说明 |
+|---|---|
+| `base_url` | `https://vectoree.ai/api/v1`（OpenAI 兼容格式） |
+| `model` | 模型 slug。省略或使用 `vectoree/auto`，按成本 / 可用性路由 |
+| Token | 计费单位。输入和输出 token 都计费 |
+| API Key | 机器凭证。可在控制台按环境创建多把 |
+
+## 浏览与探测
+
+```bash
+npx @vectoree/cli ai models list
+npx @vectoree/cli ai models search --input-modality speech
+npx @vectoree/cli ai chat "ping"
+npx @vectoree/cli ai status
+```
+
+控制台 **Model Plaza** 列出全部模型及价格、供应商与状态。用 **Playground** 把同一提示词并排打到多个模型上。
+
+## 特殊 slug
+
+| Slug | 作用 |
+|---|---|
+| `vectoree/auto` | 默认。智能路由 — 选择便宜或可用的目录模型 |
+
+## 多模态端点
+
+除了文本 chat（`/api/v1/chat/completions`），同一把 Key 还能访问：
+
+- `/api/v1/audio/speech` — 文本转语音（TTS）
+- `/api/v1/audio/transcriptions` — 语音转文本（STT）
+- `/api/v1/images` — 图像生成
+- `/api/v1/videos` — 视频生成
+- `/api/v1/embeddings` — 文本 Embeddings
+
+用 `ai models list --output-modality speech` 查找 TTS slug。不要把 TTS slug 发给 `ai chat`。
+
+## 定价
+
+- 每个模型在 Model Plaza 展示每百万 token 价格
+- 价格随 **调用类型、区域、时段（高峰 / 低谷）** 变化
+- 账单 = 实际消耗 token × 单价，从组织钱包扣除
+
+充值与用量见 [计费](/zh/billing)。

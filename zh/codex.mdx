@@ -1,0 +1,205 @@
+---
+title: "接入 Codex"
+description: "一条命令，把 OpenAI Codex（CLI 或 ChatGPT 桌面端）切到 Vectoree Model Gateway。"
+---
+
+当你希望 **Codex** 通过 Vectoree 调模型，而不是走 ChatGPT 账号或其他供应商时，用本页。这和接入应用后端（`login` / `link`）是分开的。
+
+你需要一个 Vectoree 账号。安装脚本用和 `npx @vectoree/cli login --use-device-code` 相同的 **device-code** 流程登录，然后让你选择：
+
+1. **项目 Key**（`sk-ve-v1-...`）— 选择项目并签发带范围的网关 Key
+2. **员工 Key**（`ek-ve-v1-...`）— 选择你有有效 Employee AI 席位的组织（会轮换该席位的 Key）
+3. **粘贴**已有 Key（或设置 `VECTOREE_API_KEY` / 复用 `vectoree link` 写下的 `.vectoree/config.json`）
+
+不要使用实例主密钥（`ik_`）。
+
+## 一键安装（推荐）
+
+把下面其中一条复制到终端。脚本会备份 `~/.codex`、写入模型目录，并且只改 Codex 需要的 provider 密钥。
+
+### macOS / Linux
+
+```bash
+bash <(curl -fsSL https://vectoree.ai/scripts/codex-vectoree-setup.sh)
+```
+
+### Windows（PowerShell）
+
+```powershell
+irm https://vectoree.ai/scripts/codex-vectoree-setup.ps1 | iex
+```
+
+### 把这段提示词贴给 Agent
+
+如果更希望 Cursor、Claude Code 或其他 Agent 帮你切换：
+
+```text
+Point my Codex CLI at Vectoree as the model provider.
+Run the one-click setup (macOS/Linux):
+  bash <(curl -fsSL https://vectoree.ai/scripts/codex-vectoree-setup.sh)
+Or on Windows PowerShell:
+  irm https://vectoree.ai/scripts/codex-vectoree-setup.ps1 | iex
+I already have (or you can create) a project API key (sk-ve-v1-...).
+Follow C07 in the Vectoree skill if the script is unavailable:
+https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectoree/scenarios/model-gateway.md
+```
+
+## 前置条件
+
+1. 安装 Codex CLI（`npm install -g @openai/codex`）或 ChatGPT 桌面应用。
+2. 先启动一次，让 `~/.codex` 存在。
+3. 准备好 Vectoree 账号。优先菜单 **1**（项目 Key）或 **2**（员工 Key），脚本会打开浏览器并签发 Key。可选：设置 `VECTOREE_API_KEY` 跳过登录。
+
+## 菜单做什么
+
+| 选项 | 操作 |
+| --- | --- |
+| `1`–`7` | 安装 / 切换到精选 chat 模型（`vectoree/auto` 是 1，推荐） |
+| `c` | 输入任意网关模型 slug（例如 `anthropic/claude-opus-4.6`） |
+| `r` | 恢复安装前的配置，并退出 Vectoree / API-provider 模式 |
+
+菜单 1 是 `vectoree/auto`。然后是：`deepseek/deepseek-v4-pro`、`qwen/qwen3-max`、`qwen/qwen-plus`、`z-ai/glm-5.2`、`qwen/qwen3.5-plus-02-15`、`qwen/qwen3-coder-flash`。视频 Hot SKU 不在此列表。
+
+首次安装输入 `y`。可选环境变量：`VECTOREE_API_KEY`、`VECTOREE_BASE_URL`（默认 `https://vectoree.ai/api/v1/`）、`CODEX_HOME`。
+
+## 桌面端与 CLI
+
+| 客户端 | 安装之后 |
+| --- | --- |
+| **Codex CLI** | 通过 `model_providers.vectoree` 正常使用 Vectoree |
+| **ChatGPT 桌面端** | 使用 API Key 鉴权（`preferred_auth_method=apikey`）；模型选择器显示 **Custom**；ChatGPT 账号历史界面可能看起来是空的 |
+
+`~/.codex/sessions` 下的本地会话不会删除。要恢复 ChatGPT 默认，再跑脚本，选择 `r`（最新的 `backup-vectoree*` 文件夹），然后完全退出并重新打开 ChatGPT / Codex。
+
+每次安装会写一份带时间戳的新备份（`backup-vectoree-YYYYMMDD-HHMMSS`）。残留的旧备份不会阻止重新安装。
+
+## 验证
+
+- Codex CLI：启动横幅显示 `model: <your-slug>`
+- ChatGPT 桌面端：模型选择器显示 **Custom**
+
+如果 Codex 返回 `BILLING_PRICE_NOT_CONFIGURED`，说明 slug 不对或未定价。检查 **Admin → Models**，或让 Agent 跑 `npx @vectoree/cli ai models search`。OpenRouter 的 `*-latest` 别名通常需要 `~` 前缀。
+
+## 工具（web search / apply_patch）
+
+Vectoree 的 `/api/v1/responses` 路径会保留 Codex **custom** 工具（自由格式 `apply_patch` 等），并重新渲染为 `custom_tool_call`，让客户端执行。托管 **web_search** 在实例配置了搜索供应商 API Key 时，由 Vectoree 的 Tool Hub 搜索完成；否则该工具会被丢掉，并出现在 `X-Vectoree-Degraded-Fields`。
+
+如果你的实例没有搜索，在 `~/.codex/config.toml` 里关掉它：
+
+```toml
+web_search = "disabled"
+```
+
+---
+
+## 手动配置
+
+如果你不想用一键脚本 — 例如锁定的 CI runner，或没有浏览器的远程服务器 — 可以直接编辑两份 Codex 配置文件。
+
+你需要一把 **Vectoree API Key**（`sk-ve-v1-...`，来自 Dashboard → Projects → API Keys），或一把 **员工 Key**（`ek-ve-v1-...`，来自组织管理员）。
+
+### 第 1 步 — 编辑 `~/.codex/config.toml`
+
+打开（或创建）`~/.codex/config.toml`，设置以下顶层键：
+
+```toml
+model                  = "vectoree/auto"
+model_provider         = "vectoree"
+preferred_auth_method  = "apikey"
+forced_login_method    = "api"
+model_reasoning_effort = "high"
+model_catalog_json     = "~/.codex/models.json"
+```
+
+然后加上 provider 段：
+
+```toml
+[model_providers.vectoree]
+name = "Vectoree"
+base_url = "https://vectoree.ai/api/v1/"
+wire_api = "responses"
+experimental_bearer_token = "sk-ve-v1-xxxxxxxxxxxxxxxx"
+```
+
+### 第 2 步 — 创建 `~/.codex/models.json`
+
+Codex 需要模型目录才能解析 `model` slug。创建 `~/.codex/models.json`，至少包含一条与所选 slug 匹配的记录：
+
+```json
+{
+  "models": [
+    {
+      "slug": "vectoree/auto",
+      "display_name": "Vectoree Auto",
+      "context_window": 200000,
+      "max_context_window": 200000,
+      "supports_reasoning_summaries": true,
+      "default_reasoning_level": "high",
+      "supported_reasoning_levels": [
+        { "effort": "low",  "description": "Fast responses with lighter reasoning" },
+        { "effort": "high", "description": "Extra high reasoning depth" },
+        { "effort": "max",  "description": "Maximum reasoning depth" }
+      ],
+      "supports_search_tool": true,
+      "apply_patch_tool_type": "freeform",
+      "supports_parallel_tool_calls": true,
+      "visibility": "list",
+      "minimal_client_version": "0.144.0",
+      "supported_in_api": true
+    }
+  ]
+}
+```
+
+你打算用的每个模型 slug 各加一条。`slug` 必须与 Vectoree 网关配置的路由完全一致。
+
+### 配置字段说明
+
+#### `~/.codex/config.toml` — 顶层键
+
+| 键 | 值 | 说明 |
+| --- | --- | --- |
+| `model` | string（例如 `"vectoree/auto"`） | Codex 发给网关的默认模型 slug。必须存在于 `models.json`。 |
+| `model_provider` | `"vectoree"` | 让 Codex 使用下面的 `vectoree` provider 块。 |
+| `preferred_auth_method` | `"apikey"` | 强制用 API Key 鉴权，而不是 ChatGPT 账号登录。桌面端必填。 |
+| `forced_login_method` | `"api"` | 阻止 ChatGPT 桌面端回退到账号鉴权。 |
+| `model_reasoning_effort` | `"high"` | 默认推理强度。可以是 `"low"`、`"high"` 或 `"max"`。 |
+| `model_catalog_json` | `"~/.codex/models.json"` | 模型目录文件路径。若覆盖了 `CODEX_HOME`，可用绝对路径。 |
+
+#### `~/.codex/config.toml` — `[model_providers.vectoree]`
+
+| 键 | 值 | 说明 |
+| --- | --- | --- |
+| `name` | `"Vectoree"` | Codex UI 里显示的名称。 |
+| `base_url` | `"https://vectoree.ai/api/v1/"` | Vectoree 网关端点。必须以 `/` 结尾。自托管时用 `VECTOREE_BASE_URL` 覆盖。 |
+| `wire_api` | `"responses"` | 使用 OpenAI Responses API 线格式。不要改。 |
+| `experimental_bearer_token` | `"sk-ve-v1-..."` | 你的 Vectoree API Key。作为 `Authorization: Bearer <key>` 发送。 |
+
+#### `~/.codex/models.json` — 条目字段
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `slug` | string | 与网关匹配的模型标识。必须与 `config.toml` 里的 `model` 一致。 |
+| `display_name` | string | 模型选择器里显示的名称。 |
+| `context_window` | number | 最大输入 token。 |
+| `max_context_window` | number | 含输出的绝对上限。 |
+| `supports_reasoning_summaries` | boolean | 模型是否输出推理摘要。 |
+| `default_reasoning_level` | string | 默认强度：`"low"`、`"high"` 或 `"max"`。 |
+| `supported_reasoning_levels` | array | 可用强度及描述。 |
+| `supports_search_tool` | boolean | 是否提供网页搜索。 |
+| `apply_patch_tool_type` | `"freeform"` | 启用自由格式 patch。 |
+| `supports_parallel_tool_calls` | boolean | 是否允许并行工具调用。 |
+| `visibility` | `"list"` | 在选择器中显示。用 `"hidden"` 隐藏。 |
+| `minimal_client_version` | string | 最低 Codex 客户端版本。 |
+| `supported_in_api` | boolean | 该模型是否可通过 API 使用。 |
+
+### 恢复
+
+要撤销手动配置，删除 `[model_providers.vectoree]` 段以及你加过的顶层键。如果以前有 `config.toml`，从一键脚本创建的备份恢复（在 `~/.codex/backup-vectoree-*` 下找）。
+
+之后完全退出并重新打开 ChatGPT / Codex，桌面 UI 才会重新加载账号模式。
+
+## 相关
+
+- [CLI 接入](/zh/quickstart) — 安装 Skill、`login`、`link`、Tool Hub MCP
+- Agent 剧本 C07：[model-gateway.md](https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectoree/scenarios/model-gateway.md)

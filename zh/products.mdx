@@ -1,0 +1,61 @@
+---
+title: "产品"
+description: "五个后端产品现已上线。Deploy 与 Payments 随后接入同一项目。"
+---
+
+本轮上线的是同一项目上的五个产品，外加给网关和 Tool Hub 用的 PAYG 钱包。`vectoree link` 之后，全部共用同一把项目 API Key。
+
+[Deploy](/zh/deploy)（公开 URL）和 [Payments](/zh/payments)（你的用户向你付费）正在开发，即将上线。它们会挂到同一个项目。
+
+<CardGroup cols={2}>
+  <Card title="Model Gateway" icon="sparkles" href="/zh/quickstart">
+    OpenAI 兼容 API。浏览模型，用 `vectoree ai` 探测，在你的服务端调用 chat。
+  </Card>
+
+  <Card title="Tool Hub" icon="puzzle" href="/zh/quickstart">
+    托管 MCP，提供 `search` 与 `extract`。Tavily 兼容参数。从组织钱包扣费。
+  </Card>
+
+  <Card title="Authentication" icon="shield" href="/zh/auth">
+    为 *你的应用* 的用户提供邮箱与 Google 登录。这不是登录 Vectoree Cloud。
+  </Card>
+
+  <Card title="Database" icon="database" href="/zh/quickstart">
+    每个项目一份 Postgres。表、schema 与 SQL 可在控制台或 CLI 操作。
+  </Card>
+
+  <Card title="Storage" icon="folder" href="/zh/quickstart">
+    对象存储，支持存储桶与签名访问。
+  </Card>
+</CardGroup>
+
+## 如何操作
+
+<CardGroup cols={2}>
+  <Card title="Agent Skill" icon="sparkles" href="/zh/quickstart">
+    `npx skills add VectoreeAI/vectoree-skills`。面向 Cursor / Claude Code / Codex 的场景剧本。平台操作走 CLI；**网页工具走 Tool Hub MCP**。
+  </Card>
+  <Card title="CLI" icon="terminal" href="/zh/quickstart">
+    `npx @vectoree/cli`。原子命令：`login`（Cloud）、`auth`（你应用的用户）、`link`、`ai`、`db`、`storage`、`tools`。`ai chat` 是文本；TTS / STT / 图像 / 视频 / embed 各有探测命令。全局 `--json`。
+  </Card>
+  <Card title="Codex → Vectoree" icon="robot" href="/zh/codex">
+    一键脚本把 Codex CLI 指向 Model Gateway。复制命令，或把提示词贴给 Agent。
+  </Card>
+</CardGroup>
+
+## 计费
+
+本轮没有月度订阅。给 **组织钱包** 充值后，模型网关和 Tool Hub 用量从中扣除。Auth、Database 和 Storage 跑在共享基础设施上，暂不单独计量。
+
+这个钱包是你付给 Vectoree 的。向使用你应用的人收费是 [Payments](/zh/payments)，即将上线。
+
+## 即将上线
+
+<CardGroup cols={2}>
+  <Card title="Deploy" icon="rocket" href="/zh/deploy">
+    把项目发布到公开 HTTPS URL。即将上线。
+  </Card>
+  <Card title="Payments" icon="credit-card" href="/zh/payments">
+    向使用 Agent 的人收费。即将上线。
+  </Card>
+</CardGroup>

@@ -1,0 +1,66 @@
+---
+title: "身份认证"
+description: "给你的应用加上登录。这不是登录 Vectoree Cloud。"
+---
+
+Vectoree 有两套登录，不要混用。
+
+| | Vectoree Cloud（你） | Auth 产品（你的用户） |
+|---|---|---|
+| 对象 | 你、组织成员、CLI | 使用你正在构建的应用的人 |
+| UI | [vectoree.ai/dashboard/login](https://vectoree.ai/dashboard/login) | 你自己的页面，或无 UI 的 REST |
+| CLI | `npx @vectoree/cli login` | `npx @vectoree/cli auth status` / `snippet` / `open` |
+| API | `POST /api/system/auth/signup` | `POST /api/auth/users`、`/sessions`、`/email/*`、`/oauth/google` |
+| 用户表 | `system.users` | `auth.users`（按项目） |
+| 邮件 | 飞书 SMTP（平台） | Resend，每封 $0.0005，或你自己的 SMTP |
+
+如果说的是「登录 Vectoree」，用 Cloud 登录。如果说的是「给我的应用加登录」，留在本页。
+
+## 选择登录 UI
+
+### Vectoree 托管 UI
+
+在浏览器里使用项目的 Publishable Key（`pk_...`）。它标识一个项目，可以暴露。托管 UI 在登录成功后换取 App 用户 JWT。
+
+### 你自己的 UI
+
+浏览器调用你自己的后端 / BFF。BFF 用带 `auth:*` 范围的项目 API Key 调用 Vectoree：
+
+```bash
+VECTOREE_API_KEY=sk-ve-v1-... # server only; never NEXT_PUBLIC_
+```
+
+不要从自定义浏览器 UI 直接打 Vectoree Auth，也永远不要把项目 API Key 暴露给应用用户。
+
+## 给应用加上登录
+
+1. `npx @vectoree/cli login`，然后 `npx @vectoree/cli link`（Cloud 账号，做一次即可）。
+2. `npx @vectoree/cli auth status` 查看邮箱验证，以及你配置了哪些 OAuth 提供方。
+3. 邮箱 + 密码默认开启。新用户在签发 session 前会收到 **8 位** 邮箱验证码。
+4. Google 或 GitHub：打开 [Authentication → Auth methods](https://vectoree.ai/dashboard/authentication/auth-methods)，填入 **你自己的** Client ID 和 Secret。不要复用 Vectoree Cloud 的密钥。不要把密钥放进仓库。
+5. 打印片段：
+
+```bash
+npx @vectoree/cli auth snippet --ui
+npx @vectoree/cli auth snippet --rest --lang ts
+# --no-ui is accepted as an alias of --rest
+```
+
+`auth open` 打开 Auth methods。`auth open --docs` 打开本页。
+
+## 身份
+
+应用用户只存在 Vectoree 的 `auth.users`。不要 `CREATE TABLE users`。业务表上的 `user_id` 就是 Auth JWT 的 `sub`。
+
+同一邮箱可以在项目 A 和项目 B 各有独立账号。App JWT 不能调 Cloud 控制台 API，Cloud token 也不能充当应用用户。
+
+## 自定义 UI 的服务端 REST
+
+把带 `auth:*` 的项目 API Key 放在 `Authorization: Bearer`。Key 选定项目；Auth 端点不接受 `X-Project-Id`。永远不要从你的应用调用 `POST /api/system/auth/signup`。
+
+- `POST /api/auth/users` 注册
+- `POST /api/auth/sessions` 密码登录
+- `POST /api/auth/email/send-verification`，然后用 8 位验证码调用 `POST /api/auth/email/verify`
+- `GET /api/auth/oauth/google`（仅在配置了你自己的 Google 应用之后）
+
+TypeScript REST 说明：`npx @vectoree/cli docs get auth-sdk`。

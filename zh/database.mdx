@@ -1,0 +1,43 @@
+---
+title: "数据库"
+description: "托管 Postgres，带行级安全。多租户隔离，不用胶水代码。"
+---
+
+Vectoree 为每个项目提供托管 Postgres。可在控制台或 CLI 建表、查询、执行 SQL。行级安全（RLS）与 Auth 打通，每个用户只能看到自己的行。
+
+## 常用命令
+
+```bash
+# List tables
+npx @vectoree/cli db list
+
+# Show table schema
+npx @vectoree/cli db schema <table>
+
+# Create a table
+npx @vectoree/cli db create --name todos --columns "title:text, done:boolean"
+
+# Insert data
+npx @vectoree/cli db insert todos --data '{"title":"Write docs","done":false}'
+
+# Query rows
+npx @vectoree/cli db query todos --limit 20
+```
+
+<Warning>
+  用 `db sql` 跑自定义 SQL 会先确认（或传入 `--yes`）。删表是破坏性操作 — 请仔细确认。
+</Warning>
+
+## 行级安全（RLS）
+
+RLS 让你用同一份数据库服务多个用户，而不会串数据。用户通过 [身份认证](/zh/auth) 登录后，身份会变成行级过滤：用户 A 和用户 B 把行写在同一张表里，但谁也查不到对方的数据。
+
+这就是 Auth 和 Database 作为一套系统的原因 — 登录身份直接进入数据库访问层。不用胶水代码去把外部用户 ID 映射到你的表。
+
+## 向量与 Embeddings
+
+数据库支持 `pgvector`，用来存文本 embeddings。这样可以做检索增强生成（RAG）：把知识库转成向量、存起来，在模型回答前取出相关上下文。
+
+## 控制台
+
+在控制台 **Database** 页浏览表、查看 schema，并在网页编辑器里跑 SQL。

@@ -1,0 +1,62 @@
+---
+title: "FAQ"
+description: "关于计费、连接、模型、数据和 1.0 上线范围的常见问题。"
+---
+
+## 计费
+
+**要花钱吗？**  
+注册免费。模型调用按 token 计费。本轮使用预付钱包 — 使用付费模型前先充值。
+
+**怎么充值？**  
+控制台 > **Organization > Billing** > Stripe 结账。金额进入组织钱包。
+
+**余额用完了怎么办？**  
+模型和工具调用会返回明确的余额不足错误。充值后即可恢复。
+
+**在哪里看价格？**  
+控制台 > **Model Plaza**。每个模型展示每百万 token 单价。
+
+## 连接
+
+**`link` 连不上？**  
+确认先跑过 `login`。确认当前目录就是你要绑定到项目的目录。
+
+**登不进去 / 收不到验证码？**  
+检查垃圾邮件。若仍不行，确认平台 SMTP 已配置，并联系支持。
+
+**Key 无效？**  
+检查 Key 是否完整、未被删除，且属于当前项目。
+
+## 模型
+
+**`vectoree/auto` 是什么？**  
+默认 chat 模型。会路由到便宜或可用的目录模型。chat completions 省略 `model` 时，网关使用 `vectoree/auto`。
+
+**为什么同一模型价格不同？**  
+价格随调用类型、区域、时段（高峰 / 低谷）变化，与上游供应商定价一致。
+
+**能用 TTS / STT / 图像 / 视频模型吗？**  
+可以。用 `ai models list --output-modality speech` 找对应 slug。不要把 TTS slug 发给 `ai chat`。
+
+## 数据与安全
+
+**我的数据存在哪里？**  
+存在 Vectoree 托管的存储（Postgres 和对象存储）。访问由 RLS 和私有桶控制。
+
+**API Key 泄露了怎么办？**  
+立刻在控制台删除该 Key 并新建。Key 只放服务端，不要打进浏览器包。
+
+**能删除项目吗？**  
+可以，但是破坏性操作。按控制台确认提示操作。
+
+## 本轮上线范围
+
+**1.0 包含什么？**  
+Model Gateway、Auth、Database、Storage、Tool Hub（托管 MCP）、组织钱包计费、CLI + Agent Skill，以及 Google / 邮箱登录。
+
+**即将上线什么？**  
+[Deploy](/zh/deploy) — 应用的公开 HTTPS URL。[Payments](/zh/payments) — 向终端用户收费并收款。两项都在开发中，即将上线。
+
+**本轮没有什么？**  
+Edge Functions、Realtime、Compute。Skills Hub 已由 Tool Hub 替代。

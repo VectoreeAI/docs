@@ -1,0 +1,37 @@
+---
+title: "对象存储"
+description: "对象存储，支持公开与私有存储桶。从 CLI 或控制台上传和管理文件。"
+---
+
+Vectoree 提供文件与图片的对象存储。创建存储桶，标成公开或私有，再从 CLI 或控制台上传。
+
+## 常用命令
+
+```bash
+# List buckets
+npx @vectoree/cli storage buckets list
+
+# Create a public bucket (for avatars, public images)
+npx @vectoree/cli storage buckets create uploads --public
+
+# Upload a file
+npx @vectoree/cli storage upload uploads ./avatar.png
+
+# List files in a bucket
+npx @vectoree/cli storage ls uploads
+```
+
+## 公开与私有
+
+| 类型 | 用途 | 访问 |
+|---|---|---|
+| public | 头像、公开图片、静态资源 | 任何拿到 URL 的人 |
+| private | 用户私有文件、知识库源文件 | 需要签名 URL（限时、需鉴权） |
+
+<Warning>
+  用户敏感文件放进私有桶。不要图省事把所有东西默认公开。
+</Warning>
+
+## 控制台
+
+在控制台 **Storage** 页管理存储桶，并在网页界面上传文件。

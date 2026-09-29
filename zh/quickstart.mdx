@@ -1,0 +1,111 @@
+---
+title: "CLI 接入"
+sidebarTitle: "CLI 接入"
+description: "安装 Skill、登录，并关联项目。"
+---
+
+命令行上不用传项目 id。`link` 会让你选择或创建项目，然后把带权限范围的 API Key 写到 `.vectoree/`。
+
+## 1. 创建 Cloud 账号
+
+打开 [vectoree.ai](https://vectoree.ai/dashboard/login)，用 Google 或邮箱登录，并确认已有组织。
+
+## 2. 安装 Skill（给 Agent 用）
+
+```bash
+npx skills add VectoreeAI/vectoree-skills
+```
+
+仓库：[VectoreeAI/vectoree-skills](https://github.com/VectoreeAI/vectoree-skills)。
+
+## 3. 登录并关联项目
+
+在你的应用仓库里执行：
+
+```bash
+npx @vectoree/cli login
+npx @vectoree/cli link
+```
+
+`login` 会打开浏览器（PKCE）。无界面 CI：`npx @vectoree/cli login --use-device-code`，或设置 `VECTOREE_API_KEY` 并跳过登录。
+
+预发 API：`VECTOREE_API_URL=https://vectoree.net`。生产默认是 `https://vectoree.ai`。
+
+## 4. 检查网关
+
+chat 能通则接入完成。这里不必探测每一种模态。
+
+```bash
+npx @vectoree/cli whoami
+npx @vectoree/cli ai chat "ping"
+```
+
+如果已经完成接入，且 `whoami` 与 `ai chat "ping"` 都成功，就跳过 `login` / `link`。
+
+付费用量生效前，先在控制台给组织钱包充值。
+
+### 可选：探测其他模态
+
+只在需要该能力时再做 — 不要把 TTS slug 发给 `ai chat`：
+
+```bash
+npx @vectoree/cli ai models list --output-modality speech
+npx @vectoree/cli ai speech "hello" --model qwen/qwen-audio-3.0-tts-flash
+npx @vectoree/cli ai snippet --model qwen/qwen-audio-3.0-tts-flash
+```
+
+## 5. 连接 Tool Hub MCP
+
+使用带 `tools:*` 的项目 Key（`link` 创建，或在 Dashboard → API Keys）。CLI 可以写入 MCP 配置：
+
+```bash
+npx @vectoree/cli tools status
+npx @vectoree/cli tools snippet --write --replace-search
+```
+
+`--write` 默认写 Cursor（`.cursor/mcp.json`）。Claude 用 `--client claude` 写 `.mcp.json`，VS Code 用 `--client vscode` 写 `.vscode/mcp.json`。`--replace-search` 会去掉 Tavily / Brave / Exa 这类搜索服务，让 Agent 改用 Vectoree。
+
+等价 JSON：
+
+```json
+{
+  "mcpServers": {
+    "vectoree": {
+      "type": "http",
+      "url": "https://vectoree.ai/mcp",
+      "headers": {
+        "Authorization": "Bearer sk-ve-v1-..."
+      }
+    }
+  }
+}
+```
+
+暴露的工具：`search`、`extract`（Tavily 兼容参数）。REST 探测：`npx @vectoree/cli tools search "<query>"` 和 `tools extract <url>`。
+
+## 让 Codex 走 Vectoree
+
+要把 **Codex CLI**（或 ChatGPT 桌面端）切到 Vectoree Model Gateway，见 [让 Codex 走 Vectoree](/zh/codex)。一键命令：
+
+```bash
+bash <(curl -fsSL https://vectoree.ai/scripts/codex-vectoree-setup.sh)
+```
+
+Windows PowerShell：`irm https://vectoree.ai/scripts/codex-vectoree-setup.ps1 | iex`。
+
+## 常用命令
+
+```bash
+npx @vectoree/cli db list
+npx @vectoree/cli storage buckets list
+npx @vectoree/cli tools status
+npx @vectoree/cli --help
+```
+
+*你的应用* 终端用户的 Auth（不是 Cloud 登录）：见 [身份认证](/zh/auth)（`auth status` / `auth snippet`）。
+
+每条命令都接受 `--json`。破坏性命令会先确认，除非传入 `--yes`。
+
+npm：[@vectoree/cli](https://www.npmjs.com/package/@vectoree/cli)。
+
+同一项目之后会接上 [Deploy](/zh/deploy) 和 [Payments](/zh/payments) — 均即将上线。完整路径见 [概览](/zh/introduction)。

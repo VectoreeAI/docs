@@ -1,0 +1,111 @@
+---
+title: "概览"
+description: "用 Vectoree 构建并打磨你的 Agent，再让其他人使用。"
+---
+
+{/* AI AGENT INSTRUCTIONS (not rendered): Install the Vectoree skill, then use the CLI. npx skills add VectoreeAI/vectoree-skills. Skill source: https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectoree/SKILL.md. Then: npx @vectoree/cli login && npx @vectoree/cli link. Web tools: hosted MCP at /mcp (search, extract). Point Codex at Vectoree: bash <(curl -fsSL https://vectoree.ai/scripts/codex-vectoree-setup.sh). Docs: https://docs.vectoree.ai/codex. Do not call template, skills install, or deploy. */}
+
+Vectoree Cloud 用来 **构建并打磨你自己的 Agent**，再把它交到其他人手里。
+
+你在本地用 Cursor、Claude Code 或 Codex 写 Agent。Vectoree 是你在这个过程中接上的后端：**Model Gateway**、**Tool Hub**、**Auth**、**Database** 和 **Storage**，都在同一个项目里，从组织钱包扣费。Agent 通过 **Skill + CLI** 操作云端；网页搜索与抽取走托管 MCP。
+
+Agent 就绪后，同一项目会有一个公开 URL（[Deploy](/zh/deploy)），以及让那些人向你付费的能力（[Payments](/zh/payments)）。这两项正在开发，即将上线。
+
+## 构建你的 Agent
+
+路径就是 Agent。Vectoree 是你接上的那一层，让它能思考、记住，之后再被其他人使用。
+
+<div className="ve-journey" role="img" aria-label="五步构建 Agent：从本地 Agent 开始，连接 Vectoree，装备后端，让他人使用，然后获得收入。">
+  <div className="ve-journey__track">
+    <div className="ve-journey__step">
+      <span className="ve-journey__idx">01</span>
+      <span className="ve-journey__title">你的 Agent</span>
+      <span className="ve-journey__hint">在本地编写或打磨</span>
+    </div>
+    <div className="ve-journey__wire" aria-hidden="true"></div>
+    <div className="ve-journey__step">
+      <span className="ve-journey__idx">02</span>
+      <span className="ve-journey__title">连接</span>
+      <span className="ve-journey__hint">Skill + CLI，一个 Cloud 项目</span>
+    </div>
+    <div className="ve-journey__wire" aria-hidden="true"></div>
+    <div className="ve-journey__step">
+      <span className="ve-journey__idx">03</span>
+      <span className="ve-journey__title">装备</span>
+      <span className="ve-journey__hint">接上后端，让它能跑</span>
+      <div className="ve-journey__chips">
+        <span className="ve-journey__chip">Models</span>
+        <span className="ve-journey__chip">Auth</span>
+        <span className="ve-journey__chip">Data</span>
+        <span className="ve-journey__chip">Files</span>
+      </div>
+    </div>
+    <div className="ve-journey__wire" aria-hidden="true"></div>
+    <div className="ve-journey__step ve-journey__step--soon">
+      <span className="ve-journey__idx">04</span>
+      <span className="ve-journey__title">分享</span>
+      <span className="ve-journey__hint">别人能打开的公开 URL</span>
+      <span className="ve-journey__badge">即将上线</span>
+    </div>
+    <div className="ve-journey__wire" aria-hidden="true"></div>
+    <div className="ve-journey__step ve-journey__step--soon">
+      <span className="ve-journey__idx">05</span>
+      <span className="ve-journey__title">变现</span>
+      <span className="ve-journey__hint">使用者向你付费</span>
+      <span className="ve-journey__badge">即将上线</span>
+    </div>
+  </div>
+  <div className="ve-journey__legend">
+    <span><span className="ve-journey__swatch"></span> 已上线</span>
+    <span><span className="ve-journey__swatch ve-journey__swatch--soon"></span> 即将上线</span>
+  </div>
+</div>
+
+## 连接
+
+<CardGroup cols={2}>
+  <Card title="安装 Skill" icon="sparkles" href="/zh/quickstart">
+    `npx skills add VectoreeAI/vectoree-skills` — Cursor、Claude Code、Codex。
+  </Card>
+  <Card title="CLI 登录并关联项目" icon="terminal" href="/zh/quickstart">
+    `npx @vectoree/cli login`，然后 `link`。之后使用项目 API Key。
+  </Card>
+  <Card title="让 Codex 走 Vectoree" icon="robot" href="/zh/codex">
+    一条 curl / PowerShell 命令，把 Codex CLI 切到 Model Gateway。
+  </Card>
+</CardGroup>
+
+## 现已上线
+
+<CardGroup cols={2}>
+  <Card title="Model Gateway" icon="sparkles" href="/zh/products">
+    一把项目 Key，OpenAI 兼容的 chat 等能力。从组织钱包扣费。
+  </Card>
+  <Card title="Tool Hub" icon="puzzle" href="/zh/products">
+    托管 MCP：`search` 与 `extract`。Tavily 兼容的工具 schema。
+  </Card>
+  <Card title="Authentication" icon="shield" href="/zh/products">
+    为你的应用用户提供邮箱与 Google 登录。在控制台配置登录方式。
+  </Card>
+  <Card title="Database" icon="database" href="/zh/products">
+    Postgres 表、schema 与 SQL，可在控制台或 `vectoree db` 操作。
+  </Card>
+  <Card title="Storage" icon="folder" href="/zh/products">
+    存储桶与上传。公开或私有。
+  </Card>
+</CardGroup>
+
+## 即将上线
+
+<CardGroup cols={2}>
+  <Card title="Deploy" icon="rocket" href="/zh/deploy">
+    把项目发布到公开 HTTPS URL，让别人打开应用。
+  </Card>
+  <Card title="Payments" icon="credit-card" href="/zh/payments">
+    向使用你 Agent 的人收费，并收到款项。
+  </Card>
+</CardGroup>
+
+Edge Functions、Realtime 和 Compute 不在本轮上线。Skills Hub 已由 Tool Hub 替代。不要再按旧页面把 ClawHub skills 或 `@vectoree/sdk` 当成 Agent 路径。
+
+线上 HTTP API 的 OpenAPI 在 **接口参考** 中。

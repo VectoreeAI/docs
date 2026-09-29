@@ -109,12 +109,82 @@
         ]
       },
       {
-        "language": "zh-CN",
+        "language": "zh",
         "tabs": [
+          {
+            "tab": "文档",
+            "groups": [
+              {
+                "group": "入门",
+                "pages": [
+                  "zh/introduction",
+                  "zh/products",
+                  "zh/quickstart"
+                ]
+              },
+              {
+                "group": "功能",
+                "pages": [
+                  "zh/models",
+                  "zh/auth",
+                  "zh/database",
+                  "zh/storage",
+                  "zh/billing",
+                  "zh/deploy",
+                  "zh/payments"
+                ]
+              },
+              {
+                "group": "Agent 集成",
+                "pages": [
+                  "zh/codex"
+                ]
+              },
+              {
+                "group": "FAQ",
+                "pages": [
+                  "zh/faq"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "接口参考",
+            "groups": [
+              {
+                "group": "数据表",
+                "openapi": "/openapi/tables.yaml"
+              },
+              {
+                "group": "身份认证",
+                "openapi": "/openapi/auth.yaml"
+              },
+              {
+                "group": "记录",
+                "openapi": "/openapi/records.yaml"
+              },
+              {
+                "group": "对象存储",
+                "openapi": "/openapi/storage.yaml"
+              },
+              {
+                "group": "模型网关",
+                "openapi": "/openapi/gateway-v1.yaml"
+              },
+              {
+                "group": "Tool Hub",
+                "openapi": "/openapi/tool-hub.yaml"
+              },
+              {
+                "group": "健康检查",
+                "openapi": "/openapi/health.yaml"
+              }
+            ]
+          },
           {
             "tab": "更新日志",
             "pages": [
-              "zh-CN/changelog"
+              "zh/changelog"
             ]
           }
         ],
@@ -151,6 +221,10 @@
     {
       "source": "/",
       "destination": "/introduction"
+    },
+    {
+      "source": "/zh",
+      "destination": "/zh/introduction"
     }
   ],
   "logo": {

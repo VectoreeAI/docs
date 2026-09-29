@@ -1,0 +1,47 @@
+---
+title: "计费"
+description: "给组织钱包充值，模型与工具按用量扣费。透明、按量付。"
+---
+
+本轮没有月度订阅。给 **组织钱包** 充值后，模型网关和 Tool Hub 用量从中扣除。Auth、Database 和 Storage 跑在共享基础设施上，暂不单独计量。
+
+## 两股资金流
+
+**组织钱包（现已上线）。** 通过 Stripe 充值。Vectoree 扣除模型和 Tool Hub 用量。就是本页。
+
+**Payments（即将上线）。** 使用你 Agent 的人向你付费。见 [Payments](/zh/payments)。
+
+## 怎么工作
+
+```text
+Organization wallet (top up via Stripe)
+  -> Each model call bills by token
+  -> Each Tool Hub call bills per use
+  -> Balance and usage visible in dashboard
+```
+
+## 充值
+
+1. 打开控制台，进入 **Organization > Billing**
+2. 通过 Stripe 付款 — 金额进入组织钱包
+3. 用 `npx @vectoree/cli ai status` 查看余额
+
+## 用量
+
+- 控制台 **Organization > Usage** 列出每次调用：模型、token 数和费用
+- `npx @vectoree/cli ai status` 从 CLI 查看网关连通性和钱包余额
+
+## 余额不足
+
+钱包用尽时，模型和工具调用会返回明确的 **insufficient balance** 错误 — 不会静默成功。充值后即可恢复。
+
+## PAYG 与订阅
+
+| | 订阅 | PAYG 钱包（Vectoree 1.0） |
+|---|---|---|
+| 费用 | 固定月费 | 预充值，按实际用量扣除 |
+| 适合 | 功能档位、配额（例如 SSO） | 资源消耗（模型 token） |
+
+<Info>
+  未来的订阅档位（例如 Database / Storage 配额）会与 PAYG 并存：订阅卖功能和配额，PAYG 卖消耗。
+</Info>
