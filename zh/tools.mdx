@@ -1,0 +1,87 @@
+---
+title: "Tool Hub"
+description: "托管 MCP：搜索、页面抽取和数据查询。在控制台浏览、试打并连接。"
+---
+
+Tool Hub 是控制台目录，入口在 [vectoree.ai/dashboard/tools](https://vectoree.ai/dashboard/tools)。这是托管 MCP — Agent 调 Vectoree，而不用自己去接 Tavily、Similarweb 等供应商账号。
+
+打开一个工具可以看 schema，对线上接口 **试打**（从组织钱包扣费），把 **MCP** 配置复制到 Cursor 或 Claude，或用同一契约走 **REST**。
+
+## 它在架构里的位置
+
+Skill + CLI 操作 Cloud 项目（登录、关联、模型、数据库）。Tool Hub 是 Agent **搜网页、抽页面、拉营销 / 社交数据** 的入口。同一个项目、同一把 `sk-ve-v1-...`，按次从组织钱包扣费。
+
+| 入口 | 用来做什么 |
+|---|---|
+| 控制台 → **Tool Hub** | 浏览目录、试打、复制 MCP |
+| MCP `POST https://vectoree.ai/mcp` | 在 Cursor / Claude / Codex 里当工具用 |
+| REST `/api/tools/v1/...` | 服务端用同一套 payload 调用 |
+| CLI `vectoree tools` | 状态、MCP 片段、search / extract 探测 |
+
+## 在控制台连接
+
+1. 打开项目侧栏 **Build** 分组里的 **Tool Hub**。
+2. 选一个工具。工作区展示端点、参数和定价。
+3. **试打**走正式接口。浏览器里用的是控制台登录态，不用贴 Key。运行时一旦执行，失败也可能按标价扣费。
+4. **MCP** 复制一段 server 配置。使用带 `tools:*` 的项目 API Key（来自 `vectoree link` 或 **API Keys**）。Tool Hub 上线前创建的 CLI Key 需要重新 `link`。
+5. **REST** 对应 `tools/call` 的 HTTP 形态。Master Key 和 Publishable Key（`pk_...`）会被拒绝。
+
+Native HTTP MCP：
+
+```json
+{
+  "mcpServers": {
+    "vectoree": {
+      "type": "http",
+      "url": "https://vectoree.ai/mcp",
+      "headers": {
+        "Authorization": "Bearer sk-ve-v1-..."
+      }
+    }
+  }
+}
+```
+
+CLI 可以帮你写这个文件：
+
+```bash
+npx @vectoree/cli tools status
+npx @vectoree/cli tools snippet --write --replace-search
+```
+
+`--write` 默认写 Cursor（`.cursor/mcp.json`）。Claude 用 `--client claude`，VS Code 用 `--client vscode`。`--replace-search` 会去掉 Tavily / Brave / Exa 这类搜索服务，让 Agent 改用 Vectoree。
+
+## 目录里有什么
+
+以控制台实时列表为准 — 上架或暂停不必等文档发布。
+
+**给 Agent 的基础能力**
+
+- **Search**（`search`）— Tavily 兼容的网页搜索
+- **Extract**（`extract`）— Tavily 兼容的页面抽取
+
+REST 探测：
+
+```bash
+npx @vectoree/cli tools search "<query>"
+npx @vectoree/cli tools extract <url>
+```
+
+**数据工具（不用另开供应商账号）**
+
+Tool Hub 也托管营销与社交查询，例如 **Similarweb**、**Semrush**、**X / Twitter**。数据工具会持续增加。打开目录查看当前集合、schema 和单次价格。
+
+Chat 里网关自带的 search/fetch（`web_search` / `web_fetch`）同样记到组织钱包。
+
+## 鉴权与计费
+
+| | 规则 |
+|---|---|
+| 凭证 | 项目 API Key `sk-ve-v1-...`，需带 `tools:*`（或 `*`） |
+| 不接受 | Publishable Key `pk_...`、实例 master key、应用用户 JWT |
+| 计量 | 按成功的工具调用，从 **组织钱包** 扣除 |
+| 余额不足 | 返回明确的余额不足错误 |
+
+在 **Organization → Billing** 充值。见 [计费](/zh/billing)。
+
+这些 HTTP 接口的 OpenAPI 在 **接口参考 → Tool Hub**。

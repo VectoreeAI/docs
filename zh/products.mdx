@@ -1,30 +1,34 @@
 ---
 title: "产品"
-description: "五个后端产品现已上线。Deploy 与 Payments 随后接入同一项目。"
+description: "同一项目上的后端产品与控制台 Build 模块。Deploy 与 Payments 随后接入。"
 ---
 
-本轮上线的是同一项目上的五个产品，外加给网关和 Tool Hub 用的 PAYG 钱包。`vectoree link` 之后，全部共用同一把项目 API Key。
+本轮上线的是同一个 Cloud 项目：**Model Gateway**、**Tool Hub**、**Auth**、**Database** 和 **Storage**，外加 PAYG 钱包。**Templates** 和 **Tool Hub** 也是控制台 Build 里的模块 — 从仓库起步，并给 Agent 托管工具。`vectoree link` 之后，全部共用同一把项目 API Key。
 
 [Deploy](/zh/deploy)（公开 URL）和 [Payments](/zh/payments)（你的用户向你付费）正在开发，即将上线。它们会挂到同一个项目。
 
 <CardGroup cols={2}>
-  <Card title="Model Gateway" icon="sparkles" href="/zh/quickstart">
-    OpenAI 兼容 API。浏览模型，用 `vectoree ai` 探测，在你的服务端调用 chat。
+  <Card title="Model Gateway" icon="sparkles" href="/zh/models">
+    OpenAI 兼容 API。在 Model Plaza 浏览模型，用 `vectoree ai` 探测，在你的服务端调用 chat。
   </Card>
 
-  <Card title="Tool Hub" icon="puzzle" href="/zh/quickstart">
-    托管 MCP，提供 `search` 与 `extract`。Tavily 兼容参数。从组织钱包扣费。
+  <Card title="Templates" icon="clone" href="/zh/templates">
+    控制台里的 Vectoree 适配仓库目录。复制提示词；Agent 会 clone 并关联当前项目。
+  </Card>
+
+  <Card title="Tool Hub" icon="puzzle" href="/zh/tools">
+    控制台里的托管 MCP 目录。搜索、抽取和数据查询。可在控制台试打，从组织钱包扣费。
   </Card>
 
   <Card title="Authentication" icon="shield" href="/zh/auth">
     为 *你的应用* 的用户提供邮箱与 Google 登录。这不是登录 Vectoree Cloud。
   </Card>
 
-  <Card title="Database" icon="database" href="/zh/quickstart">
+  <Card title="Database" icon="database" href="/zh/database">
     每个项目一份 Postgres。表、schema 与 SQL 可在控制台或 CLI 操作。
   </Card>
 
-  <Card title="Storage" icon="folder" href="/zh/quickstart">
+  <Card title="Storage" icon="folder" href="/zh/storage">
     对象存储，支持存储桶与签名访问。
   </Card>
 </CardGroup>
@@ -37,6 +41,9 @@ description: "五个后端产品现已上线。Deploy 与 Payments 随后接入�
   </Card>
   <Card title="CLI" icon="terminal" href="/zh/quickstart">
     `npx @vectoree/cli`。原子命令：`login`（Cloud）、`auth`（你应用的用户）、`link`、`ai`、`db`、`storage`、`tools`。`ai chat` 是文本；TTS / STT / 图像 / 视频 / embed 各有探测命令。全局 `--json`。
+  </Card>
+  <Card title="Templates" icon="clone" href="/zh/templates">
+    控制台 → Templates。同样是 `login` / `link`，从 clone 起步而不是空目录。
   </Card>
   <Card title="Codex → Vectoree" icon="robot" href="/zh/codex">
     一键脚本把 Codex CLI 指向 Model Gateway。复制命令，或把提示词贴给 Agent。

@@ -1,0 +1,64 @@
+---
+title: "Templates"
+description: "Start from a Vectoree-adapted repo. Copy a prompt, clone locally, and link the current Cloud project."
+---
+
+Templates live in the dashboard at [vectoree.ai/dashboard/templates](https://vectoree.ai/dashboard/templates). Pick a template, copy the prompt, and paste it into Cursor, Claude Code, Codex, or another coding agent.
+
+The agent clones the Vectoree-adapted repository, installs `@vectoree/cli` if needed, then runs `login` and `link` against the **current dashboard project**. You do not start from a blank folder unless you want to.
+
+This is a starting point, not a hosted app. [Deploy](/deploy) (a public URL) is still coming soon.
+
+## How it fits
+
+You still write the agent locally. A template is a repo already wired for Vectoree — Model Gateway, Auth, Database, Storage, and the rest of the same project you would connect with Skill + CLI.
+
+| Step | Where | What happens |
+|---|---|---|
+| 1 | Dashboard → **Templates** | Browse by use case, open a template |
+| 2 | Template detail | Copy the prompt (it names the current project) |
+| 3 | Coding agent | Clone the repo, install CLI, `login` / `link` |
+| 4 | Local repo | `vectoree current` shows this Cloud project |
+
+Onboarding in the console can also start from a template instead of an existing local folder. A successful `link` still unlocks the welcome wallet credit.
+
+## What to expect in the prompt
+
+The copied prompt tells the agent to:
+
+1. Clone the template's Git URL
+2. `cd` into that directory
+3. Install `@vectoree/cli` once if it is not on `PATH`
+4. Log in with a one-time dashboard token (do not print the token)
+5. `vectoree link` to the project you had selected in the dashboard
+6. Stop after `vectoree current` succeeds — do not reinstall or re-link if it is already connected
+
+Prefer the global `vectoree` binary from the prompt. Do not mix in `npx` for the same steps.
+
+## Catalog
+
+The live list is in the dashboard. Typical entries:
+
+| Template | What it is for |
+|---|---|
+| [Vectoree Starter](https://github.com/VectoreeAI/vectoree-starter) | Fast local clone to try Model Gateway and other cloud services |
+| DeepTutor | Agent-native tutoring workspace |
+| DeerFlow | Long-horizon super-agent framework |
+| RAGFlow | RAG engine for complex documents |
+| LibreChat | Self-hosted ChatGPT-style interface |
+| Coze Studio | Visual agent studio |
+
+Filter by use case (AI, Auth, Database, Storage, and others) or search by name. Some templates expose **View repository**, **Preview**, or **View demo** when those URLs are configured.
+
+Starter is also the shortest path: clone [vectoree-starter](https://github.com/VectoreeAI/vectoree-starter) yourself, then `login` / `link`, or copy the same prompt from Templates.
+
+## After it is linked
+
+The cloned repo is a normal local project on this Cloud project:
+
+- Models: [Model Gateway](/models)
+- Web tools: [Tool Hub](/tools)
+- App login: [Authentication](/auth)
+- Data and files: [Database](/database), [Storage](/storage)
+
+Keep using Skill + CLI for day-to-day ops. See [CLI setup](/quickstart).

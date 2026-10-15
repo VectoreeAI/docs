@@ -3,11 +3,11 @@ title: "Overview"
 description: "Use Vectoree to build and improve your agent — then let other people use it."
 ---
 
-{/* AI AGENT INSTRUCTIONS (not rendered): Install the Vectoree skill, then use the CLI. npx skills add VectoreeAI/vectoree-skills. Skill source: https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectoree/SKILL.md. Then: npx @vectoree/cli login && npx @vectoree/cli link. Web tools: hosted MCP at /mcp (search, extract). Point Codex at Vectoree: bash <(curl -fsSL https://vectoree.ai/scripts/codex-vectoree-setup.sh). Docs: https://docs.vectoree.ai/codex. Do not call template, skills install, or deploy. */}
+{/* AI AGENT INSTRUCTIONS (not rendered): Install the Vectoree skill, then use the CLI. npx skills add VectoreeAI/vectoree-skills. Skill source: https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectoree/SKILL.md. Then: npx @vectoree/cli login && npx @vectoree/cli link. Optional start: Dashboard → Templates, copy the prompt. Web tools: Dashboard → Tool Hub or hosted MCP at /mcp. Point Codex at Vectoree: bash <(curl -fsSL https://vectoree.ai/scripts/codex-vectoree-setup.sh). Docs: https://docs.vectoree.ai/codex. Do not treat @vectoree/sdk as the agent path. Deploy is coming soon. */}
 
 Vectoree Cloud is how you **build and improve your own agent** — then put it in front of other people.
 
-You write the agent locally with Cursor, Claude Code, or Codex. Vectoree is the backend you attach while you do that: **Model Gateway**, **Tool Hub**, **Auth**, **Database**, and **Storage**, on one project, paid from an organization wallet. Agents operate it with a **Skill + CLI**; web search and extract go through hosted MCP.
+You write the agent locally with Cursor, Claude Code, or Codex. Start from a blank repo plus Skill + CLI, or from **Templates** in the dashboard (copy a prompt, clone a Vectoree-adapted repo, link this project). Vectoree is the backend you attach: **Model Gateway**, **Tool Hub**, **Auth**, **Database**, and **Storage**, on one project, paid from an organization wallet. Agents operate the project with **Skill + CLI**; they call web search, extract, and data tools through **Tool Hub** (hosted MCP).
 
 When the agent is ready, the same project gets a public URL ([Deploy](/deploy)) and a way for those people to pay you ([Payments](/payments)). Both are in development and launching soon.
 
@@ -26,7 +26,7 @@ The path is the agent. Vectoree is what you connect so it can think, remember, a
     <div className="ve-journey__step">
       <span className="ve-journey__idx">02</span>
       <span className="ve-journey__title">Connect</span>
-      <span className="ve-journey__hint">Skill + CLI, one Cloud project</span>
+      <span className="ve-journey__hint">Skill + CLI, or start from a template</span>
     </div>
     <div className="ve-journey__wire" aria-hidden="true"></div>
     <div className="ve-journey__step">
@@ -35,6 +35,7 @@ The path is the agent. Vectoree is what you connect so it can think, remember, a
       <span className="ve-journey__hint">Give it a backend so it can run</span>
       <div className="ve-journey__chips">
         <span className="ve-journey__chip">Models</span>
+        <span className="ve-journey__chip">Tools</span>
         <span className="ve-journey__chip">Auth</span>
         <span className="ve-journey__chip">Data</span>
         <span className="ve-journey__chip">Files</span>
@@ -70,6 +71,9 @@ The path is the agent. Vectoree is what you connect so it can think, remember, a
   <Card title="CLI login and link" icon="terminal" href="/quickstart">
     `npx @vectoree/cli login` then `link`. One project API key after that.
   </Card>
+  <Card title="Start from a template" icon="clone" href="/templates">
+    Dashboard → Templates. Copy the prompt; the agent clones a Vectoree-adapted repo and links this project.
+  </Card>
   <Card title="Point Codex at Vectoree" icon="robot" href="/codex">
     One curl/PowerShell command switches Codex CLI to the Model Gateway.
   </Card>
@@ -78,19 +82,22 @@ The path is the agent. Vectoree is what you connect so it can think, remember, a
 ## What's live now
 
 <CardGroup cols={2}>
-  <Card title="Model Gateway" icon="sparkles" href="/products">
+  <Card title="Model Gateway" icon="sparkles" href="/models">
     One project key, OpenAI-compatible chat and more. Pay from the org wallet.
   </Card>
-  <Card title="Tool Hub" icon="puzzle" href="/products">
-    Hosted MCP: `search` and `extract`. Tavily-compatible tool schemas.
+  <Card title="Templates" icon="clone" href="/templates">
+    Vectoree-adapted repos. Copy a prompt, clone locally, link this Cloud project.
   </Card>
-  <Card title="Authentication" icon="shield" href="/products">
+  <Card title="Tool Hub" icon="puzzle" href="/tools">
+    Dashboard catalog of hosted MCP tools: search, extract, and data lookups. Try and connect in the console.
+  </Card>
+  <Card title="Authentication" icon="shield" href="/auth">
     Email and Google for your app users. Configure methods in the dashboard.
   </Card>
-  <Card title="Database" icon="database" href="/products">
+  <Card title="Database" icon="database" href="/database">
     Postgres tables, schema, and SQL from the dashboard or `vectoree db`.
   </Card>
-  <Card title="Storage" icon="folder" href="/products">
+  <Card title="Storage" icon="folder" href="/storage">
     Buckets and uploads. Public or private.
   </Card>
 </CardGroup>

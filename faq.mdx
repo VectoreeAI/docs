@@ -28,6 +28,17 @@ Check your spam folder. If the issue persists, confirm the platform SMTP is conf
 **Key invalid error?**  
 Check that the key is complete, not deleted, and belongs to the current project.
 
+## Templates and Tool Hub
+
+**How do I start from a template?**  
+Dashboard → **Templates**. Copy the prompt into your coding agent. It clones a Vectoree-adapted repo and runs `login` / `link` on the current project. Details: [Templates](/templates).
+
+**Where do I connect web search or data tools?**  
+Dashboard → **Tool Hub**. Try a call in the console (bills the org wallet), or copy MCP config into Cursor / Claude. Use a project key with `tools:*`. Details: [Tool Hub](/tools).
+
+**Tool Hub MCP says unauthorized?**  
+Re-run `vectoree link` so the key has `tools:*`. Publishable keys (`pk_...`) and master keys are rejected.
+
 ## Models
 
 **What is `vectoree/auto`?**  
@@ -53,7 +64,7 @@ Yes, but deletion is destructive. Follow the dashboard confirmation prompts.
 ## What ships in this launch
 
 **What is included in 1.0?**  
-Model Gateway, Auth, Database, Storage, Tool Hub (hosted MCP), org wallet billing, CLI + Agent Skill, and Google / email login.
+Model Gateway, [Templates](/templates), [Tool Hub](/tools) (dashboard catalog + hosted MCP), Auth, Database, Storage, org wallet billing, CLI + Agent Skill, and Google / email login.
 
 **What is coming soon?**  
 [Deploy](/deploy) — a public HTTPS URL for the app. [Payments](/payments) — charge your end users and get paid. Both are in development and launching soon.

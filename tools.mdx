@@ -1,0 +1,87 @@
+---
+title: "Tool Hub"
+description: "Hosted MCP tools for search, extract, and data lookups. Browse, try, and connect from the dashboard."
+---
+
+Tool Hub is the dashboard catalog at [vectoree.ai/dashboard/tools](https://vectoree.ai/dashboard/tools). It is hosted MCP — your agent calls Vectoree instead of wiring Tavily, Similarweb, or other vendor accounts itself.
+
+Open a tool to read its schema, **Try** it against the live API (this bills the org wallet), copy **MCP** config into Cursor or Claude, or call the same contract over **REST**.
+
+## How it fits
+
+Skill + CLI operate the Cloud project (login, link, models, database). Tool Hub is how the agent **searches the web, extracts pages, and pulls marketing / social data** while it works. Same project, same `sk-ve-v1-...` key, billed per use from the organization wallet.
+
+| Surface | Use it for |
+|---|---|
+| Dashboard → **Tool Hub** | Browse catalog, try a call, copy MCP |
+| MCP `POST https://vectoree.ai/mcp` | Agent tools in Cursor / Claude / Codex |
+| REST `/api/tools/v1/...` | Server-side calls with the same payloads |
+| CLI `vectoree tools` | Status, MCP snippet, search / extract probes |
+
+## Connect from the dashboard
+
+1. Open **Tool Hub** in the project sidebar (Build group).
+2. Select a tool. The workspace shows endpoints, parameters, and pricing.
+3. **Try** sends a live request. It uses your dashboard session — you do not paste a key in the browser. Failed tries still consume the listed price when the runtime ran.
+4. **MCP** copies a server block. Use a project API key with `tools:*` (from `vectoree link` or **API Keys**). Keys created before Tool Hub shipped need a fresh `link`.
+5. **REST** documents the HTTP twin of `tools/call`. Master keys and publishable keys (`pk_...`) are rejected.
+
+Native HTTP MCP:
+
+```json
+{
+  "mcpServers": {
+    "vectoree": {
+      "type": "http",
+      "url": "https://vectoree.ai/mcp",
+      "headers": {
+        "Authorization": "Bearer sk-ve-v1-..."
+      }
+    }
+  }
+}
+```
+
+The CLI can write that file for you:
+
+```bash
+npx @vectoree/cli tools status
+npx @vectoree/cli tools snippet --write --replace-search
+```
+
+`--write` defaults to Cursor (`.cursor/mcp.json`). Use `--client claude` or `--client vscode` for those editors. `--replace-search` removes Tavily / Brave / Exa-style servers so the agent uses Vectoree.
+
+## What is in the catalog
+
+The dashboard list is the source of truth — listings can be enabled or paused without a docs deploy.
+
+**Always on for agents**
+
+- **Search** (`search`) — Tavily-compatible web search
+- **Extract** (`extract`) — Tavily-compatible page extract
+
+REST probes:
+
+```bash
+npx @vectoree/cli tools search "<query>"
+npx @vectoree/cli tools extract <url>
+```
+
+**Data tools (no extra vendor account)**
+
+Tool Hub also hosts marketing and social lookups such as **Similarweb**, **Semrush**, and **X / Twitter**. More data tools keep arriving. Open the catalog for the live set, schema, and per-call price.
+
+Gateway-owned search/fetch used inside chat (`web_search` / `web_fetch`) bills the same organization wallet.
+
+## Auth and billing
+
+| | Rule |
+|---|---|
+| Credential | Project API key `sk-ve-v1-...` with `tools:*` (or `*` ) |
+| Not accepted | Publishable key `pk_...`, instance master key, app-user JWT |
+| Meter | Per successful tool call, deducted from the **organization wallet** |
+| Empty wallet | Calls return a clear insufficient-balance error |
+
+Top up under **Organization → Billing**. See [Billing](/billing).
+
+OpenAPI for these HTTP APIs is under **API Reference → Tool Hub**.

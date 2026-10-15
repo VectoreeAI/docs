@@ -28,6 +28,17 @@ description: "关于计费、连接、模型、数据和 1.0 上线范围的常�
 **Key 无效？**  
 检查 Key 是否完整、未被删除，且属于当前项目。
 
+## Templates 与 Tool Hub
+
+**怎么从模板起步？**  
+控制台 → **Templates**。把提示词贴进 coding agent。它会 clone Vectoree 适配仓库，并对当前项目执行 `login` / `link`。详见 [Templates](/zh/templates)。
+
+**网页搜索或数据工具在哪接？**  
+控制台 → **Tool Hub**。可在控制台试打（从组织钱包扣费），或把 MCP 配置复制到 Cursor / Claude。使用带 `tools:*` 的项目 Key。详见 [Tool Hub](/zh/tools)。
+
+**Tool Hub MCP 提示未授权？**  
+重新 `vectoree link`，让 Key 带上 `tools:*`。Publishable Key（`pk_...`）和 master key 会被拒绝。
+
 ## 模型
 
 **`vectoree/auto` 是什么？**  
@@ -53,7 +64,7 @@ description: "关于计费、连接、模型、数据和 1.0 上线范围的常�
 ## 本轮上线范围
 
 **1.0 包含什么？**  
-Model Gateway、Auth、Database、Storage、Tool Hub（托管 MCP）、组织钱包计费、CLI + Agent Skill，以及 Google / 邮箱登录。
+Model Gateway、[Templates](/zh/templates)、[Tool Hub](/zh/tools)（控制台目录 + 托管 MCP）、Auth、Database、Storage、组织钱包计费、CLI + Agent Skill，以及 Google / 邮箱登录。
 
 **即将上线什么？**  
 [Deploy](/zh/deploy) — 应用的公开 HTTPS URL。[Payments](/zh/payments) — 向终端用户收费并收款。两项都在开发中，即将上线。

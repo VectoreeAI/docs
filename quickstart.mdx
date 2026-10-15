@@ -54,7 +54,11 @@ npx @vectoree/cli ai speech "hello" --model qwen/qwen-audio-3.0-tts-flash
 npx @vectoree/cli ai snippet --model qwen/qwen-audio-3.0-tts-flash
 ```
 
-## 5. Connect Tool Hub MCP
+## 5. Optional: start from a template
+
+Instead of an empty folder, open [Templates](/templates) in the dashboard, copy the prompt, and let the agent clone a Vectoree-adapted repo into the current project. Then continue from step 4 in that directory.
+
+## 6. Connect Tool Hub MCP
 
 Use a scoped project key with `tools:*` (created by `link` or in Dashboard → API Keys). The CLI can write the MCP config:
 
@@ -81,7 +85,12 @@ Equivalent JSON:
 }
 ```
 
-Tools exposed: `search`, `extract` (Tavily-compatible parameters). REST probes: `npx @vectoree/cli tools search "<query>"` and `tools extract <url>`.
+The live catalog (search, extract, and data tools) is **Dashboard → Tool Hub**. See [Tool Hub](/tools). REST probes for the core tools:
+
+```bash
+npx @vectoree/cli tools search "<query>"
+npx @vectoree/cli tools extract <url>
+```
 
 ## Point Codex at Vectoree
 

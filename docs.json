@@ -45,6 +45,8 @@
                 "group": "Features",
                 "pages": [
                   "models",
+                  "templates",
+                  "tools",
                   "auth",
                   "database",
                   "storage",
@@ -126,6 +128,8 @@
                 "group": "功能",
                 "pages": [
                   "zh/models",
+                  "zh/templates",
+                  "zh/tools",
                   "zh/auth",
                   "zh/database",
                   "zh/storage",

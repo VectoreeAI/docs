@@ -54,7 +54,11 @@ npx @vectoree/cli ai speech "hello" --model qwen/qwen-audio-3.0-tts-flash
 npx @vectoree/cli ai snippet --model qwen/qwen-audio-3.0-tts-flash
 ```
 
-## 5. 连接 Tool Hub MCP
+## 5. 可选：从模板起步
+
+不想从空目录开始，就打开控制台 [Templates](/zh/templates)，复制提示词，让 Agent clone Vectoree 适配仓库到当前项目。然后在该目录从第 4 步继续。
+
+## 6. 连接 Tool Hub MCP
 
 使用带 `tools:*` 的项目 Key（`link` 创建，或在 Dashboard → API Keys）。CLI 可以写入 MCP 配置：
 
@@ -81,7 +85,12 @@ npx @vectoree/cli tools snippet --write --replace-search
 }
 ```
 
-暴露的工具：`search`、`extract`（Tavily 兼容参数）。REST 探测：`npx @vectoree/cli tools search "<query>"` 和 `tools extract <url>`。
+实时目录（search、extract 和数据工具）在 **控制台 → Tool Hub**。见 [Tool Hub](/zh/tools)。核心工具的 REST 探测：
+
+```bash
+npx @vectoree/cli tools search "<query>"
+npx @vectoree/cli tools extract <url>
+```
 
 ## 让 Codex 走 Vectoree
 

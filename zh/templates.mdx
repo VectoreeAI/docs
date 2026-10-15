@@ -1,0 +1,64 @@
+---
+title: "Templates"
+description: "从 Vectoree 适配过的仓库起步。复制提示词，在本地 clone，并关联当前 Cloud 项目。"
+---
+
+模板在控制台 [vectoree.ai/dashboard/templates](https://vectoree.ai/dashboard/templates)。选一个模板，复制提示词，贴进 Cursor、Claude Code、Codex 或其他 coding agent。
+
+Agent 会 clone Vectoree 适配过的仓库，必要时安装 `@vectoree/cli`，再对**当前控制台项目**执行 `login` 和 `link`。除非你想从空目录开始，否则不必手搭项目。
+
+这是起步方式，不是托管上线。[Deploy](/zh/deploy)（公开 URL）仍即将上线。
+
+## 它在架构里的位置
+
+Agent 仍然在本地写。模板是已经接好 Vectoree 的仓库 — Model Gateway、Auth、Database、Storage 都落在你用 Skill + CLI 会连上的同一个项目。
+
+| 步骤 | 在哪 | 会发生什么 |
+|---|---|---|
+| 1 | 控制台 → **Templates** | 按场景浏览，打开模板 |
+| 2 | 模板详情 | 复制提示词（里面带当前项目） |
+| 3 | Coding agent | Clone 仓库、安装 CLI、`login` / `link` |
+| 4 | 本地仓库 | `vectoree current` 显示这个 Cloud 项目 |
+
+控制台首次引导也可以从模板开始，而不必已有本地目录。`link` 成功仍会发放迎新钱包额度。
+
+## 提示词会让 Agent 做什么
+
+复制出的提示词会让 Agent：
+
+1. Clone 该模板的 Git 地址
+2. 进入 clone 后的目录
+3. 若 `PATH` 上没有 `vectoree`，安装一次 `@vectoree/cli`
+4. 用一次性控制台 token 登录（不要打印 token）
+5. `vectoree link` 到你在控制台选中的项目
+6. `vectoree current` 成功后停住 — 已连接就不要重装或再 link
+
+优先用提示词里的全局 `vectoree` 命令。同一套步骤不要再混用 `npx`。
+
+## 目录
+
+以控制台实时列表为准。常见条目：
+
+| 模板 | 用途 |
+|---|---|
+| [Vectoree Starter](https://github.com/VectoreeAI/vectoree-starter) | 快速 clone 到本地，体验 Model Gateway 等云端能力 |
+| DeepTutor | Agent 原生的辅导工作区 |
+| DeerFlow | 长程 super-agent 框架 |
+| RAGFlow | 面向复杂文档的 RAG 引擎 |
+| LibreChat | 自托管的 ChatGPT 风格界面 |
+| Coze Studio | 可视化 Agent 工作室 |
+
+可按场景（AI、Auth、Database、Storage 等）筛选，或按名称搜索。部分模板提供 **View repository**、**Preview** 或 **View demo**（配置了对应 URL 时）。
+
+最短路径也可以是 Starter：直接 clone [vectoree-starter](https://github.com/VectoreeAI/vectoree-starter)，再 `login` / `link`，或从 Templates 复制同一条提示词。
+
+## 关联完成之后
+
+clone 下来的仓库就是挂在这个 Cloud 项目上的普通本地项目：
+
+- 模型：[Model Gateway](/zh/models)
+- 网页工具：[Tool Hub](/zh/tools)
+- 应用登录：[身份认证](/zh/auth)
+- 数据与文件：[数据库](/zh/database)、[存储](/zh/storage)
+
+日常操作继续用 Skill + CLI。见 [CLI 接入](/zh/quickstart)。
