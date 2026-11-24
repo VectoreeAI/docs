@@ -2,6 +2,36 @@
 title: "Changelog"
 ---
 
+## 1.0.6 — 2026-11-23
+
+Vectoree Cloud 1.0.6 is here. This release launches app hosting, opens Organization Pro subscriptions, lists new headline models in Model Gateway, and refines welcome-credit claiming, so you can deploy from GitHub and pay as you go for Model Gateway and Tool Hub in one flow.
+
+### 🚀 New features
+
+* **App hosting (Deploy)**
+  * App hosting is now available. Build and publish from a linked GitHub repository and get a public URL when the deploy finishes.
+  * **One project maps to one app**. Push updates to the same repo and deploy again to refresh the app in place—the URL stays the same.
+  * From your repo, run `login`, `link`, `github`, and `deploy` with the CLI, follow the steps on the console **Deploy** page, or hand the on-page prompts to Cursor, Claude Code, or another coding agent.
+  * Your repo needs a Compose file or a root `Dockerfile`. Commit and push to GitHub before you deploy.
+
+* **Organization Pro (Organization Pro)**
+  * Organizations can subscribe to **Pro**. Each billing cycle adds **plan balance** to the organization wallet to offset [Model Gateway](/models) and Tool Hub usage.
+  * While subscribed, you get **member pricing** and higher limits on projects and hosted apps.
+  * Pro works alongside the PAYG wallet. Without a subscription, usage still debits the organization balance at catalog rates.
+  * Upgrade or manage under Organization → **Billing** in the console. See [Billing](/billing).
+
+* **New models (Model Gateway)**
+  * **10** new public models are listed, including **Hot** models **GPT-6.2 Astra** and **Claude Fable 5.2**.
+  * We also added **Claude Opus 4.7 / 4.8 / 5.5**, **Sonnet 4.6 / 5**, **Haiku 5.5**, and **Fable 5 / 5.1**, so you can pick by reasoning depth and response speed.
+  * Full list and pricing: [Model Gateway](/models). Browse the public [product catalog](https://vectoree.net/#product).
+
+### 🛠️ Fixes and improvements
+
+* **Welcome credit:** **$5** welcome credit used to arrive in one payout after your first successful `link`. It is now three steps for the same **$5** total—**$1** for linking Google or GitHub, **$2** after a connection check, **$2** after saving a card—so you can claim each step on your own schedule.
+* **Site performance:** vectoree.ai loads faster after performance work, so the console and product pages feel smoother to open.
+
+---
+
 ## 1.0.5 — 2026-11-02
 
 Vectoree Cloud 1.0.5 is here. This release expands the public site and catalog, and lists new Tool Hub tools, so you can learn the product, see what models and tools are supported, and call them directly.
