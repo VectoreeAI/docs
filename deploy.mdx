@@ -1,16 +1,131 @@
 ---
 title: "Deploy"
-description: "Publish the linked project to a public HTTPS URL. Coming soon."
+description: "Deploy an app from its GitHub repository and get a public address. Run it from the CLI or follow the steps in the dashboard."
 ---
 
-<Info>
-  Coming soon — in development and launching soon.
-</Info>
+Deploy builds your app from its GitHub repository and gives it a public address. When you deploy from the CLI or the console, one project corresponds to one app. To deploy more than one codebase, create more than one project. Later updates read the same repository, and the address stays the same.
 
-Give the app a public HTTPS URL so someone else can open it in a browser. Vectoree hosts it for you. The backend you already connected — [Model Gateway](/models), [Auth](/auth), [Database](/database), and [Storage](/storage) — stays attached.
+You can run every step yourself, or copy the prompts on the dashboard **Deploy** page and hand them to a coding agent.
 
-This is the next station after today's backend: the same linked project, now reachable by other people.
+## Before you start
 
-After Deploy, [Payments](/payments) is how those people pay you.
+- A Vectoree Cloud account, and the CLI logged in and linked to a project (see [CLI setup](/quickstart)).
+- The app's code is in a GitHub repository, and the local directory you deploy from is a clone of it.
+- The repository has a Compose file (`compose.yaml`, `compose.yml`, `docker-compose.yaml`, or `docker-compose.yml`, at the root or up to two folders deep) or a `Dockerfile` at the root. Keep only one Compose file. If there is no Compose file, the root `Dockerfile` is used.
 
-The full path is on [Overview](/introduction).
+## Deploy from the CLI
+
+Run these in the app's repository:
+
+```bash
+npx @vectoree/cli login
+npx @vectoree/cli link
+npx @vectoree/cli github
+npx @vectoree/cli deploy
+```
+
+| Command | What it does |
+|---|---|
+| `login` | Signs in to Vectoree Cloud in the browser. |
+| `link` | Connects this directory to a project. |
+| `github` | Opens GitHub to authorize, then associates this directory's GitHub repository with the project. It does not deploy. |
+| `deploy` | Reads the associated repository, builds it, and publishes it. Prints the public address when it is done. If GitHub is not authorized yet, it runs the `github` step first. |
+
+`deploy` only runs when the directory is clean and pushed: no uncommitted changes, no local commits missing from GitHub, and `origin` points to the associated repository. Commit and push first.
+
+If `deploy` stops before it finishes, run it again. It picks up the same deploy task instead of starting a new one.
+
+### Update the app
+
+Push your changes to GitHub, then run `npx @vectoree/cli deploy` again in the same directory. The app is updated in place and keeps its address.
+
+### Environment variables
+
+```bash
+npx @vectoree/cli env list          # list variable names
+npx @vectoree/cli env set API_KEY   # save one variable; the value is typed hidden
+```
+
+Variables belong to the deployed app, so deploy once before you set them. They take effect on the next deploy. You cannot change them while a deploy is running.
+
+### Logs
+
+```bash
+npx @vectoree/cli logs                   # list recent deploy ids
+npx @vectoree/cli logs <deploymentId>    # print the build log of one deploy
+```
+
+## Deploy from the dashboard
+
+Open **Deploy** in the dashboard sidebar (`/dashboard/runtime-apps`). The page walks through three steps:
+
+<Steps>
+  <Step title="Connect the local project">
+    Copy the link prompt and run it in your local project directory, or run `vectoree link --project <id>` yourself. The step completes on its own once the directory is connected.
+  </Step>
+  <Step title="Authorize GitHub">
+    Authorize GitHub and associate a repository, or run `vectoree github`. Access is limited to the repository you choose, and you can revoke it in GitHub settings. If the project is not on GitHub yet, the page has a prompt that asks your agent to create the repository and push the code.
+  </Step>
+  <Step title="Deploy">
+    Copy the deploy prompt and give it to a coding agent, or run `vectoree deploy` in the repository. When the build and publish finish, the page shows the address, status, deploy time, and source repository.
+  </Step>
+</Steps>
+
+After the first deploy, open **Settings** on the same page to:
+
+- **Stop** the app. The address stops serving until you deploy again.
+- **Delete** the deploy. Type the project name to confirm. The address stops working and the app's data volume is deleted. The GitHub repository stays connected.
+- **Disconnect** GitHub. The project can no longer deploy. An app that is already running stays available.
+
+## Limits
+
+The numbers below are defaults. The platform can adjust them, so the limits that apply to your organization may differ.
+
+### Per organization
+
+- **Deployed apps:** 3 per organization. If your organization is on a plan, the plan's number applies instead. When the limit is reached, nothing is created and the CLI prints "The deploy quota is full."
+- **Builds at the same time:** 1 per organization. A new deploy does not start while another build in the organization is running.
+
+### Per project
+
+- **One deploy at a time:** if a deploy is already running for the project, a new one does not start.
+- **Environment variables:** up to 200 per app. Names use letters, digits, and underscores, do not start with a digit, and are at most 256 characters. Each value is at most 8 KB.
+
+### How often
+
+- **Builds per hour:** 10 per organization.
+- **Builds per day:** 10 per organization.
+
+When a limit is reached, the deploy does not start and an existing address keeps working.
+
+### Size and time
+
+- **Repository:** up to 200 MB in total, 10 MB per file, and 20 folder levels deep.
+- **Compose file:** up to 256 KB.
+- **Reading the repository:** cloning and checking the repository stops after 120 seconds. The time counts from when reading starts and does not include time spent waiting in the queue.
+- **Build:** each service has up to 15 minutes, and the whole build up to 30 minutes.
+- **Build log:** up to 5 MB is kept per build.
+
+## App ID rules
+
+Each app has an ID inside its project. The CLI and dashboard deploy flow derives it from the project name, so you usually do not set it. When you do pick one, it must:
+
+- use lowercase letters, digits, and hyphens only, and start and end with a letter or digit;
+- be 63 characters or shorter;
+- not be `www`, `api`, `admin`, `dokploy`, `traefik`, or `mail`;
+- be unique within the project.
+
+## When a deploy fails
+
+The CLI prints a plain reason and what to do next. Common cases:
+
+| Message | What to do |
+|---|---|
+| Not logged in | Run `vectoree login`. |
+| This directory is not linked | Run `vectoree link`. |
+| This project is not connected to GitHub / GitHub authorization has expired | Run `vectoree github`, or reconnect on the Deploy page. |
+| This directory is X, but Y is bound | Run the command in the bound repository's directory. |
+| Building failed | Check the build log with `vectoree logs <deploymentId>`, fix the code, push, and deploy again. |
+| Deploy is not enabled for this project | Deploy is not turned on for this organization yet. |
+
+If an update fails, the previous address keeps working.
