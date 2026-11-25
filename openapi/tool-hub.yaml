@@ -3,63 +3,64 @@ info:
   title: Vectoree Tool Hub
   version: 1.1.0
   description: |
-    Hosted MCP tools for web search and page extraction.
+    Hosted MCP tools. Catalog product remains `vectoree.search` (REST `/run` with `action`).
+    Agent MCP `tools/list` exposes two facades: `search` and `extract` (no `action` field).
+    Legacy MCP name `vectoree.search` with `action=search|extract` remains accepted on `tools/call`.
 
-    MCP (JSON-RPC) lives at `POST /mcp` with `Authorization: Bearer sk-ve-v1-...`
-    and `tools:*` scope. REST mirrors the same Tavily-compatible payloads.
-
+    MCP (JSON-RPC) lives at `POST /mcp` with `Authorization: Bearer sk-ve-v1-...` and `tools:*` scope.
+    Preferred REST: `POST /api/tools/v1/vectoree.search/run` with `{ "action": "search"|"extract", ... }`.
+    Legacy aliases `POST /api/tools/v1/search` and `/extract` remain for transition and are deprecated.
 servers:
-  - url: https://vectoree.ai
-    description: Production
-
+  - url: https://vectoree.ai/api
 paths:
-  /api/tool-hub/tools:
+  /tool-hub/tools:
     get:
       summary: List Tool Hub catalog
       description: Dashboard-authenticated catalog of available tools.
-      tags:
-        - Tool Hub
-      security:
-        - bearerAuth: []
       responses:
         '200':
           description: Tool list
-
-  /api/tool-hub/tools/{toolId}:
-    get:
-      summary: Get Tool Hub tool
-      tags:
-        - Tool Hub
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: toolId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Tool details
-
-  /api/tool-hub/mcp-config:
-    get:
-      summary: Get Tool Hub MCP config
-      description: Config snippet for connecting an MCP client to `POST /mcp`.
-      tags:
-        - Tool Hub
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: MCP config
-
-  /api/tools/v1/search:
+  /tools/v1/vectoree.search/run:
     post:
-      summary: Web search
-      description: Tavily-compatible search. Bills organization wallet per request. Requires `tools:*`.
-      tags:
-        - Tool Hub
+      summary: Vectoree Search (unified)
+      description: |
+        Run search or extract under the Vectoree Search product.
+        Body requires `action` plus Tavily-compatible fields for that action.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action]
+              properties:
+                action:
+                  type: string
+                  enum: [search, extract]
+                query:
+                  type: string
+                max_results:
+                  type: integer
+                  minimum: 1
+                  maximum: 20
+                urls:
+                  type: array
+                  items:
+                    type: string
+                    format: uri
+                url:
+                  type: string
+                  format: uri
+      responses:
+        '200':
+          description: Search or extract results
+  /tools/v1/search:
+    post:
+      summary: Web search (deprecated alias)
+      description: Deprecated. Prefer `/tools/v1/vectoree.search/run` with `action=search`.
+      deprecated: true
       security:
         - bearerAuth: []
       requestBody:
@@ -87,19 +88,14 @@ paths:
                   type: array
                   items:
                     type: string
-            example:
-              query: vectoree model gateway
-              max_results: 5
       responses:
         '200':
           description: Search results
-
-  /api/tools/v1/extract:
+  /tools/v1/extract:
     post:
-      summary: Web extract
-      description: Tavily-compatible URL extraction. Bills per successful URL. Requires `tools:*`.
-      tags:
-        - Tool Hub
+      summary: Web extract (deprecated alias)
+      description: Deprecated. Prefer `/tools/v1/vectoree.search/run` with `action=extract`.
+      deprecated: true
       security:
         - bearerAuth: []
       requestBody:
@@ -117,53 +113,12 @@ paths:
                 url:
                   type: string
                   format: uri
-            example:
-              urls:
-                - https://docs.vectoree.ai
       responses:
         '200':
           description: Extract results
-
-  /api/tools/v1/{toolId}/run:
-    post:
-      summary: Run a Tool Hub tool
-      tags:
-        - Tool Hub
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: toolId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              additionalProperties: true
-      responses:
-        '200':
-          description: Tool output
-
-  /mcp:
-    post:
-      summary: Tool Hub MCP JSON-RPC
-      description: 'Hosted MCP endpoint. Send Authorization: Bearer sk-ve-v1-... with tools:*.'
-      tags:
-        - Tool Hub
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: JSON-RPC response
-
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      description: |
-        Project API key `sk-ve-v1-...` with `tools:*` (or `*`). Catalog routes
-        also accept a Console JWT. Paste the key only.
+      bearerFormat: sk-ve-v1-...

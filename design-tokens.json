@@ -1,0 +1,134 @@
+{
+  "designSystem": "Vectoree — Acid Brutalism",
+  "description": "Design tokens extracted from packages/ui/src/styles.css, packages/ui/tailwind-preset.js, packages/dashboard/tailwind.config.js and packages/dashboard/src/styles.css. Canvas colors are RGB triplets for Tailwind rgb(var(--...)) compatibility where noted.",
+  "color": {
+    "core": {
+      "acid": { "value": "#D8FF00", "description": "Primary fluorescent acid accent" },
+      "ink": { "value": "#101010", "description": "Primary foreground / border ink" },
+      "paper": { "value": "#F1F1E8", "description": "Canonical page surface" },
+      "white": { "value": "#FFFFFF", "description": "White surface" },
+      "gray": { "value": "#6B6B60", "description": "Muted foreground" },
+      "gridLine": { "value": "#00000009", "description": "Background grid line, 3.5% black" },
+      "lineSoft": { "value": "#C9C9BD", "description": "Soft separator line" },
+      "rowLine": { "value": "#E2E2D6", "description": "Row separator line" },
+      "acidSoft": { "value": "#FBFFEA", "description": "Soft acid-tinted surface" },
+      "ink60": { "value": "#333333", "description": "60% ink" },
+      "ink40": { "value": "#555555", "description": "40% ink" },
+      "ink30": { "value": "#999999", "description": "30% ink / disabled" }
+    },
+    "semantic": {
+      "page": { "value": "#F1F1E8", "description": "Page background" },
+      "card": { "value": "#FFFFFF", "description": "Card / panel background" },
+      "toast": { "value": "#FFFFFF", "description": "Toast background" },
+      "foreground": { "value": "#101010", "description": "Default foreground" },
+      "mutedForeground": { "value": "#6B6B60", "description": "Muted foreground" },
+      "disabled": { "value": "#999999", "description": "Disabled foreground" },
+      "inverse": { "value": "#FFFFFF", "description": "Inverse foreground/surface" },
+      "border": { "value": "#101010", "description": "Default border" },
+      "primary": { "value": "#D8FF00", "description": "Primary action" },
+      "primaryForeground": { "value": "#101010", "description": "Content on primary" },
+      "success": { "value": "#D8FF00", "description": "Success status" },
+      "destructive": { "value": "#101010", "description": "Destructive status" },
+      "warning": { "value": "#101010", "description": "Warning status" },
+      "info": { "value": "#101010", "description": "Info status" }
+    },
+    "surface": {
+      "semantic0": { "value": "#F1F1E8" },
+      "semantic1": { "value": "#FFFFFF" },
+      "semantic2": { "value": "#FBFFEA" },
+      "semantic3": { "value": "#F1F1E8" },
+      "semantic4": { "value": "#E2E2D6" },
+      "semantic5": { "value": "#C9C9BD" },
+      "semantic6": { "value": "#101010" }
+    },
+    "alpha": {
+      "alpha4": { "value": "rgba(16, 16, 16, 0.04)" },
+      "alpha8": { "value": "rgba(16, 16, 16, 0.08)" },
+      "alpha12": { "value": "rgba(16, 16, 16, 0.12)" },
+      "alpha16": { "value": "rgba(16, 16, 16, 0.16)" },
+      "alphaInverse4": { "value": "rgba(255, 255, 255, 0.04)" },
+      "alphaInverse8": { "value": "rgba(255, 255, 255, 0.08)" },
+      "alphaInverse12": { "value": "rgba(255, 255, 255, 0.12)" },
+      "alphaInverse16": { "value": "rgba(255, 255, 255, 0.16)" }
+    }
+  },
+  "font": {
+    "family": {
+      "display": { "value": "'Archivo Black', 'Arial Black', 'PingFang SC', sans-serif" },
+      "body": { "value": "'Space Grotesk', 'Helvetica Neue', 'PingFang SC', Arial, sans-serif" },
+      "sans": { "value": "'Space Grotesk', 'Helvetica Neue', 'PingFang SC', Arial, sans-serif" },
+      "mono": { "value": "'JetBrains Mono', ui-monospace, monospace" }
+    },
+    "size": {
+      "tailwind": {
+        "xs": { "value": "0.75rem", "px": 12, "lineHeight": "1rem" },
+        "sm": { "value": "0.875rem", "px": 14, "lineHeight": "1.25rem" },
+        "base": { "value": "1rem", "px": 16, "lineHeight": "1.5rem" },
+        "lg": { "value": "1.125rem", "px": 18, "lineHeight": "1.75rem" },
+        "xl": { "value": "1.25rem", "px": 20, "lineHeight": "1.75rem" },
+        "2xl": { "value": "1.5rem", "px": 24, "lineHeight": "2rem" },
+        "3xl": { "value": "1.875rem", "px": 30, "lineHeight": "2.25rem" },
+        "4xl": { "value": "2.25rem", "px": 36, "lineHeight": "2.5rem" },
+        "5xl": { "value": "3rem", "px": 48, "lineHeight": "1" },
+        "6xl": { "value": "3.75rem", "px": 60, "lineHeight": "1" }
+      },
+      "dashboard": {
+        "xs": { "value": "0.75rem", "px": 12 },
+        "sm": { "value": "0.8125rem", "px": 13 },
+        "base": { "value": "0.875rem", "px": 14 },
+        "lg": { "value": "1.25rem", "px": 20 },
+        "xl": { "value": "1.375rem", "px": 22 }
+      }
+    },
+    "weight": {
+      "normal": { "value": 400 },
+      "medium": { "value": 500 },
+      "semibold": { "value": 600 }
+    }
+  },
+  "spacing": {
+    "acid": {
+      "xs": { "value": "4px" },
+      "sm": { "value": "8px" },
+      "md": { "value": "12px" },
+      "lg": { "value": "16px" },
+      "xl": { "value": "22px" },
+      "2xl": { "value": "28px" },
+      "3xl": { "value": "40px" }
+    },
+    "tailwindExtended": {
+      "18": { "value": "4.5rem" },
+      "88": { "value": "22rem" },
+      "128": { "value": "32rem" }
+    },
+    "shell": {
+      "topbar": { "value": "58px" },
+      "sidebar": { "value": "232px" },
+      "marquee": { "value": "34px" },
+      "playground": { "value": "292px" }
+    }
+  },
+  "radius": {
+    "none": { "value": "0px" },
+    "DEFAULT": { "value": "0px" },
+    "sm": { "value": "0px" },
+    "md": { "value": "0px" },
+    "lg": { "value": "0px" },
+    "xl": { "value": "0px" },
+    "2xl": { "value": "0px" },
+    "3xl": { "value": "0px" },
+    "full": { "value": "0px" }
+  },
+  "shadow": {
+    "press": { "value": "1px 1px 0 #101010" },
+    "hardSm": { "value": "3px 3px 0 #101010" },
+    "hardMd": { "value": "4px 4px 0 #101010" },
+    "hardLg": { "value": "6px 6px 0 #101010" },
+    "hardAcid": { "value": "4px 4px 0 #D8FF00" },
+    "hardAcidLg": { "value": "5px 5px 0 #D8FF00" }
+  },
+  "motion": {
+    "toastProgress": { "value": "toast-progress linear forwards" },
+    "marquee": { "value": "marquee-scroll 22s linear infinite" }
+  }
+}

@@ -3,13 +3,13 @@ title: "Overview"
 description: "Use Vectoree to build and improve your agent — then let other people use it."
 ---
 
-{/* AI AGENT INSTRUCTIONS (not rendered): Install the Vectoree skill, then use the CLI. npx skills add VectoreeAI/vectoree-skills. Skill source: https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectoree/SKILL.md. Then: npx @vectoree/cli login && npx @vectoree/cli link. Optional start: Dashboard → Templates, copy the prompt. Web tools: Dashboard → Tool Hub or hosted MCP at /mcp. Point Codex at Vectoree: bash <(curl -fsSL https://vectoree.ai/scripts/codex-vectoree-setup.sh). Docs: https://docs.vectoree.ai/codex. Do not treat @vectoree/sdk as the agent path. Deploy is coming soon. */}
+{/* AI AGENT INSTRUCTIONS (not rendered): Install the Vectoree skill, then use the CLI. npx skills add VectoreeAI/vectoree-skills. Skill source: https://raw.githubusercontent.com/VectoreeAI/vectoree-skills/main/skills/vectoree/SKILL.md. Then: npx @vectoree/cli login && npx @vectoree/cli link. Optional start: Dashboard → Templates, copy the prompt. Web tools: Dashboard → Tool Hub or hosted MCP at /mcp. Point Codex at Vectoree: bash <(curl -fsSL https://vectoree.ai/scripts/codex-vectoree-setup.sh). Docs: https://docs.vectoree.ai/codex. Do not treat @vectoree/sdk as the agent path. Deploy is live: vectoree deploy publishes the project to a public URL. Payments is coming soon. */}
 
 Vectoree Cloud is how you **build and improve your own agent** — then put it in front of other people.
 
 You write the agent locally with Cursor, Claude Code, or Codex. Start from a blank repo plus Skill + CLI, or from **Templates** in the dashboard (copy a prompt, clone a Vectoree-adapted repo, link this project). Vectoree is the backend you attach: **Model Gateway**, **Tool Hub**, **Auth**, **Database**, and **Storage**, on one project, paid from an organization wallet. Agents operate the project with **Skill + CLI**; they call web search, extract, and data tools through **Tool Hub** (hosted MCP).
 
-When the agent is ready, the same project gets a public URL ([Deploy](/deploy)) and a way for those people to pay you ([Payments](/payments)). Both are in development and launching soon.
+When the agent is ready, the same project gets a public URL with [Deploy](/deploy). A way for those people to pay you ([Payments](/payments)) is in development and launching soon.
 
 ## Build your agent
 
@@ -42,11 +42,10 @@ The path is the agent. Vectoree is what you connect so it can think, remember, a
       </div>
     </div>
     <div className="ve-journey__wire" aria-hidden="true"></div>
-    <div className="ve-journey__step ve-journey__step--soon">
+    <div className="ve-journey__step">
       <span className="ve-journey__idx">04</span>
       <span className="ve-journey__title">Share</span>
       <span className="ve-journey__hint">A public URL others can open</span>
-      <span className="ve-journey__badge">Coming soon</span>
     </div>
     <div className="ve-journey__wire" aria-hidden="true"></div>
     <div className="ve-journey__step ve-journey__step--soon">
@@ -100,14 +99,14 @@ The path is the agent. Vectoree is what you connect so it can think, remember, a
   <Card title="Storage" icon="folder" href="/storage">
     Buckets and uploads. Public or private.
   </Card>
+  <Card title="Deploy" icon="rocket" href="/deploy">
+    Publish the project to a public HTTPS URL so someone else can open the app.
+  </Card>
 </CardGroup>
 
 ## Coming soon
 
 <CardGroup cols={2}>
-  <Card title="Deploy" icon="rocket" href="/deploy">
-    Publish the project to a public HTTPS URL so someone else can open the app.
-  </Card>
   <Card title="Payments" icon="credit-card" href="/payments">
     Charge the people who use your agent, and get paid.
   </Card>

@@ -1,0 +1,222 @@
+---
+title: "Unified client setup (offline preview)"
+description: "Configure selected local Codex and Claude clients or stage a DeepSeek Harness overlay without sending a model request."
+---
+
+This preview changes local configuration only. It does not install or launch a
+client, contact the gateway, sign in, mint or rotate a key, or send a test request.
+The three-tool release is **No-Go**: DeepSeek Harness defaults to `ADAPTER_BLOCKED`,
+and native reacceptance, live integration and release validation are not complete.
+VS Code (historical G1) is out of scope, not resolved or delivered. The existing
+single-client setup commands are unchanged.
+
+| Target | Preview scope |
+| --- | --- |
+| `codex` | Installed CLI on PATH, existing `CODEX_HOME`, Responses provider and local `models.json` |
+| `claude` / `cli` | Installed CLI on PATH, existing Claude config root, `settings.json` |
+| `claude` / `desktop` | Explicit existing Desktop root and `configLibrary`, Vectoree third-party profile; offline file layout only, not proof of consumption |
+| `deepseek-harness` | Blocked by default; explicit overlay preparation only, no runtime or credential initialization |
+
+### Run a reviewed copy
+
+These entrypoints have not been released. Before running a future published
+copy, download it completely to a private temporary location, check the
+successful download and the exact reviewed version's length and SHA-256, then
+run it as a file and clean up the download. Do not pipe a download into a shell
+or use `Invoke-Expression`. A digest from the same server is not an independent
+signature.
+
+The Bash entry uses Bash 3.2-compatible syntax and Python 3.9+. On 2026-11-24
+the user, in chief-manager chat t1625u (13:23 Asia/Shanghai), chose to keep the
+current behavior: simple, native, without introducing new dependencies, and as
+compatible with older runtimes as the present implementation already is. That
+approves the refusal limits below as explicit exceptions. It does **not**
+approve a new parser or other dependency, a ninth file, a .NET library, or a
+PowerShell Python prerequisite, and it does **not** mean the original full
+Python 3.9 or unrestricted complex-TOML contracts are now satisfied.
+
+### Support matrix (approved 2026-11-24 exceptions)
+
+| Area | What works now | Approved exception (not a support claim) |
+| --- | --- | --- |
+| Python / Codex TOML | Python 3.9+ language for the Bash entry. Absent or empty Codex TOML may be created. Restore and recovery work without `tomllib`. Claude and unrelated scopes do not need `tomllib`. | Exception 1: on Python 3.9/3.10, nonempty Codex TOML is refused for inspection, dry-run/preview, unchanged/idempotence detection, and editing (`CODEX_EXISTING_TOML_PARSER_REQUIRED`). |
+| TOML editing | PowerShell retains unrelated bytes only for bare keys and table headers, single-line strings/scalars (including dates and special floats), and flat single-line arrays. Bash with `tomllib` (Python 3.11+) can preserve more unrelated simple or already-supported layouts. | Exception 2: PowerShell's scoped editor continues to refuse valid complex TOML, including quoted or dotted assignment keys, inline tables, arrays of tables, multiline strings or arrays, nested arrays, and mixed line endings. Bash still refuses edits that contain triple-quote markers, or where a managed key cannot be located safely and unambiguously. Neither entry is a general TOML validator. |
+| Refusal safety | A parser or layout refusal is zero-write and leaves the original target bytes unchanged. The entry does not rewrite TOML it cannot safely edit. | These refusals are limitations, not “complex TOML supported” or “fully Python 3.9 compatible.” |
+| Product policy | Unchanged. Existing Codex Profiles, external catalog references, and conflicting provider overrides are refused. Claude CLI preserves other settings and does not rewrite onboarding, workspace overrides, or existing sessions. Desktop does not modify developer settings and refuses hybrid pointers. | Policy refusals are not format exceptions and were not relaxed. |
+| Dependencies | No new parser or third-party TOML library is introduced. | The 2026-11-24 decision rejected adding a dependency to close the gaps above. |
+
+PowerShell 7.4+ uses native file interfaces: Linux `statx`, Darwin no-follow
+metadata and ACL checks on arm64/x64, and Windows no-reparse handles, file IDs,
+and protected DACLs on local fixed NTFS. Linux is host-tested; the Darwin and
+Windows implementations are **not native-verified**. Network/device paths,
+reparse points, unsafe owners/ACLs and unsupported filesystem capabilities are
+not accepted. Close the selected clients before applying or restoring. The
+Linux CLI process-name check is best-effort; Desktop and non-Linux writes
+require an explicit root and `--clients-closed` operator attestation.
+
+```bash
+bash ./vectoree-setup.sh --tools codex --codex-model vectoree/auto \
+  --credential-mode shared --non-interactive --dry-run
+```
+
+```powershell
+pwsh -NoProfile -File ./vectoree-setup.ps1 --tools claude --claude-clients cli `
+  --claude-model anthropic/claude-sonnet-5.5 --credential-mode shared --non-interactive --dry-run
+```
+
+Supply your existing gateway key using a hidden prompt or via the process
+`VECTOREE_API_KEY` for explicit `shared`/`replace` mode. **Never put it in the
+command line, script, shell history, or logs.** `preserve` is default: it reuses
+only the selected scope’s key tied to the fixed Vectoree endpoint, otherwise
+interactive setup can prompt for a key. `shared` affects the selected scopes
+and refuses a conflicting existing key; `replace` explicitly replaces the
+selected scopes’ supported credential. Dry-run never prompts for secrets;
+a valid source must already be available for a complete preview. Force login,
+new-key creation, and endpoint overrides are unsupported.
+
+Choose either `--tools` with a comma-separated list or `--all`. `--all` selects
+`codex`, `claude`, and `deepseek-harness` only. Old VS Code selectors and flags
+fail global preflight (`TOOL_OUT_OF_SCOPE`) without allocating any scope state.
+Claude can produce two independent rows, so a three-tool batch can have four
+result rows. With Claude,
+choose `--claude-clients cli`, `desktop`, or `cli,desktop` (default). Root
+options are `--codex-home`, `--claude-home`, and `--claude-desktop-root`. Roots
+must exist, be absolute, and pass file ownership/link checks. Without overrides,
+CLI roots use `CODEX_HOME`/`CLAUDE_CONFIG_DIR` or the corresponding directory
+under `HOME`. No adjacent runtime helpers are required. `--dry-run` reads a
+snapshot without writing setup files. For apply, replace `--dry-run` with
+`--yes` for noninteractive use. Otherwise, the entry acquires available scope
+locks in the same identity-key order, rereads under lock, and shows one redacted
+batch plan before asking for a final `yes`. The plan lists all selected scopes,
+including busy or blocked scopes, and the file and credential actions for
+eligible scopes. Hidden key entry, when needed, is separate from approval. A
+refusal or lost confirmation input leaves config, snapshots and pending markers
+unchanged; lock bookkeeping can create private state directories. After
+approval, scopes execute independently with conflict checks. A later failure
+does not undo an earlier commit or discard its restore ID.
+
+Apply and dry-run refuse a scope with `DESIRED_FILE_TOO_LARGE` if any planned
+file would exceed 8 MiB after UTF-8 serialization. No target in that scope is
+written, even if the oversized file is not the first one in the plan. The Codex
+catalog and Claude Desktop sidecars are sized before a hidden key prompt. For
+credential-dependent files, the definitive check can follow the key prompt.
+
+### DeepSeek Harness: prepare an overlay only
+
+With either entrypoint, select `--tools deepseek-harness --prepare-dsh-config
+--dsh-stage-dir ABSOLUTE_PRIVATE_DIR --dsh-model PROVIDER/MODEL`. The user-owned
+stage must already exist and be private. Preview with `--dry-run` first; for a
+noninteractive write add `--clients-closed --non-interactive --yes`. Keep the
+default `--credential-mode preserve`; `shared` and `replace` are refused for
+this scope. Preparation creates only the reference-only `vectoree.dsh.patch.yml`
+and private setup bookkeeping. An identical private overlay is unchanged;
+another file is not overwritten. Choose a separate stage, not your Harness
+home. Setup does not discover `DSH_HOME` or read, store, or erase a real
+credential.
+
+`CONFIG_PREPARED` does not mean the adapter ran. The row reports runtime and
+credential `NOT_VERIFIED` and request `NOT_RUN`. Offline verification used
+the installed official `0.2.3-alpha.2` CLI and public SDK with an explicit
+`--patch` overlay. A patch overrides whole entries; later patches can replace
+the same entries. In that fixed version a stored credential for the **same
+reference**, `VECTOREE_DSH_API_KEY`, wins over the environment value. This
+version-specific result does not establish authentication, gateway
+compatibility, or default-profile behavior.
+
+Specify a known route with `--codex-model` or `--claude-model`; no directory is
+queried. Codex accepts `openai/...` or `vectoree/auto`; Claude accepts
+`anthropic/claude-...`. The preview can retain a compatible current model, but
+will not select the first model from a catalog. New Codex catalog entries use
+an offline bootstrap tested with native Codex CLI **0.171.0** on Linux. It
+declares text-only input and no shell, reasoning presets, verbosity, or
+experimental tools; its truncation limit is for local tool output, not a
+gateway context limit. It does not advertise a context window or imply that
+the gateway verified the route. The scripts preserve existing entries, including
+unknown fields, and do not migrate already-incompatible catalogs. Even if an
+incompatible existing entry matches the selected slug, local setup can succeed
+or report `UNCHANGED` while native Codex rejects the catalog. Existing
+Codex Profiles, external catalog references and conflicting provider overrides
+remain refused; see the support matrix. Codex TOML layout support and the
+approved refusals are listed there. A refusal leaves the original file bytes
+unchanged and is not a claim of general complex-TOML support. Claude CLI
+preserves other settings and does not rewrite onboarding, workspace overrides,
+or existing sessions. Desktop does not modify developer settings and refuses
+hybrid pointers.
+
+### Results and restore
+
+Both entries print one JSON object. Each selected scope reports `configStatus`,
+`reason`, and `requestStatus: NOT_RUN`. `SUCCESS` means local files were written,
+not client consumption or gateway success. Offline native Codex 0.171.0
+consumption on Linux is checked separately from writes; Claude CLI/Desktop
+consumption is not verified by this preview. Gateway requests are not run.
+
+| Exit | Meaning |
+| --- | --- |
+| `0` | Selected scopes configured, unchanged, or successfully previewed |
+| `2` | Global pre-execution failure or approval not given; no config, snapshot, or pending writes |
+| `3` | Incomplete execution: an item failed or was skipped, busy, unsupported, or adapter-blocked |
+| `4` | Recovery required, rollback uncertain, lock release failed, or restore conflicts with a later edit; takes precedence |
+| `130` | A handled interruption stopped execution with known transaction state |
+
+`NOT_RUN` in `configStatus` means the item did not execute (for example,
+`CANCELLED` after a refusal, `CONFIRMATION_REQUIRED` at terminal EOF, or
+`INTERRUPTED` after an actual signal). This is separate from `requestStatus`,
+which is always `NOT_RUN`. A lock release failure is reported separately in
+`cleanupStatus` without erasing a committed result or its `runId`.
+
+Use `--restore RUN_ID` with the same single tool, explicit Claude subclient
+when applicable, and the same root. Restore checks the current content and
+mode before writing and saves a new snapshot; it will not overwrite a later
+edit. For a pending interrupted run use `--recover RUN_ID` with the same scope.
+A stale lock is **never** reaped automatically. If a crash leaves a lock,
+stop all competing writers and have an operator verify the lock owner and host
+are no longer executing before manually removing only that stale lock
+(directory and owner marker, not the pending pointer or snapshots). If unsure,
+leave it in place. On Linux, PowerShell observes SIGTERM at transaction checkpoints and
+compensates in reverse before returning 130 when the state is known. A signal
+observed after commit may leave that scope committed; the result identifies it.
+A hard stop cannot return a JSON result; the next invocation returns 4 for a
+pending run until it is recovered. The Linux PTY checks cover Ctrl-C, SIGTERM, EOF, decline and acceptance
+at final approval, including terminal restoration and lock release. PowerShell
+uses bounded terminal waits (`poll` on Linux, `select` on Darwin, console
+readiness on Windows). Windows and macOS terminal behavior is `NOT_RUN`.
+
+For DeepSeek Harness restore or recovery, use `--tools deepseek-harness
+--prepare-dsh-config --dsh-stage-dir ABSOLUTE_PRIVATE_DIR` and the original run
+ID with `--restore` or `--recover`; omit `--dsh-model`. If recovery returns
+`RECOVERY_OWNERSHIP_UNVERIFIED`, it cannot establish who published the file.
+Stop all writers; retain the overlay, pending marker, journal and any lock.
+Privately compare the pending run ID, stage identity, journal phase and
+before/after mode and hash with independent records of the file's origin.
+Matching bytes alone are not evidence of ownership. If origin or lock-owner
+liveness cannot be verified, leave everything in place and escalate to the
+operator. If the operator independently establishes that the overlay can be
+moved without losing user data, preserve it in a separate private location.
+Only after that and any separately verified stale-lock handling above, rerun
+the same scoped `--recover RUN_ID --dry-run`. Proceed with
+`--recover RUN_ID --clients-closed --non-interactive --yes` only if the preview
+reports `WOULD_RECOVER`. Do not delete the pending marker or edit the journal
+to bypass the check.
+
+On Unix the entries share directory locks keyed by device/inode and the same
+journal and mode fingerprints under `~/.vectoree/unified-setup`. They accept
+older path-keyed journals using the original root path; do not run a previous
+entrypoint version concurrently. Windows uses volume/file identity and owner/
+DACL fingerprints, restoring the effective DACL with inheritance protected.
+Windows publication requests write-through; directory-entry durability on
+delete and power-loss recovery are not guaranteed. Snapshots can contain keys: keep their directory
+private, out of sync and source control. A multi-file update is journaled, not
+one atomic operation. Locks coordinate these two entries only; neither old
+setup scripts nor clients participate. Do not run with another writer active.
+
+### Remote contract status
+
+Both sources include an internal, fixture-tested protocol for session reuse,
+device-code steps, project/employee key requests, and directory response
+classification. Live integration is **not implemented**: the CLI does not call
+the protocol, has no live sender or transport flag, and does not load real
+session files for this workflow. No refresh route is assumed; the legacy
+refresh behavior is device re-login. No live endpoint was probed in this
+repair. G2 (DeepSeek Harness) still requires an adapter, native consumption and
+real gateway acceptance. G1 is historical and not a release gate.

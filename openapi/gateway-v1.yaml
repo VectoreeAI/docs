@@ -7,8 +7,7 @@ info:
 
     Authenticate with a **scoped project API key** (`sk-ve-v1-...`) that has
     `gateway:chat` (inference) or `gateway:models` (list). Instance master keys
-    (`ik_...`) and publishable keys (`pk_`) are rejected. Paste the key in
-    Bearer (no `Bearer ` prefix).
+    (`ik_...`) and publishable keys (`pk_`) are rejected.
 
     Organization wallet billing applies when enabled (default). Optional per-key
     `rpmLimit` returns HTTP 429 with `Retry-After`. Errors use the OpenAI shape
@@ -28,11 +27,13 @@ paths:
       responses:
         '200':
           description: |
-            OpenAI-shaped model list. Each item includes the standard
-            `id` / `object` / `created` / `owned_by` fields, plus Vectoree
-            `inputModality` / `outputModality` and OpenRouter-style
-            `architecture.input_modalities` / `architecture.output_modalities`
-            so clients can filter TTS (`speech`), STT (`transcription`), video, etc.
+            OpenAI-shaped model list with OpenRouter-compatible capability fields.
+            Each item includes `id` / `object` / `created` / `owned_by`, Vectoree
+            `inputModality` / `outputModality`, OpenRouter-style
+            `architecture` / `reasoning` / `supported_parameters` / `context_length` /
+            `canonical_slug` / `top_provider` (numeric only) / `per_request_limits: null`,
+            and `pricing` built from **sell** rates (never inbound cost).
+            Upstream channel ids and generation cost are never exposed.
         '401':
           $ref: '#/components/responses/GatewayError'
         '429':
@@ -45,6 +46,8 @@ paths:
         Supports vision content parts on messages (image_url).
         Set `stream: true` for SSE (`text/event-stream`) with OpenAI chunk payloads
         and a terminal `data: [DONE]` event.
+        Decisions models (output modality `decisions`) are rejected with HTTP 400;
+        use `POST /api/v1/systemone` (or the `/api/v1/decisions` alias) instead.
       tags: [Gateway]
       security:
         - bearerAuth: []
@@ -68,9 +71,39 @@ paths:
                   type: number
                 max_tokens:
                   type: integer
+                reasoning:
+                  type: object
+                  description: |
+                    Unified reasoning controls. Mapped per upstream origin
+                    (OpenRouter `reasoning`, DashScope `enable_thinking` /
+                    `thinking_budget`, Anthropic `thinking`, etc.).
+                  properties:
+                    effort:
+                      type: string
+                    max_tokens:
+                      type: integer
+                    enabled:
+                      type: boolean
+                    exclude:
+                      type: boolean
+                reasoning_effort:
+                  type: string
+                  description: Legacy alias mapped to reasoning.effort
+                seed:
+                  type: number
+                frequency_penalty:
+                  type: number
+                presence_penalty:
+                  type: number
+                parallel_tool_calls:
+                  type: boolean
       responses:
         '200':
-          description: Chat completion or SSE stream
+          description: |
+            Chat completion or SSE stream. Response `id` is a Vectoree request id
+            (not the upstream generation id). `usage` reflects Vectoree meter
+            quantities; upstream `usage.cost` / provider routing fields are never
+            returned.
         '429':
           $ref: '#/components/responses/RateLimited'
 
@@ -146,6 +179,63 @@ paths:
       responses:
         '200':
           description: Embedding vectors
+
+  /api/v1/systemone:
+    post:
+      summary: System One evaluation (Jev / TypeSafe-compatible)
+      description: |
+        Preferred ingress for decisions models (output modality `decisions`).
+        Send `state` plus typed `questions` (noul / choice / score); response is
+        structured `answers`. Compatible with TypeSafe SDKs pointed at this host
+        (`baseURL` ending in `/api` → `/v1/systemone`).
+        Upstream OpenRouter or TypeSafe uses `/v1/systemone`. Client-facing
+        `usage` uses OpenAI field names (`prompt_tokens` / `completion_tokens`);
+        upstream `input_tokens` / `output_tokens` are normalized.
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SystemOneRequest'
+      responses:
+        '200':
+          description: Structured answers and usage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemOneResponse'
+        '400':
+          $ref: '#/components/responses/GatewayError'
+
+  /api/v1/decisions:
+    post:
+      summary: Structured decisions (alias of /api/v1/systemone)
+      deprecated: true
+      description: |
+        Alias of `POST /api/v1/systemone`. Same request and response body.
+        Prefer `/api/v1/systemone` for new integrations; this path remains
+        supported for existing clients.
+      tags: [Gateway]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SystemOneRequest'
+      responses:
+        '200':
+          description: Structured answers and usage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemOneResponse'
+        '400':
+          $ref: '#/components/responses/GatewayError'
 
   /api/v1/images:
     post:
@@ -322,9 +412,7 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-      description: |
-        Project API key `sk-ve-v1-...` with `gateway:chat` or `gateway:models`.
-        Paste the key only. Do not use `pk_...` or `ik_...`.
+      description: Scoped project API key `sk-ve-v1-...` (not `ik_...`).
   responses:
     GatewayError:
       description: OpenAI-shaped error
@@ -344,6 +432,42 @@ components:
           schema:
             $ref: '#/components/schemas/OpenAIError'
   schemas:
+    SystemOneRequest:
+      type: object
+      required: [model, state, questions]
+      properties:
+        model:
+          type: string
+          example: typesafe/jev-1.13
+        state:
+          description: Free-form context string, object, or array for the decision.
+        questions:
+          type: object
+          additionalProperties: true
+          description: Map of question id → typed question definition (noul / choice / score).
+    SystemOneResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        model:
+          type: string
+        answers:
+          type: object
+          additionalProperties: true
+        usage:
+          type: object
+          description: OpenAI-shaped token counts (normalized from upstream input_tokens/output_tokens).
+          properties:
+            prompt_tokens:
+              type: integer
+            completion_tokens:
+              type: integer
+            total_tokens:
+              type: integer
+            cost:
+              type: number
+              description: Optional upstream cost (OpenRouter); not used for Vectoree billing.
     OpenAIError:
       type: object
       required: [error]

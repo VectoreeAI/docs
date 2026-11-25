@@ -1,11 +1,8 @@
 openapi: 3.0.3
 info:
   title: VECTOREE Records API
-  version: 2.1.0
-  description: |
-    PostgREST-style row operations. Use a project API key (`sk-ve-v1-...`)
-    with `database` or `*` scope, or an App user JWT. Path `{tableName}`
-    must be a real table. POST body must be a JSON array of rows.
+  version: 2.0.0
+  description: PostgREST-style database record operations
 
 servers:
   - url: https://vectoree.ai
@@ -29,11 +26,6 @@ paths:
             type: string
           description: Name of the table to query
           example: posts
-        - name: schema
-          in: query
-          schema:
-            type: string
-          description: Database schema. Defaults to the project app schema.
         - name: limit
           in: query
           schema:
@@ -341,14 +333,10 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-      description: |
-        Project API key (`sk-ve-v1-...`) with `database` or `*` scope, or an
-        App user JWT after login. Paste the key or token only.
     apiKey:
       type: apiKey
       in: header
-      name: X-API-Key
-      description: Same project API key as Bearer. Fill one of the two, not both.
+      name: x-api-key
 
   schemas:
     ErrorResponse:

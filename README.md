@@ -1,8 +1,8 @@
 # Vectoree Docs
 
-Source for [docs.vectoree.ai](https://docs.vectoree.ai), hosted by [Mintlify](https://mintlify.com).
+Product documentation published at [docs.vectoree.ai](https://docs.vectoree.ai) (Mintlify).
 
-This repository is a **mirror** of `docs/` from the Vectoree product source. Public GitHub: [VectoreeAI](https://github.com/VectoreeAI/). Do not edit pages here by hand — they will be overwritten on the next sync.
+Edit files in this folder. After merge to `main`, CI mirrors the folder to the public repo [VectoreeAI/docs](https://github.com/VectoreeAI/docs). Mintlify deploys from that repo (content directory = repository root).
 
 ## Local preview
 
@@ -10,10 +10,4 @@ This repository is a **mirror** of `docs/` from the Vectoree product source. Pub
 npx mint dev
 ```
 
-Open `http://localhost:3000`.
-
-## How updates land
-
-1. Change MDX / `docs.json` in the monorepo `docs/` folder.
-2. Merge to `main`. GitHub Actions copies `docs/` here and pushes.
-3. Mintlify deploys from this repo's `main` (content directory = repository root).
+Run this in `docs/`. Open `http://localhost:3000`.

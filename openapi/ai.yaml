@@ -193,9 +193,7 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-      description: |
-        Console JWT or a project API key. New integrations should use
-        `/api/v1/*` (Model Gateway) instead of these deprecated AI routes.
+      bearerFormat: JWT
 
   schemas:
     ChatMessage:
@@ -556,6 +554,50 @@ components:
         outputPriceLabel:
           type: string
           description: Human-readable output pricing label, such as "$10.00 / 1M tokens" or "Free", when available.
+        maxCompletionTokens:
+          type: integer
+          description: Provider-reported max output tokens.
+        contextLength:
+          type: integer
+          description: Context window in tokens.
+        reasoning:
+          type: object
+          description: |
+            Client-facing reasoning / effort capability for the effective binding
+            origin (not a raw OpenRouter snapshot when the product routes elsewhere).
+          properties:
+            mandatory:
+              type: boolean
+            supportedEfforts:
+              type: array
+              nullable: true
+              items:
+                type: string
+            defaultEffort:
+              type: string
+              nullable: true
+            defaultEnabled:
+              type: boolean
+            supportsMaxTokens:
+              type: boolean
+        supportedParameters:
+          type: array
+          items:
+            type: string
+          description: Sanitized supported request parameters (provider/models/route stripped).
+        canonicalSlug:
+          type: string
+          description: Vectoree catalog slug (never an upstream provider id).
+        topProvider:
+          type: object
+          properties:
+            contextLength:
+              type: integer
+            maxCompletionTokens:
+              type: integer
+              nullable: true
+            isModerated:
+              type: boolean
 
     OpenRouterKeyResponse:
       type: object
